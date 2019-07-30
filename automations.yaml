@@ -1,0 +1,323 @@
+# For starting Homekit - 1
+  - alias: 'Start HomeKit when media_player ready'
+    trigger:
+      #- platform: event
+      #  event_type: media_player.network_ready
+      - platform: event
+        event_type: media_player.network_complete
+      #- platform: event
+      #  event_type: media_player.network_complete_some_dead
+    action:
+      - service: homekit.start
+# For starting Homekit - 2
+  - alias: 'Start HomeKit'
+    trigger:
+      - platform: homeassistant
+        event: start
+    action:
+      - delay: 00:05  # Waits 5 minutes
+      - service: homekit.start
+# Hue remote 1 hold
+  - alias: 'Hue 1 hold'
+    trigger:
+      - platform: state
+        entity_id: sensor.hue_dimmer_switch_1
+        to: '1_hold'
+    action:
+      service: script.turn_on
+      entity_id: script.time_for_bed
+# Hue remote 4 hold
+  - alias: 'Hue 4 hold'
+    trigger:
+      - platform: state
+        entity_id: sensor.hue_dimmer_switch_1
+        to: '4_hold'
+    action:
+      service: script.turn_on
+      entity_id: script.goodnight
+# Turns on Media Player automations if first person gets home
+  - alias: 'Any Entry - Media Autos On'
+    trigger:
+      - platform: state
+        entity_id: device_tracker.iphone
+        to: 'home'
+      - platform: state
+        entity_id: device_tracker.meghans_iphone
+        to: 'home'
+    action:
+      service: homeassistant.turn_on
+      entity_id: group.media_autos
+# Turns alarm to standby if any entry while in away mode
+  - alias: 'Any Entry In Away Mode - Standby'
+    trigger:
+      - platform: state
+        entity_id: device_tracker.iphone
+        to: 'home'
+      - platform: state
+        entity_id: device_tracker.meghans_iphone
+        to: 'home'
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.abode_alarm_system
+        state: 'armed_away'
+    action:
+      - service: alarm_control_panel.alarm_disarm
+        entity_id: alarm_control_panel.abode_alarm_system
+# Turns alarm to standby then home if any entry while in home mode
+  - alias: 'Any Entry In Home Mode - Standby Then Home'
+    trigger:
+      - platform: state
+        entity_id: device_tracker.iphone
+        to: 'home'
+      - platform: state
+        entity_id: device_tracker.meghans_iphone
+        to: 'home'
+    condition:
+      - condition: state
+        entity_id: alarm_control_panel.abode_alarm_system
+        state: 'armed_home'
+    action:
+      - service: alarm_control_panel.alarm_disarm
+        entity_id: alarm_control_panel.abode_alarm_system
+      - delay: 00:05
+      - service: alarm_control_panel.alarm_arm_home
+        entity_id: alarm_control_panel.abode_alarm_system
+# Turns alarm to Standby if 5:30am and someone home
+# (Standby is redundant with Abode, but it also turns on media autos)
+  - alias: 'Morning Home - Standby'
+    trigger:
+      - platform: time
+        at: '05:30:00'
+    condition:
+      - condition: state
+        entity_id: group.all_devices
+        state: 'home'
+    action:
+      - service: script.turn_on
+        entity_id: script.good_morning
+# Turns alarm to Home if 11:00pm and someone home
+# (Redundant with Abode, but M's GPS is sometimes bad)
+  - alias: 'Night Home - Home'
+    trigger:
+      - platform: time
+        at: '23:00:00'
+    condition:
+      - condition: state
+        entity_id: group.all_devices
+        state: 'home'
+    action:
+      - service: alarm_control_panel.alarm_arm_home
+        entity_id: alarm_control_panel.abode_alarm_system   
+# Turns on Front Door light if anyone gets home after sunset. Turns off after 5 minutes
+  - alias: 'Any Entry At Night - Porch On Then Off'
+    trigger:
+      - platform: state
+        entity_id: device_tracker.iphone
+        to: 'home'
+      - platform: state
+        entity_id: device_tracker.meghans_iphone
+        to: 'home'
+    condition:
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+    action:
+      - service: light.turn_on
+        entity_id: light.front_door
+      - delay: 00:05
+      - service: light.turn_off
+        entity_id: light.front_door
+# Turns on Living Room lights if first person gets home after sunset and before 11pm
+  - alias: 'First Entry At Night - LR On'
+    trigger:
+      - platform: state
+        entity_id: group.all_devices
+        to: 'home'
+    condition:
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+      - condition: time
+        after: '16:00:00'
+        before: '23:00:00'
+    action:
+      service: light.turn_on
+      entity_id: light.living_room
+# Turns off devices if everyone leaves in Abode
+  - alias: 'Last Exit In Abode - All Off'
+    trigger:
+      - platform: event
+        event_type: abode_automation
+        event_data:
+          device_name: 'Last phone leaves -> Away mode'
+    action:
+      service: script.turn_on
+      entity_id: script.everything_off
+# Switch Spotify
+  - alias: 'Switch Spotify to Bedroom Stereo'
+    trigger:
+      - platform: state
+        entity_id: media_player.spotify
+        to: 'playing'
+      - platform: state
+        entity_id: sensor.spotify_source
+        to: 'Bedroom Echo Dot'
+    condition:
+      - condition: state
+        entity_id: sensor.spotify_source
+        state: 'Bedroom Echo Dot'
+      - condition: template
+        value_template: "{{ not is_state('sensor.bedroom_stereo_main_source', 'mc_link') }}"
+    action:
+      - service: media_player.turn_on
+        data:
+          entity_id: media_player.bedroom_stereo_main
+      - delay: 00:00:06
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.spotify
+          source: 'Bedroom Stereo'
+  - alias: 'Switch Spotify to Living Room Stereo'
+    trigger:
+      - platform: state
+        entity_id: media_player.spotify
+        to: 'playing'
+      - platform: state
+        entity_id: sensor.spotify_source
+        to: 'Living Room Echo Dot'
+    condition:
+      - condition: state
+        entity_id: sensor.spotify_source
+        state: 'Living Room Echo Dot'
+    action:
+      - service: media_player.turn_on
+        data:
+          entity_id: media_player.living_room_stereo_main
+      - delay: 00:00:06
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.spotify
+          source: 'Living Room Stereo'
+  - alias: 'Switch Spotify to Kitchen Stereo'
+    trigger:
+      - platform: state
+        entity_id: media_player.spotify
+        to: 'playing'
+      - platform: state
+        entity_id: sensor.spotify_source
+        to: 'Kitchen Echo Dot'
+    condition:
+      - condition: state
+        entity_id: sensor.spotify_source
+        state: 'Kitchen Echo Dot'
+      - condition: template
+        value_template: "{{ not is_state('sensor.kitchen_stereo_main_source', 'mc_link') }}"
+    action:
+      - service: media_player.turn_on
+        data:
+          entity_id: media_player.kitchen_stereo_main
+      - delay: 00:00:08
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.spotify
+          source: 'Kitchen Stereo'
+  - alias: 'Switch Spotify from Bedroom Echo Dot to Linked LR when stereo off'
+    trigger:
+      - platform: state
+        entity_id: sensor.bedroom_stereo_main_source
+        to: 'mc_link'
+    condition:
+      - condition: state
+        entity_id: media_player.spotify
+        state: 'playing'
+      - condition: state
+        entity_id: sensor.spotify_source
+        state: 'Bedroom Echo Dot'
+    action:
+      - service: media_player.turn_on
+        data:
+          entity_id: media_player.living_room_stereo_main
+      - delay: 00:00:06
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.spotify
+          source: 'Living Room Stereo'
+  - alias: 'Switch Spotify from Kitchen Echo Dot to Linked LR when stereo off'
+    trigger:
+      - platform: state
+        entity_id: sensor.kitchen_stereo_main_source
+        to: 'mc_link'
+    condition:
+      - condition: state
+        entity_id: media_player.spotify
+        state: 'playing'
+      - condition: state
+        entity_id: sensor.spotify_source
+        state: 'Kitchen Echo Dot'
+    action:
+      - service: media_player.turn_on
+        data:
+          entity_id: media_player.living_room_stereo_main
+      - delay: 00:00:06
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.spotify
+          source: 'Living Room Stereo'
+  - alias: 'Switch Spotify from Bedroom Echo Dot to Linked LR when stereo on'
+    trigger:
+      - platform: state
+        entity_id: media_player.spotify
+        to: 'playing'
+        from: 'idle'
+      - platform: state
+        entity_id: media_player.spotify
+        to: 'playing'
+        from: 'paused'
+      - platform: state
+        entity_id: sensor.spotify_source
+        to: 'Bedroom Echo Dot'
+    condition:
+      - condition: state
+        entity_id: sensor.spotify_source
+        state: 'Bedroom Echo Dot'
+      - condition: state
+        entity_id: sensor.bedroom_stereo_main_source
+        state: 'mc_link'
+    action:
+      - service: media_player.turn_on
+        data:
+          entity_id: media_player.living_room_stereo_main
+      - delay: 00:00:06
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.spotify
+          source: 'Living Room Stereo'
+  - alias: 'Switch Spotify from Kitchen Echo Dot to Linked LR when stereo on'
+    trigger:
+      - platform: state
+        entity_id: media_player.spotify
+        to: 'playing'
+        from: 'idle'
+      - platform: state
+        entity_id: media_player.spotify
+        to: 'playing'
+        from: 'paused'
+      - platform: state
+        entity_id: sensor.spotify_source
+        to: 'Kitchen Echo Dot'
+    condition:
+      - condition: state
+        entity_id: sensor.spotify_source
+        state: 'Kitchen Echo Dot'
+      - condition: state
+        entity_id: sensor.kitchen_stereo_main_source
+        state: 'mc_link'
+    action:
+      - service: media_player.turn_on
+        data:
+          entity_id: media_player.living_room_stereo_main
+      - delay: 00:00:06
+      - service: media_player.select_source
+        data:
+          entity_id: media_player.spotify
+          source: 'Living Room Stereo'

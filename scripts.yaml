@@ -1,0 +1,222 @@
+good_morning:
+  alias: "Good Morning"
+  sequence:
+    - service: alarm_control_panel.alarm_disarm
+      entity_id: alarm_control_panel.abode_alarm_system 
+    - service: homeassistant.turn_on
+      entity_id: group.media_autos
+
+everything_off:
+  alias: "Everything Off"
+  sequence:
+    - service: homeassistant.turn_off
+      entity_id: group.all_lights
+    - service: homeassistant.turn_off
+      entity_id: group.all_media_players
+    - service: script.turn_on
+      entity_id: script.close_garage
+
+night_time:
+  alias: "Transition to Night"
+  sequence:
+    - service: homeassistant.turn_off
+      entity_id: group.media_autos
+    - service: alarm_control_panel.alarm_arm_home
+      entity_id: alarm_control_panel.abode_alarm_system    
+
+goodnight:
+  alias: "Goodnight"
+  sequence:
+    - service: script.turn_on
+      entity_id: script.everything_off
+    - service: script.turn_on
+      entity_id: script.night_time
+
+time_for_bed:
+  alias: "Time For Bed"
+  sequence:
+    - service: homeassistant.turn_off
+      entity_id: group.base
+    - service: homeassistant.turn_off
+      entity_id: group.guest_room
+    - service: light.turn_on
+      entity_id: light.bedroom
+    - service: script.turn_on
+      entity_id: script.night_time
+
+tv_time:
+  alias: "TV Time"
+  sequence:
+    - service: homeassistant.turn_off
+      entity_id: group.base
+    - service: homeassistant.turn_off
+      entity_id: group.bedroom
+
+goodbye:
+  alias: "Goodbye"
+  sequence:
+    - service: script.turn_on
+      entity_id: script.everything_off
+    - service: homeassistant.turn_off
+      entity_id: group.media_autos
+    - service: alarm_control_panel.alarm_arm_away
+      entity_id: alarm_control_panel.abode_alarm_system
+
+link_kitchen:
+  alias: "Link Kitchen"
+  sequence:
+    - service: rest_command.ask_alexa
+      data:
+        message: "Ask music cast to link the living room stereo with the kitchen stereo"
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: "Living Room Stereo"
+
+link_bedroom:
+  alias: "Link Bedroom"
+  sequence:
+    - service: rest_command.ask_alexa
+      data:
+        message: "Ask music cast to link the living room stereo with the bedroom stereo"
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: "Living Room Stereo"
+
+link_guest_room:
+  alias: "Link Guest Room"
+  sequence:
+    - service: rest_command.ask_alexa
+      data:
+        message: "Ask music cast to link the living room stereo with the guest room stereo"
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: "Living Room Stereo"
+
+link_basement:
+  alias: "Link Basement"
+  sequence:
+    - service: rest_command.ask_alexa
+      data:
+        message: "Ask music cast to link the living room stereo with the basement stereo"
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: "Living Room Stereo"
+
+unlink_rooms:
+  alias: "Unlink All Rooms"
+  sequence:
+    - service: rest_command.ask_alexa
+      data:
+        message: "Ask music cast to unlink all rooms"
+
+turntable:
+  alias: "Turntable"
+  sequence:
+    - service: media_player.turn_on
+      data:
+        entity_id: media_player.living_room_stereo_main
+    - delay:
+        seconds: 5
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.living_room_stereo_main
+        source: phono
+    - service: media_player.volume_set
+      data:
+        entity_id: media_player.living_room_stereo_main
+        volume_level: 0.7
+streaming:
+  alias: "Streaming"
+  sequence:
+    - service: media_player.turn_on
+      data:
+        entity_id: media_player.living_room_stereo_main
+    - delay:
+        seconds: 5
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.living_room_stereo_main
+        source: spotify
+    - service: media_player.volume_set
+      data:
+        entity_id: media_player.living_room_stereo_main
+        volume_level: 0.55
+close_garage:
+  alias: "Close Garage"
+  sequence:
+    - service: cover.close_cover
+      data:
+        entity_id: cover.garage_door
+spotify_play:
+  alias: "Spotify Play"
+  sequence:
+    - service: media_player.media_play
+      data:
+        entity_id: media_player.spotify
+spotify_pause:
+  alias: "Spotify Pause"
+  sequence:
+    - service: media_player.media_pause
+      data:
+        entity_id: media_player.spotify
+spotify_living_room:
+  alias: "Living Room Spotify"
+  sequence:
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: 'Living Room Stereo'
+spotify_bedroom:
+  alias: "Bedroom Spotify"
+  sequence:
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: 'Bedroom Stereo'
+spotify_kitchen:
+  alias: "Kitchen Spotify"
+  sequence:
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: 'Kitchen Stereo'
+spotify_basement:
+  alias: "Basement Spotify"
+  sequence:
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: 'Basement Stereo'
+spotify_guest_room:
+  alias: "Guest Room Spotify"
+  sequence:
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: 'Guest Room Stereo'
+spotify_living_room_dot:
+  alias: "Living Room Dot Spotify"
+  sequence:
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: 'Living Room Echo Dot'
+spotify_bedroom_dot:
+  alias: "Bedroom Dot Spotify"
+  sequence:
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: 'Bedroom Echo Dot'
+spotify_kitchen_dot:
+  alias: "Kitchen Dot Spotify"
+  sequence:
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: 'Kitchen Echo Dot'
+

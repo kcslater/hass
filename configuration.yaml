@@ -1,0 +1,277 @@
+homeassistant:
+  # Name of the location where Home Assistant is running
+  # name: Home
+  # Location required to calculate the time the sun rises and sets
+  # latitude: !secret lat
+  # longitude: !secret long
+  # Impacts weather/sunrise data (altitude above sea level in meters)
+  # elevation: 0
+  # metric for Metric, imperial for Imperial
+  # unit_system: imperial
+  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  # time_zone: America/Los_Angeles
+  # Trusted networks
+  # auth_providers:
+  #   - type: homeassistant
+  #   - type: trusted_networks
+  #     trusted_networks:
+  #       - !secret iphone_ip  # Customization file
+  customize: !include customize.yaml
+
+# Show links to resources in log and frontend
+#introduction:
+
+# Enables the frontend
+frontend:
+
+# Enables configuration UI
+config:
+
+# Enables Hass IO UI
+hassio:
+
+# Checks for available updates
+# Note: This component will send some information about your system to
+# the developers to assist with development of Home Assistant.
+# For more information, please see:
+# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
+updater:
+  # Optional, allows Home Assistant developers to focus on popular components.
+  # include_used_components: true
+
+# Discover some devices automatically
+discovery:
+  ignore:
+    - google_cast
+    - igd
+
+# Allows you to issue voice commands from the frontend in enabled browsers
+conversation:
+
+# Enables support for tracking state changes over time
+history:
+
+# View all events in a logbook
+logbook:
+
+# Enables a map showing the location of tracked devices
+map:
+
+# Track the sun
+sun:
+
+#iOS
+ios:
+
+# Virtual Echo
+rest_command:
+  ask_alexa:
+    url: !secret virtual_echo_url
+
+# Sensors
+sensor:
+  # Hue custom component
+  - platform: huesensor
+  # Weather prediction
+  - platform: yr
+  # Spotify source
+  - platform: template
+    sensors:
+      spotify_source:
+        value_template: '{{ states.media_player.spotify.attributes["source"] }}'
+        friendly_name: 'Spotify Source'
+      bedroom_stereo_main_source:
+        value_template: '{{ states.media_player.bedroom_stereo_main.attributes["source"] }}'
+        friendly_name: 'Bedroom Stereo Source'
+      kitchen_stereo_main_source:
+        value_template: '{{ states.media_player.kitchen_stereo_main.attributes["source"] }}'
+        friendly_name: 'Kitchen Stereo Source'
+
+# Text to speech
+tts:
+  - platform: google_translate
+    service_name: google_say
+
+# Cloud
+cloud:
+
+# iOS
+ios:
+
+# Device Tracker
+device_tracker:
+  - platform: netgear
+    password: !secret netgear_password
+    new_device_defaults:
+      track_new_devices: false
+    interval_seconds: 30
+    consider_home: 0:10
+
+emulated_hue:
+  host_ip: !secret hassio_ip
+  listen_port: 80
+  expose_by_default: true
+  exposed_domains:
+    - script
+    - switch
+  off_maps_to_on_domains:
+    - script
+    - scene
+  entities:
+    script.good_morning:
+      hidden: true
+    switch.outdoor_switch_00420738:
+      name: "Backyard Switch"
+      hidden: false
+
+# Switch for HomeKit to turn media player automations on/off
+switch:
+  - platform: template
+    switches:
+      media_autos:
+        friendly_name: 'Media Automations'
+        value_template: "{{ is_state('group.media_autos', 'on') }}"
+        turn_on:
+          service: homeassistant.turn_on
+          data:
+            entity_id: 
+              - group.media_autos
+        turn_off:
+          service: homeassistant.turn_off
+          data:
+            entity_id: 
+              - group.media_autos
+
+# HomeKit
+homekit:
+  auto_start: False
+  filter:
+    include_domains:
+      - cover
+      - media_player
+      - alarm_control_panel
+      - binary_sensor
+      - light
+      - switch
+    include_entities:
+      - script.turntable
+      - script.streaming
+      - script.spotify_living_room
+      - script.spotify_bedroom
+      - script.spotify_kitchen
+      - script.spotify_basement
+      - script.spotify_guest_room
+      - script.goodnight
+      - script.time_for_bed
+      - script.everything_off
+      - script.goodbye
+      - script.tv_time
+    exclude_entities:
+      - binary_sensor.key_fob
+      - binary_sensor.iota_motion
+      - binary_sensor.motion_sensor_1_motion
+      - binary_sensor.motion_sensor_motion_1
+      - light.backyard
+      - light.guest_room
+  entity_config:
+    light.living_room:
+      name: "Living Room Lights"
+    light.bedroom:
+      name: "Bedroom Lights"
+    light.basement:
+      name: "Basement Lights"
+    light.front_door:
+      name: "Front Door Light"
+    switch.outdoor_switch_00420738:
+      name: "Backyard Switch"
+    media_player.living_room_stereo_main:
+      name: "Living Room Stereo"
+      feature_list:
+        feature: on_off
+    media_player.kitchen_stereo_main:
+      name: "Kitchen Stereo"
+      feature_list:
+        feature: on_off
+    media_player.bedroom_stereo_main:
+      name: "Bedroom Stereo"
+      feature_list:
+        feature: on_off
+    media_player.basement_stereo_main:
+      name: "Basement Stereo"
+      feature_list:
+        feature: on_off
+    media_player.guest_room_stereo_main:
+      name: "Guest Room Stereo"
+      feature_list:
+        feature: on_off
+    # media_player.vizio_smartcast:
+    #   name: "TV"
+    #   feature_list:
+    #     - feature: on_off
+
+# Hue
+hue:
+  bridges:
+    - host: !secret hue_ip
+
+# Garage Door
+cover:
+  - platform: myq
+    username: !secret myq_user
+    password: !secret myq_password
+    type: chamberlain
+
+# Abode Alarm System
+abode:
+  username: !secret abode_username
+  password: !secret abode_password
+  name: Abode Alarm System
+  polling: false
+
+# Yamaha and Spotify
+media_player:
+  - platform: yamaha_musiccast
+    host: !secret lr_stereo_ip
+    port: 5005
+  - platform: yamaha_musiccast
+    host: !secret ki_stereo_ip
+    port: 5006
+  - platform: yamaha_musiccast
+    host: !secret br_stereo_ip
+    port: 5007
+  - platform: yamaha_musiccast
+    host: !secret ba_stereo_ip
+    port: 5008
+  - platform: yamaha_musiccast
+    host: !secret gr_stereo_ip
+    port: 5009
+  - platform: spotify
+    client_id: !secret spotify_client_id
+    client_secret: !secret spotify_client_secret
+    aliases:
+      !secret lr_stereo_alias: 'Living Room Stereo'
+      !secret br_stereo_alias: 'Bedroom Stereo'
+      !secret gr_stereo_alias: 'Guest Room Stereo'
+      !secret ki_stereo_alias: 'Kitchen Stereo'
+      !secret ba_stereo_alias: 'Basement Stereo'
+      !secret lr_dot_alias: 'Living Room Echo Dot'
+      !secret ki_dot_alias: 'Kitchen Echo Dot'
+      !secret br_dot_alias: 'Bedroom Echo Dot'
+  # - platform: vizio
+  #   host: !secret vizio_ip
+  #   access_token: !secret vizio_auth_token
+
+# Log to get Spotify aliases
+logger:
+  default: warning
+  logs:
+    homeassistant.components.media_player.spotify: info
+
+http:
+  base_url: !secret base_url
+  ssl_certificate: /ssl/fullchain.pem
+  ssl_key: /ssl/privkey.pem
+
+group: !include groups.yaml
+automation: !include automations.yaml
+script: !include scripts.yaml

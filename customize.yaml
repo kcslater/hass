@@ -1,0 +1,7 @@
+group.all_automations:
+  hidden: false
+group.all_scripts:
+  hidden: false
+sensor.basement_temperature: {}
+sun.sun:
+  hidden: true
