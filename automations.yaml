@@ -165,7 +165,7 @@
   - alias: 'Abode Away - All Off'
     trigger:
       - platform: state
-        event_id: alarm_control_panel.abode_alarm_system
+        entity_id: alarm_control_panel.abode_alarm_system
         to: 'armed_away'
     action:
       service: script.turn_on
