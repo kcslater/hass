@@ -52,7 +52,7 @@
       service: homeassistant.turn_on
       entity_id: group.media_autos
 # Turns alarm to standby if any entry while in away mode
-  - alias: 'Any Entry In Away Mode - Standby'
+  - alias: 'Any Entry - Standby'
     trigger:
       - platform: state
         entity_id: device_tracker.iphone
@@ -60,39 +60,8 @@
       - platform: state
         entity_id: device_tracker.meghans_iphone
         to: 'home'
-      - platform: event
-        event_type: abode_automation
-        event_data:
-          device_name: 'Any phone enters -> Standby mode'
-    condition:
-      - condition: state
-        entity_id: alarm_control_panel.abode_alarm_system
-        state: 'armed_away'
     action:
       - service: alarm_control_panel.alarm_disarm
-        entity_id: alarm_control_panel.abode_alarm_system
-# Turns alarm to standby then home if any entry while in home mode
-  - alias: 'Any Entry In Home Mode - Standby Then Home'
-    trigger:
-      - platform: state
-        entity_id: device_tracker.iphone
-        to: 'home'
-      - platform: state
-        entity_id: device_tracker.meghans_iphone
-        to: 'home'
-      - platform: event
-        event_type: abode_automation
-        event_data:
-          device_name: 'Any phone enters -> Standby mode'
-    condition:
-      - condition: state
-        entity_id: alarm_control_panel.abode_alarm_system
-        state: 'armed_home'
-    action:
-      - service: alarm_control_panel.alarm_disarm
-        entity_id: alarm_control_panel.abode_alarm_system
-      - delay: 00:05
-      - service: alarm_control_panel.alarm_arm_home
         entity_id: alarm_control_panel.abode_alarm_system
 # Turns alarm to Standby if 5:30am and someone home
 # (Standby is redundant with Abode, but it also turns on media autos)
