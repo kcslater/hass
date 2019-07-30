@@ -140,17 +140,22 @@
     action:
       - service: light.turn_on
         entity_id: light.front_door
-      - service: light.turn_on
-        entity_id: light.living_room
       - delay: 00:05
       - service: light.turn_off
         entity_id: light.front_door
 # Turns on Living Room lights if first person gets home after sunset and before 11pm
-  - alias: 'First Entry At Night - LR On'
+  - alias: 'Any Entry At Night - LR On'
     trigger:
       - platform: state
-        entity_id: group.all_devices
+        entity_id: device_tracker.iphone
         to: 'home'
+      - platform: state
+        entity_id: device_tracker.meghans_iphone
+        to: 'home'
+      - platform: event
+        event_type: abode_automation
+        event_data:
+          device_name: 'Any phone enters -> Standby mode'
     condition:
       - condition: state
         entity_id: sun.sun
