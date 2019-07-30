@@ -44,6 +44,10 @@
       - platform: state
         entity_id: device_tracker.meghans_iphone
         to: 'home'
+      - platform: event
+        event_type: abode_automation
+        event_data:
+          device_name: 'Any phone enters -> Standby mode'
     action:
       service: homeassistant.turn_on
       entity_id: group.media_autos
@@ -56,6 +60,10 @@
       - platform: state
         entity_id: device_tracker.meghans_iphone
         to: 'home'
+      - platform: event
+        event_type: abode_automation
+        event_data:
+          device_name: 'Any phone enters -> Standby mode'
     condition:
       - condition: state
         entity_id: alarm_control_panel.abode_alarm_system
@@ -72,6 +80,10 @@
       - platform: state
         entity_id: device_tracker.meghans_iphone
         to: 'home'
+      - platform: event
+        event_type: abode_automation
+        event_data:
+          device_name: 'Any phone enters -> Standby mode'
     condition:
       - condition: state
         entity_id: alarm_control_panel.abode_alarm_system
@@ -117,6 +129,10 @@
       - platform: state
         entity_id: device_tracker.meghans_iphone
         to: 'home'
+      - platform: event
+        event_type: abode_automation
+        event_data:
+          device_name: 'Any phone enters -> Standby mode'
     condition:
       - condition: state
         entity_id: sun.sun
@@ -124,6 +140,8 @@
     action:
       - service: light.turn_on
         entity_id: light.front_door
+      - service: light.turn_on
+        entity_id: light.living_room
       - delay: 00:05
       - service: light.turn_off
         entity_id: light.front_door
@@ -143,13 +161,12 @@
     action:
       service: light.turn_on
       entity_id: light.living_room
-# Turns off devices if everyone leaves in Abode
-  - alias: 'Last Exit In Abode - All Off'
+# Turns off devices if Abode goes to Away Mode
+  - alias: 'Abode Away - All Off'
     trigger:
-      - platform: event
-        event_type: abode_automation
-        event_data:
-          device_name: 'Last phone leaves -> Away mode'
+      - platform: state
+        event_id: alarm_control_panel.abode_alarm_system
+        to: 'armed_away'
     action:
       service: script.turn_on
       entity_id: script.everything_off
