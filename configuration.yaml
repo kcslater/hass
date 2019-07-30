@@ -121,7 +121,7 @@ emulated_hue:
     script.good_morning:
       hidden: true
     switch.outdoor_switch_00420738:
-      name: "Backyard Switch"
+      name: "Backyard Lights"
       hidden: false
 
 # Switch for HomeKit to turn media player automations on/off
@@ -183,7 +183,7 @@ homekit:
     light.front_door:
       name: "Front Door Light"
     switch.outdoor_switch_00420738:
-      name: "Backyard Switch"
+      name: "Backyard Lights"
     media_player.living_room_stereo_main:
       name: "Living Room Stereo"
       feature_list:
