@@ -88,13 +88,13 @@
   media_autos:
     name: Media Automations
     entities:
-      - automation.switch_spotify_to_bedroom_stereo
-      - automation.switch_spotify_to_kitchen_stereo
-      - automation.switch_spotify_to_living_room_stereo
-      - automation.switch_spotify_from_bedroom_echo_dot_to_linked_lr_when_stereo_off
-      - automation.switch_spotify_from_bedroom_echo_dot_to_linked_lr_when_stereo_on
-      - automation.switch_spotify_from_kitchen_echo_dot_to_linked_lr_when_stereo_off
-      - automation.switch_spotify_from_kitchen_echo_dot_to_linked_lr_when_stereo_on
+      - automation.bedroom_echo_bedroom_stereo
+      - automation.bedroom_echo_linked_living_room_1
+      - automation.bedroom_echo_linked_living_room_2
+      - automation.kitchen_echo_kitchen_stereo
+      - automation.kitchen_echo_linked_living_room_1
+      - automation.kitchen_echo_linked_living_room_2
+      - automation.living_room_echo_living_room_stereo
   
   upstairs:
     name: Upstairs
