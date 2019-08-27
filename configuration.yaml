@@ -136,11 +136,6 @@ switch:
           data:
             entity_id: 
               - group.media_autos
-
-# Switch for HomeKit to turn all stereos on/off
-switch:
-  - platform: template
-    switches:
       all_stereos:
         friendly_name: 'All Stereos'
         value_template: "{{ is_state('group.all_stereos', 'on') }}"

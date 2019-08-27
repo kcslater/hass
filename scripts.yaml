@@ -63,93 +63,6 @@ goodbye:
     - service: alarm_control_panel.alarm_arm_away
       entity_id: alarm_control_panel.abode_alarm_system
 
-# MUSIC
-link_kitchen:
-  alias: "Link The Kitchen"
-  sequence:
-    - service: rest_command.ask_alexa
-      data:
-        message: "Ask music cast to link the living room stereo with the kitchen stereo"
-    - service: media_player.select_source
-      data:
-        entity_id: media_player.spotify
-        source: "Living Room Stereo"
-
-link_bedroom:
-  alias: "Link The Bedroom"
-  sequence:
-    - service: rest_command.ask_alexa
-      data:
-        message: "Ask music cast to link the living room stereo with the bedroom stereo"
-    - service: media_player.select_source
-      data:
-        entity_id: media_player.spotify
-        source: "Living Room Stereo"
-
-link_guest_room:
-  alias: "Link The Guest Room"
-  sequence:
-    - service: rest_command.ask_alexa
-      data:
-        message: "Ask music cast to link the living room stereo with the guest room stereo"
-    - service: media_player.select_source
-      data:
-        entity_id: media_player.spotify
-        source: "Living Room Stereo"
-
-link_basement:
-  alias: "Link The Basement"
-  sequence:
-    - service: rest_command.ask_alexa
-      data:
-        message: "Ask music cast to link the living room stereo with the basement stereo"
-    - service: media_player.select_source
-      data:
-        entity_id: media_player.spotify
-        source: "Living Room Stereo"
-
-link_all_rooms:
-  alias: "Link All Rooms"
-  sequence:
-    - service: rest_command.ask_alexa
-      data:
-        message: "Ask music cast to link the living room stereo with all rooms"
-
-unlink_rooms:
-  alias: "Unlink All Rooms"
-  sequence:
-    - service: rest_command.ask_alexa
-      data:
-        message: "Ask music cast to unlink all rooms"
-
-unlink_kitchen:
-  alias: "Unlink the Kitchen"
-  sequence:
-    - service: rest_command.ask_alexa
-      data:
-        message: "Ask music cast to unlink the Kitchen"
-
-unlink_bedroom:
-  alias: "Unlink the Bedroom"
-  sequence:
-    - service: rest_command.ask_alexa
-      data:
-        message: "Ask music cast to unlink the Bedroom"
-
-unlink_basement:
-  alias: "Unlink the Basement"
-  sequence:
-    - service: rest_command.ask_alexa
-      data:
-        message: "Ask music cast to unlink the Basement"
-
-unlink_guest_room:
-  alias: "Unlink the Guest Room"
-  sequence:
-    - service: rest_command.ask_alexa
-      data:
-        message: "Ask music cast to unlink the Guest Room"
-
 # SPECIAL MUSIC
 turntable:
   alias: "Turntable"
@@ -157,8 +70,7 @@ turntable:
     - service: media_player.turn_on
       data:
         entity_id: media_player.living_room_stereo_main
-    - delay:
-        seconds: 5
+    - delay: '00:00:02'
     - service: media_player.select_source
       data:
         entity_id: media_player.living_room_stereo_main
@@ -173,8 +85,7 @@ streaming:
     - service: media_player.turn_on
       data:
         entity_id: media_player.living_room_stereo_main
-    - delay:
-        seconds: 5
+    - delay: '00:00:02'
     - service: media_player.select_source
       data:
         entity_id: media_player.living_room_stereo_main
@@ -230,11 +141,14 @@ spotify_bedroom:
       data:
         entity_id: media_player.spotify
         source: 'Bedroom Stereo'
-    - delay: 00:00:06
-    - condition: template
-      value_template: "{{ not is_state('media_player.bedroom_stereo_main', 'playing') }}"
-    - service: script.turn_on
-      entity_id: script.link_bedroom
+    - delay: '00:00:02'
+    - condition: state
+      entity_id: media_player.bedroom_stereo_main
+      state: 'mc_link'
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: 'Living Room Stereo'
 spotify_kitchen:
   alias: "Spotify Kitchen"
   sequence:
@@ -245,11 +159,14 @@ spotify_kitchen:
       data:
         entity_id: media_player.spotify
         source: 'Kitchen Stereo'
-    - delay: 00:00:06
-    - condition: template
-      value_template: "{{ not is_state('media_player.kitchen_stereo_main', 'playing') }}"
-    - service: script.turn_on
-      entity_id: script.link_kitchen
+    - delay: '00:00:02'
+    - condition: state
+      entity_id: media_player.kitchen_stereo_main
+      state: 'mc_link'
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: 'Living Room Stereo'
 spotify_basement:
   alias: "Spotify Basement"
   sequence:
