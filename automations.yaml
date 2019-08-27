@@ -116,7 +116,7 @@
       - service: light.turn_off
         entity_id: light.front_door
 # Turns on Living Room lights if first person gets home after sunset and before 11pm
-  - alias: 'Any Entry After Sunset Before 11 -> Living Room On'
+  - alias: 'Any Entry After Sunset Before 10 -> Living Room On'
     trigger:
       - platform: state
         entity_id: device_tracker.iphone
@@ -134,7 +134,7 @@
         state: 'below_horizon'
       - condition: time
         after: '16:00:00'
-        before: '23:00:00'
+        before: '22:00:00'
     action:
       service: light.turn_on
       entity_id: light.living_room
@@ -160,17 +160,9 @@
       - condition: state
         entity_id: sensor.spotify_source
         state: 'Bedroom Echo Dot'
-      - condition: template
-        value_template: "{{ not is_state('sensor.bedroom_stereo_main_source', 'mc_link') }}"
     action:
-      - service: media_player.turn_on
-        data:
-          entity_id: media_player.bedroom_stereo_main
-      - delay: 00:00:06
-      - service: media_player.select_source
-        data:
-          entity_id: media_player.spotify
-          source: 'Bedroom Stereo'
+      - service: script.turn_on
+        entity_id: script.spotify_bedroom
   - alias: 'Living Room Echo -> Living Room Stereo'
     trigger:
       - platform: state
@@ -184,14 +176,8 @@
         entity_id: sensor.spotify_source
         state: 'Living Room Echo Dot'
     action:
-      - service: media_player.turn_on
-        data:
-          entity_id: media_player.living_room_stereo_main
-      - delay: 00:00:06
-      - service: media_player.select_source
-        data:
-          entity_id: media_player.spotify
-          source: 'Living Room Stereo'
+      - service: script.turn_on
+        entity_id: script.spotify_living_room
   - alias: 'Kitchen Echo -> Kitchen Stereo'
     trigger:
       - platform: state
@@ -204,114 +190,6 @@
       - condition: state
         entity_id: sensor.spotify_source
         state: 'Kitchen Echo Dot'
-      - condition: template
-        value_template: "{{ not is_state('sensor.kitchen_stereo_main_source', 'mc_link') }}"
     action:
-      - service: media_player.turn_on
-        data:
-          entity_id: media_player.kitchen_stereo_main
-      - delay: 00:00:08
-      - service: media_player.select_source
-        data:
-          entity_id: media_player.spotify
-          source: 'Kitchen Stereo'
-  - alias: 'Bedroom Echo -> Linked Living Room 1'
-    trigger:
-      - platform: state
-        entity_id: sensor.bedroom_stereo_main_source
-        to: 'mc_link'
-    condition:
-      - condition: state
-        entity_id: media_player.spotify
-        state: 'playing'
-      - condition: state
-        entity_id: sensor.spotify_source
-        state: 'Bedroom Echo Dot'
-    action:
-      - service: media_player.turn_on
-        data:
-          entity_id: media_player.living_room_stereo_main
-      - delay: 00:00:06
-      - service: media_player.select_source
-        data:
-          entity_id: media_player.spotify
-          source: 'Living Room Stereo'
-  - alias: 'Kitchen Echo -> Linked Living Room 1'
-    trigger:
-      - platform: state
-        entity_id: sensor.kitchen_stereo_main_source
-        to: 'mc_link'
-    condition:
-      - condition: state
-        entity_id: media_player.spotify
-        state: 'playing'
-      - condition: state
-        entity_id: sensor.spotify_source
-        state: 'Kitchen Echo Dot'
-    action:
-      - service: media_player.turn_on
-        data:
-          entity_id: media_player.living_room_stereo_main
-      - delay: 00:00:06
-      - service: media_player.select_source
-        data:
-          entity_id: media_player.spotify
-          source: 'Living Room Stereo'
-  - alias: 'Bedroom Echo -> Linked Living Room 2'
-    trigger:
-      - platform: state
-        entity_id: media_player.spotify
-        to: 'playing'
-        from: 'idle'
-      - platform: state
-        entity_id: media_player.spotify
-        to: 'playing'
-        from: 'paused'
-      - platform: state
-        entity_id: sensor.spotify_source
-        to: 'Bedroom Echo Dot'
-    condition:
-      - condition: state
-        entity_id: sensor.spotify_source
-        state: 'Bedroom Echo Dot'
-      - condition: state
-        entity_id: sensor.bedroom_stereo_main_source
-        state: 'mc_link'
-    action:
-      - service: media_player.turn_on
-        data:
-          entity_id: media_player.living_room_stereo_main
-      - delay: 00:00:06
-      - service: media_player.select_source
-        data:
-          entity_id: media_player.spotify
-          source: 'Living Room Stereo'
-  - alias: 'Kitchen Echo -> Linked Living Room 2'
-    trigger:
-      - platform: state
-        entity_id: media_player.spotify
-        to: 'playing'
-        from: 'idle'
-      - platform: state
-        entity_id: media_player.spotify
-        to: 'playing'
-        from: 'paused'
-      - platform: state
-        entity_id: sensor.spotify_source
-        to: 'Kitchen Echo Dot'
-    condition:
-      - condition: state
-        entity_id: sensor.spotify_source
-        state: 'Kitchen Echo Dot'
-      - condition: state
-        entity_id: sensor.kitchen_stereo_main_source
-        state: 'mc_link'
-    action:
-      - service: media_player.turn_on
-        data:
-          entity_id: media_player.living_room_stereo_main
-      - delay: 00:00:06
-      - service: media_player.select_source
-        data:
-          entity_id: media_player.spotify
-          source: 'Living Room Stereo'
+      - service: script.turn_on
+        entity_id: script.spotify_kitchen

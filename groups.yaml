@@ -27,8 +27,8 @@
   #    - camera.iota_cam
   
   # Media Players
-  all_media_players:
-    name: All Media Players
+  all_stereos:
+    name: All Stereos
     entities:
       - media_player.living_room_stereo_main
       - media_player.bedroom_stereo_main
@@ -89,11 +89,7 @@
     name: Media Automations
     entities:
       - automation.bedroom_echo_bedroom_stereo
-      - automation.bedroom_echo_linked_living_room_1
-      - automation.bedroom_echo_linked_living_room_2
       - automation.kitchen_echo_kitchen_stereo
-      - automation.kitchen_echo_linked_living_room_1
-      - automation.kitchen_echo_linked_living_room_2
       - automation.living_room_echo_living_room_stereo
   
   upstairs:
