@@ -65,9 +65,9 @@ sun:
 ios:
 
 # Virtual Echo
-rest_command:
-  ask_alexa:
-    url: !secret virtual_echo_url
+#rest_command:
+#  ask_alexa:
+#    url: !secret virtual_echo_url
 
 # Sensors
 sensor:
@@ -169,6 +169,7 @@ homekit:
       - light.guest_room
       - script.close_garage
       - script.night_time
+      - media_player.den_tv
   entity_config:
     light.living_room:
       name: "Living Room Lights"
@@ -221,8 +222,7 @@ cover:
 abode:
   username: !secret abode_username
   password: !secret abode_password
-  name: Abode Alarm System
-  polling: false
+  name: Abode
 
 # Yamaha and Spotify
 media_player:
