@@ -43,13 +43,7 @@
         to: '2_hold'
     action:
       - service: script.turn_on
-        data_template:
-          entity_id : >-
-            {% if is_state('media_player.living_room_stereo_main', 'playing') %}
-              script.link_bedroom
-            {% else %}
-              script.spotify_bedroom
-            {% endif %}
+        entity_id: script.spotify_bedroom
 # Disarms and turns on Media Player automations if any person arrives
   - alias: 'Any Entry -> Good Morning'
     trigger:
@@ -147,6 +141,18 @@
     action:
       service: script.turn_on
       entity_id: script.goodbye
+# Turns off devices and media autos if 2AM and no one home (in case of power outage)
+  - alias: '2 AM Away -> Everything Off'
+    trigger:
+      - platform: time
+        at: '02:00:00'
+    condition:
+      - condition: state
+        entity_id: group.all_devices
+        state: 'not_home'
+    action:
+      service: script.turn_on
+      entity_id: script.everything_off
 # Switch Spotify
   - alias: 'Bedroom Echo -> Bedroom Stereo'
     trigger:
