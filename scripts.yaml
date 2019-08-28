@@ -3,7 +3,7 @@ good_morning:
   alias: "Good Morning"
   sequence:
     - service: alarm_control_panel.alarm_disarm
-      entity_id: alarm_control_panel.abode_alarm_system 
+      entity_id: alarm_control_panel.abode
     - service: homeassistant.turn_on
       entity_id: group.media_autos
 
@@ -23,7 +23,7 @@ night_time:
     - service: homeassistant.turn_off
       entity_id: group.media_autos
     - service: alarm_control_panel.alarm_arm_home
-      entity_id: alarm_control_panel.abode_alarm_system    
+      entity_id: alarm_control_panel.abode
 
 goodnight:
   alias: "Goodnight"
@@ -61,7 +61,7 @@ goodbye:
     - service: homeassistant.turn_off
       entity_id: group.media_autos
     - service: alarm_control_panel.alarm_arm_away
-      entity_id: alarm_control_panel.abode_alarm_system
+      entity_id: alarm_control_panel.abode
 
 # SPECIAL MUSIC
 turntable:
