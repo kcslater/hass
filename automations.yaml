@@ -85,7 +85,7 @@
         state: 'home'
     action:
       - service: alarm_control_panel.alarm_arm_home
-        entity_id: alarm_control_panel.abode_alarm_system   
+        entity_id: alarm_control_panel.abode
 # Turns on Front Door light if anyone gets home after sunset. Turns off after 5 minutes
   - alias: 'Any Entry After Sunset -> Porch On Then Off'
     trigger:
@@ -136,7 +136,7 @@
   - alias: 'Abode to Away -> Everything Off'
     trigger:
       - platform: state
-        entity_id: alarm_control_panel.abode_alarm_system
+        entity_id: alarm_control_panel.abode
         to: 'armed_away'
     action:
       - service: script.turn_on
