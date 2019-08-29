@@ -121,22 +121,8 @@ emulated_hue:
     switch.outdoor_switch_00420738:
       name: "Backyard Lights"
       hidden: false
-    switch.good_morning:
-      hidden: true
-    switch.everything_off:
-      hidden: true
-    switch.night_time:
-      hidden: true
-    switch.goodnight:
-      hidden: true
-    switch.time_for_bed:
-      hidden: true
-    switch.tv_time:
-      hidden: true
-    switch.goodbye:
-      hidden: true
 
-# Switches for HomeKit
+# Switch Templates for HomeKit
 switch:
   - platform: template
     switches:
@@ -164,92 +150,6 @@ switch:
         turn_off:
           service: homeassistant.turn_off
           entity_id: group.all_stereos
-      good_morning:
-        friendly_name: 'Good Morning'
-        value_template: >-
-          {{  is_state('alarm_control_panel.abode', 'disarmed') and
-              is_state('group.media_autos', 'on')
-          }}
-        turn_on:
-          service: script.turn_on
-          entity_id: script.good_morning
-        turn_off:
-      everything_off:
-        friendly_name: 'Everything Off'
-        value_template: >-
-          {{  is_state('media_player.living_room_stereo_main', 'off') and
-              is_state('media_player.bedroom_stereo_main', 'off') and
-              is_state('media_player.kitchen_stereo_main', 'off') and
-              is_state('media_player.guest_room_stereo_main', 'off') and
-              is_state('media_player.basement_stereo_main', 'off') and
-              is_state('group.all_lights', 'off') and
-              is_state('cover.garage_door', 'closed')
-          }}
-        turn_on:
-          service: script.turn_on
-          entity_id: script.everything_off
-        turn_off:
-      night_time:
-        friendly_name: 'Night Time'
-        value_template: >-
-          {{  is_state('group.media_autos', 'off') and
-              is_state('alarm_control_panel.abode', 'armed_home')
-          }}
-        turn_on:
-          service: script.turn_on
-          entity_id: script.night_time
-        turn_off:
-      goodnight:
-        friendly_name: 'Goodnight'
-        value_template: >-
-          {{  is_state('switch.everything_off', 'on') and
-              is_state('switch.night_time', 'on')
-          }}
-        turn_on:
-          service: script.turn_on
-          entity_id: script.goodnight
-        turn_off:
-      time_for_bed:
-        friendly_name: 'Time For Bed'
-        value_template: >-
-          {{  is_state('media_player.living_room_stereo_main', 'off') and
-              is_state('media_player.kitchen_stereo_main', 'off') and
-              is_state('media_player.guest_room_stereo_main', 'off') and
-              is_state('media_player.basement_stereo_main', 'off') and
-              is_state('group.base', 'off') and
-              is_state('switch.night_time', 'on') and
-              is_state('group.guest_room', 'off') and
-              is_state('light.bedroom', 'on')
-          }}
-        turn_on:
-          service: script.turn_on
-          entity_id: script.time_for_bed
-        turn_off:
-      tv_time:
-        friendly_name: 'TV Time'
-        value_template: >-
-          {{  is_state('media_player.living_room_stereo_main', 'off') and
-              is_state('media_player.bedroom_stereo_main', 'off') and
-              is_state('media_player.kitchen_stereo_main', 'off') and
-              is_state('media_player.basement_stereo_main', 'off') and
-              is_state('group.base', 'off') and
-              is_state('group.bedroom', 'off')
-          }}
-        turn_on:
-          service: script.turn_on
-          entity_id: script.tv_time
-        turn_off:
-      goodbye:
-        friendly_name: 'Goodbye'
-        value_template: >-
-          {{  is_state('alarm_control_panel.abode', 'armed_away') and
-              is_state('switch.everything_off', 'on') and
-              is_state('group.media_autos', 'off')
-          }}
-        turn_on:
-          service: script.turn_on
-          entity_id: script.goodbye
-        turn_off:
 
 # HomeKit
 homekit:
@@ -271,15 +171,7 @@ homekit:
       - light.porch_lamp
       - script.close_garage
       - script.night_time
-      - script.good_morning
-      - script.everything_off
-      - script.night_time
-      - script.goodnight
-      - script.time_for_bed
-      - script.tv_time
-      - script.goodbye
       - media_player.den_tv
-      - switch.night_time
   entity_config:
     light.living_room:
       name: "Living Room Lights"
