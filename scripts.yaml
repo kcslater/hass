@@ -127,6 +127,15 @@ spotify_previous:
 spotify_living_room:
   alias: "Spotify Living Room"
   sequence:
+    - service: media_player.turn_on
+      entity_id: media_player.living_room_stereo_main
+    - delay:
+        seconds: >
+          {% if is_state('media_player.living_room_stereo_main', 'off') %}
+            13
+          {% else %}
+            0
+          {% endif %}
     - service: media_player.select_source
       data:
         entity_id: media_player.spotify
@@ -135,8 +144,7 @@ spotify_bedroom:
   alias: "Spotify Bedroom"
   sequence:
     - service: media_player.turn_on
-      data:
-        entity_id: media_player.bedroom_stereo_main
+      entity_id: media_player.bedroom_stereo_main
     - service: media_player.select_source
       data:
         entity_id: media_player.spotify
