@@ -133,14 +133,16 @@
       service: light.turn_on
       entity_id: light.living_room
 # Turns off devices and media autos if Abode goes to Away Mode
-  - alias: 'Abode to Away -> Goodbye'
+  - alias: 'Abode to Away -> Everything Off'
     trigger:
       - platform: state
         entity_id: alarm_control_panel.abode_alarm_system
         to: 'armed_away'
     action:
-      service: script.turn_on
-      entity_id: script.goodbye
+      - service: script.turn_on
+        entity_id: script.everything_off
+      - service: homeassistant.turn_off
+        entity_id: group.media_autos
 # Turns off devices and media autos if 2AM and no one home (in case of power outage)
   - alias: '2 AM Away -> Everything Off'
     trigger:
