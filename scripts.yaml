@@ -2,64 +2,62 @@
 good_morning:
   alias: "Good Morning"
   sequence:
-    - service: alarm_control_panel.alarm_disarm
-      entity_id: alarm_control_panel.abode
-    - service: homeassistant.turn_on
-      entity_id: group.media_autos
+    - service: light.turn_on
+      data:
+        entity_id: light.bedroom
+        brightness_pct: 100
 
 everything_off:
   alias: "Everything Off"
   sequence:
     - service: homeassistant.turn_off
-      entity_id: group.all_lights
+      entity_id: group.bedroom
     - service: homeassistant.turn_off
-      entity_id: group.all_stereos
-    - service: script.turn_on
-      entity_id: script.close_garage
-
-night_time:
-  alias: "Transition to Night"
-  sequence:
+      entity_id: group.upstairs
+    - condition: state
+      entity_id: input_boolean.guests_visiting
+      state: 'off'
     - service: homeassistant.turn_off
-      entity_id: group.media_autos
-    - service: alarm_control_panel.alarm_arm_home
-      entity_id: alarm_control_panel.abode
+      entity_id: group.downstairs
 
 goodnight:
   alias: "Goodnight"
   sequence:
     - service: script.turn_on
       entity_id: script.everything_off
-    - service: script.turn_on
-      entity_id: script.night_time
+    - service: alarm_control_panel.alarm_arm_home
+      entity_id: alarm_control_panel.abode
 
 time_for_bed:
   alias: "Time For Bed"
   sequence:
-    - service: homeassistant.turn_off
-      entity_id: group.base
-    - service: homeassistant.turn_off
-      entity_id: group.guest_room
     - service: light.turn_on
       entity_id: light.bedroom
-    - service: script.turn_on
-      entity_id: script.night_time
+    - service: alarm_control_panel.alarm_arm_home
+      entity_id: alarm_control_panel.abode
+    - service: homeassistant.turn_off
+      entity_id: group.upstairs
+    - condition: state
+      entity_id: input_boolean.guests_visiting
+      state: 'off'
+    - service: homeassistant.turn_off
+      entity_id: group.downstairs
 
 tv_time:
   alias: "TV Time"
   sequence:
     - service: homeassistant.turn_off
-      entity_id: group.base
+      entity_id: group.upstairs
     - service: homeassistant.turn_off
       entity_id: group.bedroom
+    - service: homeassistant.turn_off
+      entity_id: light.basement
 
 goodbye:
   alias: "Goodbye"
   sequence:
     - service: script.turn_on
       entity_id: script.everything_off
-    - service: homeassistant.turn_off
-      entity_id: group.media_autos
     - service: alarm_control_panel.alarm_arm_away
       entity_id: alarm_control_panel.abode
 
@@ -98,8 +96,7 @@ close_garage:
   alias: "Close Garage"
   sequence:
     - service: cover.close_cover
-      data:
-        entity_id: cover.garage_door
+      entity_id: cover.garage_door
 spotify_play:
   alias: "Spotify Play"
   sequence:
@@ -124,6 +121,43 @@ spotify_previous:
     - service: media_player.media_previous_track
       data:
         entity_id: media_player.spotify
+spotify_up:
+  alias: "Spotify Volume Up"
+  sequence:
+    - service: media_player.volume_up
+      data_template:
+        entity_id: >
+          media_player.{{ states("sensor.spotify_source").replace(" ", "_").lower() }}_main
+spotify_down:
+  alias: "Spotify Volume Down"
+  sequence:
+    - service: media_player.volume_down
+      data_template:
+        entity_id: >
+          media_player.{{ states("sensor.spotify_source").replace(" ", "_").lower() }}_main
+spotify_up2:
+  alias: "Spotify Volume Way Up"
+  sequence:
+    - service: media_player.volume_up
+      data_template:
+        entity_id: >
+          media_player.{{ states("sensor.spotify_source").replace(" ", "_").lower() }}_main
+    - service: media_player.volume_up
+      data_template:
+        entity_id: >
+          media_player.{{ states("sensor.spotify_source").replace(" ", "_").lower() }}_main
+spotify_down2:
+  alias: "Spotify Volume Way Down"
+  sequence:
+    - service: media_player.volume_down
+      data_template:
+        entity_id: >
+          media_player.{{ states("sensor.spotify_source").replace(" ", "_").lower() }}_main
+    - service: media_player.volume_down
+      data_template:
+        entity_id: >
+          media_player.{{ states("sensor.spotify_source").replace(" ", "_").lower() }}_main
+
 spotify_living_room:
   alias: "Spotify Living Room"
   sequence:
@@ -140,52 +174,47 @@ spotify_living_room:
       data:
         entity_id: media_player.spotify
         source: 'Living Room Stereo'
+
+spotify_switch:
+  alias: "Spotify Switch"
+  sequence: 
+    - service: media_player.turn_on
+      data_template:
+        entity_id: "media_player.{{ title.lower().replace(' ','_') }}_stereo_main"
+    - service: media_player.select_source
+      data_template:
+        entity_id: media_player.spotify
+        source: "{{ title }} Stereo"
+    - delay: '00:00:02'
+    - condition: template
+      value_template: "is_state(media_player.{{ title.lower().replace(' ','_') }}_stereo_main, 'mc_link')"
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: 'Living Room Stereo'
+
+
 spotify_bedroom:
   alias: "Spotify Bedroom"
   sequence:
-    - service: media_player.turn_on
-      entity_id: media_player.bedroom_stereo_main
-    - service: media_player.select_source
+    - service: script.spotify_switch
       data:
-        entity_id: media_player.spotify
-        source: 'Bedroom Stereo'
-    - delay: '00:00:02'
-    - condition: state
-      entity_id: media_player.bedroom_stereo_main
-      state: 'mc_link'
-    - service: media_player.select_source
-      data:
-        entity_id: media_player.spotify
-        source: 'Living Room Stereo'
+        title: "Bedroom"
 spotify_kitchen:
   alias: "Spotify Kitchen"
   sequence:
-    - service: media_player.turn_on
+    - service: script.spotify_switch
       data:
-        entity_id: media_player.kitchen_stereo_main
-    - service: media_player.select_source
-      data:
-        entity_id: media_player.spotify
-        source: 'Kitchen Stereo'
-    - delay: '00:00:02'
-    - condition: state
-      entity_id: media_player.kitchen_stereo_main
-      state: 'mc_link'
-    - service: media_player.select_source
-      data:
-        entity_id: media_player.spotify
-        source: 'Living Room Stereo'
+        title: "Kitchen"
 spotify_basement:
   alias: "Spotify Basement"
   sequence:
-    - service: media_player.select_source
+    - service: script.spotify_switch
       data:
-        entity_id: media_player.spotify
-        source: 'Basement Stereo'
+        title: "Basement"
 spotify_guest_room:
   alias: "Spotify Guest Room"
   sequence:
-    - service: media_player.select_source
+    - service: script.spotify_switch
       data:
-        entity_id: media_player.spotify
-        source: 'Guest Room Stereo'
+        title: "Guest Room"
