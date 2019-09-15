@@ -1,30 +1,24 @@
-# Groups
-  #default_view:
-  #  view: true
-  #  entities:
-  #    - group.upstairs
-  #    - group.downstairs
-  #stereos:
-  #  name: Stereos
-  #  view: true
-  #  entities:
-  #    - media_player.living_room_stereo_main
-  #    - media_player.kitchen_stereo_main
-  #    - media_player.bedroom_stereo_main
-  #    - media_player.basement_stereo_main
-  #    - media_player.guest_room_stereo_main
-  #    - media_player.spotify
-  #abode:
-  #  name: Abode
-  #  view: true
-  #  entities:
-  #    - alarm_control_panel.abode_alarm_system
-  #    - binary_sensor.flood_sensor_1
-  #    - binary_sensor.flood_sensor_2
-  #    - binary_sensor.front_door
-  #    - binary_sensor.iota_motion
-  #    - binary_sensor.side_door
-  #    - camera.iota_cam
+  bedroom:
+    name: Bedroom
+    entities:
+      - media_player.bedroom_stereo_main
+      - light.bedroom
+  upstairs:
+    name: Upstairs, Garage, No Bedroom
+    entities:
+      - light.living_room
+      - light.front_door
+      - media_player.living_room_stereo_main
+      - media_player.kitchen_stereo_main
+      - switch.backyard_lights
+      - cover.garage_door
+  downstairs:
+    name: Downstairs
+    entities:
+      - light.basement
+      - media_player.basement_stereo_main
+      - media_player.guest_room_stereo_main
+      - media_player.vizio_smartcast
   
   # Media Players
   all_stereos:
@@ -35,79 +29,11 @@
       - media_player.kitchen_stereo_main
       - media_player.basement_stereo_main
       - media_player.guest_room_stereo_main
-
-  # Rooms
-  living_room:
-    name: Living Room
-    entities:
-      - media_player.living_room_stereo_main
-      - light.elephant_lamp
-      - light.gold_lamp
-      - light.living_room
-  bedroom:
-    name: Bedroom
-    entities:
-      - media_player.bedroom_stereo_main
-      - light.kailin_s_lamp
-      - light.meghan_s_lamp
-      - light.bedroom
-  kitchen:
-    name: Kitchen
-    entities:
-      - media_player.kitchen_stereo_main
-  front_door:
-    name: Front Door
-    entities:
-      - light.porch_lamp
-  basement:
-    name: Basement
-      - light.basement_light_1
-      - light.basement_light_2
-      - light.basement
-      - media_player.basement_stereo_main
-  guest_room:
-    name: Guest Room
-      - media_player.guest_room_stereo_main
-  backyard:
-    name: Backyard
-      - switch.outdoor_switch_00420738
-
-  # Base (for scripts)
-  base:
-    name: Base Entities
-    entities:
-      - media_player.living_room_stereo_main
-      - light.living_room
-      - media_player.kitchen_stereo_main
-      - light.porch_lamp
-      - light.basement
-      - media_player.basement_stereo_main
-      - switch.outdoor_switch_00420738
   
   # Media automations (for scripts)
   media_autos:
     name: Media Automations
     entities:
-      - automation.bedroom_echo_bedroom_stereo
-      - automation.kitchen_echo_kitchen_stereo
-      - automation.living_room_echo_living_room_stereo
-  
-  upstairs:
-    name: Upstairs
-    entities:
-      - media_player.living_room_stereo_main
-      - media_player.kitchen_stereo_main
-      - media_player.bedroom_stereo_main
-      - script.turntable
-      - script.streaming
-  downstairs:
-    name: Downstairs
-    entities:
-      - cover.garage_door
-      - media_player.basement_stereo_main
-      - media_player.guest_room_stereo_main
-      - media_player.vizio_smartcast
-  for_alexa:
-    name: ForAlexa
-    entities:
-      - script.close_garage
+      - automation.spotify_on_echo_spotify_on_stereo
+      - automation.stereo_on_spotify_on_stereo
+      - automation.stereo_volume_change_spotify_on_stereo
