@@ -52,6 +52,12 @@ tv_time:
       entity_id: group.bedroom
     - service: homeassistant.turn_off
       entity_id: light.basement
+    - service: media_player.turn_on
+      entity_id: media_player.guest_room_stereo_main
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.guest_room_stereo_main
+        source: 'tv'
 
 goodbye:
   alias: "Goodbye"
@@ -59,6 +65,12 @@ goodbye:
     - service: script.turn_on
       entity_id: script.everything_off
     - service: alarm_control_panel.alarm_arm_away
+      entity_id: alarm_control_panel.abode
+
+standby:
+  alias: "Standby"
+  sequence:
+    - service: alarm_control_panel.alarm_disarm
       entity_id: alarm_control_panel.abode
 
 # SPECIAL MUSIC
@@ -193,6 +205,14 @@ spotify_switch:
         entity_id: media_player.spotify
         source: 'Living Room Stereo'
 
+
+switch_to_tv:
+  alias: "Switch to TV"
+  sequence:
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.guest_room_stereo_main
+        source: "tv"
 
 spotify_bedroom:
   alias: "Spotify Bedroom"
