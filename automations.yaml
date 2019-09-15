@@ -44,10 +44,14 @@
       - platform: state
         entity_id: device_tracker.meghans_iphone
         to: 'home'
-      - platform: event
-        event_type: abode_automation
-        event_data:
-          device_name: 'If any phone enters then Standby'
+      #- platform: event
+      #  event_type: abode_automation
+      #  event_data:
+      #    device_name: 'If any phone enters then Standby'
+    condition:
+      condition: state
+      entity_id: alarm_control_panel.abode
+      state: 'armed_away'
     action:
       - service: alarm_control_panel.alarm_disarm
         entity_id: alarm_control_panel.abode
@@ -151,14 +155,14 @@
       - service: homeassistant.turn_off
         entity_id: group.downstairs
 # Turns off TV if Guest Room Stereo turns off
-  - alias: 'Soundbar off -> TV off'
-    trigger:
-      - platform: state
-        entity_id: media_player.guest_room_stereo_main
-        to: 'off'
-    action:
-      - service: media_player.turn_off
-        entity_id: media_player.vizio_smartcast
+#  - alias: 'Soundbar off -> TV off'
+#    trigger:
+#      - platform: state
+#        entity_id: media_player.guest_room_stereo_main
+#        to: 'off'
+#    action:
+#      - service: media_player.turn_off
+#        entity_id: media_player.vizio_smartcast
 # Mute Soundbar 1
   - alias: 'Soundbar down 0 -> 1'
     trigger:
