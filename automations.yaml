@@ -35,20 +35,11 @@
     action:
       service: script.turn_on
       entity_id: script.goodnight
-# Hue remote 2 hold
-  - alias: 'Hold Hue Dim Up Button -> Spotify to Bedroom'
+# Disarms if any person arrives
+  - alias: 'Any Entry -> Standby'
     trigger:
       - platform: state
-        entity_id: sensor.hue_dimmer_switch_1
-        to: '2_hold'
-    action:
-      - service: script.turn_on
-        entity_id: script.spotify_bedroom
-# Disarms and turns on Media Player automations if any person arrives
-  - alias: 'Any Entry -> Good Morning'
-    trigger:
-      - platform: state
-        entity_id: device_tracker.iphone
+        entity_id: device_tracker.kailins_iphone
         to: 'home'
       - platform: state
         entity_id: device_tracker.meghans_iphone
@@ -56,13 +47,13 @@
       - platform: event
         event_type: abode_automation
         event_data:
-          device_name: 'Any phone enters -> Standby mode'
+          device_name: 'If any phone enters then Standby'
     action:
-      - service: script.turn_on
-        entity_id: script.good_morning
+      - service: alarm_control_panel.alarm_disarm
+        entity_id: alarm_control_panel.abode
 # Turns alarm to Standby if 5:30am and someone home
 # (Standby is redundant with Abode, but it also turns on media autos)
-  - alias: '5:30 AM At Home -> Good Morning'
+  - alias: '5:30 AM At Home -> Standby'
     trigger:
       - platform: time
         at: '05:30:00'
@@ -71,8 +62,8 @@
         entity_id: group.all_devices
         state: 'home'
     action:
-      - service: script.turn_on
-        entity_id: script.good_morning
+      - service: alarm_control_panel.alarm_disarm
+        entity_id: alarm_control_panel.abode
 # Turns alarm to Home if 11:00pm and someone home
 # (Redundant with Abode, but M's GPS is sometimes bad)
   - alias: '11 PM At Home -> Home'
@@ -90,7 +81,7 @@
   - alias: 'Any Entry After Sunset -> Porch On Then Off'
     trigger:
       - platform: state
-        entity_id: device_tracker.iphone
+        entity_id: device_tracker.kailins_iphone
         to: 'home'
       - platform: state
         entity_id: device_tracker.meghans_iphone
@@ -98,7 +89,7 @@
       - platform: event
         event_type: abode_automation
         event_data:
-          device_name: 'Any phone enters -> Standby mode'
+          device_name: 'If any phone enters then Standby'
     condition:
       - condition: state
         entity_id: sun.sun
@@ -106,14 +97,14 @@
     action:
       - service: light.turn_on
         entity_id: light.front_door
-      - delay: 00:10
+      - delay: 00:15
       - service: light.turn_off
         entity_id: light.front_door
 # Turns on Living Room lights if first person gets home after sunset and before 11pm
   - alias: 'Any Entry After Sunset Before 10 -> Living Room On'
     trigger:
       - platform: state
-        entity_id: device_tracker.iphone
+        entity_id: device_tracker.kailins_iphone
         to: 'home'
       - platform: state
         entity_id: device_tracker.meghans_iphone
@@ -121,7 +112,7 @@
       - platform: event
         event_type: abode_automation
         event_data:
-          device_name: 'Any phone enters -> Standby mode'
+          device_name: 'If any phone enters then Standby'
     condition:
       - condition: state
         entity_id: sun.sun
@@ -132,7 +123,7 @@
     action:
       service: light.turn_on
       entity_id: light.living_room
-# Turns off devices and media autos if Abode goes to Away Mode
+# Turns off devices if Abode goes to Away Mode
   - alias: 'Abode to Away -> Everything Off'
     trigger:
       - platform: state
@@ -141,9 +132,10 @@
     action:
       - service: script.turn_on
         entity_id: script.everything_off
+      # in case of guests
       - service: homeassistant.turn_off
-        entity_id: group.media_autos
-# Turns off devices and media autos if 2AM and no one home (in case of power outage)
+        entity_id: group.downstairs
+# Turns off devices if 2AM and no one home (in case of power outage)
   - alias: '2 AM Away -> Everything Off'
     trigger:
       - platform: time
@@ -153,51 +145,173 @@
         entity_id: group.all_devices
         state: 'not_home'
     action:
-      service: script.turn_on
-      entity_id: script.everything_off
+      - service: script.turn_on
+        entity_id: script.everything_off
+      # in case of guests
+      - service: homeassistant.turn_off
+        entity_id: group.downstairs
+# Turns off TV if Guest Room Stereo turns off
+  - alias: 'Soundbar off -> TV off'
+    trigger:
+      - platform: state
+        entity_id: media_player.guest_room_stereo_main
+        to: 'off'
+    action:
+      - service: media_player.turn_off
+        entity_id: media_player.vizio_smartcast
+# Mute Soundbar 1
+  - alias: 'Soundbar down 0 -> 1'
+    trigger:
+      - platform: state
+        entity_id: sensor.guest_room_volume
+    condition: 
+      - condition: state
+        entity_id: counter.mute_counter
+        state: '0'
+      - condition: template
+        value_template: '{{ trigger.to_state.state < trigger.from_state.state }}'
+    action:
+      - service: counter.increment
+        entity_id: counter.mute_counter
+  - alias: 'Soundbar up 1 -> 2'
+    trigger:
+      - platform: state
+        entity_id: sensor.guest_room_volume
+    condition: 
+      - condition: state
+        entity_id: counter.mute_counter
+        state: '1'
+      - condition: template
+        value_template: '{{ trigger.to_state.state > trigger.from_state.state }}'
+    action:
+      - service: counter.increment
+        entity_id: counter.mute_counter
+  - alias: 'Soundbar down 2 -> mute'
+    trigger:
+      - platform: state
+        entity_id: sensor.guest_room_volume
+    condition: 
+      - condition: state
+        entity_id: counter.mute_counter
+        state: '2'
+      - condition: template
+        value_template: '{{ trigger.to_state.state < trigger.from_state.state }}'
+    action:
+      - service: media_player.volume_mute
+        data:
+          entity_id: media_player.guest_room_stereo_main
+          is_volume_muted: true
+  - alias: 'Mute Counter Idle -> 0'
+    trigger:
+      - platform: state
+        entity_id: counter.mute_counter
+        to: '1'
+        for: '00:00:03'
+      - platform: state
+        entity_id: counter.mute_counter
+        to: '2'
+        for: '00:00:03'
+    action:
+      - service: counter.reset
+        entity_id: counter.mute_counter
+    
 # Switch Spotify
-  - alias: 'Bedroom Echo -> Bedroom Stereo'
+  - alias: 'Spotify on Echo -> Spotify on Stereo'
     trigger:
       - platform: state
         entity_id: media_player.spotify
         to: 'playing'
-      - platform: state
-        entity_id: sensor.spotify_source
-        to: 'Bedroom Echo Dot'
     condition:
-      - condition: state
-        entity_id: sensor.spotify_source
-        state: 'Bedroom Echo Dot'
+      condition: or
+      conditions:
+        - condition: state
+          entity_id: sensor.spotify_source
+          state: 'Kitchen Echo Dot'
+        - condition: state
+          entity_id: sensor.spotify_source
+          state: 'Bedroom Echo Dot'
+        - condition: state
+          entity_id: sensor.spotify_source
+          state: 'Living Room Echo Dot'
+        - condition: state
+          entity_id: sensor.spotify_source
+          state: 'Guest Room Echo Dot'
     action:
       - service: script.turn_on
-        entity_id: script.spotify_bedroom
-  - alias: 'Living Room Echo -> Living Room Stereo'
+        data_template:
+          entity_id: >
+            script.spotify_{{ states("sensor.spotify_source").replace(" Echo Dot", "").replace(" ","_").lower() }}
+
+  - alias: 'Stereo On -> Spotify on Stereo'
     trigger:
       - platform: state
-        entity_id: media_player.spotify
-        to: 'playing'
+        entity_id: media_player.living_room_stereo_main
+        from: 'off'
       - platform: state
-        entity_id: sensor.spotify_source
-        to: 'Living Room Echo Dot'
+        entity_id: media_player.kitchen_stereo_main
+        from: 'off'
+      - platform: state
+        entity_id: media_player.bedroom_stereo_main
+        from: 'off'
+      - platform: state
+        entity_id: media_player.basement_stereo_main
+        from: 'off'
     condition:
       - condition: state
-        entity_id: sensor.spotify_source
-        state: 'Living Room Echo Dot'
+        entity_id: media_player.spotify
+        state: 'playing'
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: sensor.spotify_source
+            state: 'Kitchen Stereo'
+          - condition: state
+            entity_id: sensor.spotify_source
+            state: 'Bedroom Stereo'
+          - condition: state
+            entity_id: sensor.spotify_source
+            state: 'Basement Stereo'
+          - condition: state
+            entity_id: sensor.spotify_source
+            state: 'Guest Room Stereo'
     action:
       - service: script.turn_on
-        entity_id: script.spotify_living_room
-  - alias: 'Kitchen Echo -> Kitchen Stereo'
+        data_template:
+          entity_id: >
+            script.spotify_{{ trigger.entity_id.replace("media_player.", "").replace("_stereo_main", "") }}
+
+  - alias: 'Stereo Volume Change -> Spotify on Stereo'
     trigger:
       - platform: state
-        entity_id: media_player.spotify
-        to: 'playing'
+        entity_id: sensor.living_room_volume
       - platform: state
-        entity_id: sensor.spotify_source
-        to: 'Kitchen Echo Dot'
+        entity_id: sensor.kitchen_volume
+      - platform: state
+        entity_id: sensor.bedroom_volume
+      - platform: state
+        entity_id: sensor.basement_volume
     condition:
       - condition: state
-        entity_id: sensor.spotify_source
-        state: 'Kitchen Echo Dot'
+        entity_id: media_player.spotify
+        state: 'playing'
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: sensor.spotify_source
+            state: 'Kitchen Stereo'
+          - condition: state
+            entity_id: sensor.spotify_source
+            state: 'Bedroom Stereo'
+          - condition: state
+            entity_id: sensor.spotify_source
+            state: 'Basement Stereo'
+          - condition: state
+            entity_id: sensor.spotify_source
+            state: 'Guest Room Stereo'
+      - condition: template
+        value_template: "{{ is_state(trigger.entity_id.replace('sensor.','media_player.').replace('_volume','_stereo_main'), 'idle') }}"
     action:
       - service: script.turn_on
-        entity_id: script.spotify_kitchen
+        data_template:
+          entity_id: >
+            script.spotify_{{ trigger.entity_id.replace("sensor.", "").replace("_volume", "") }}
