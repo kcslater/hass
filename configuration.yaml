@@ -72,6 +72,18 @@ ios:
 #  ask_alexa:
 #    url: !secret virtual_echo_url
 
+# Input booleans
+input_boolean:
+  guests_visiting:
+    name: Guest Room Guests
+    icon: mdi:account-multiple
+
+# Counter for muting Guest Room Stereo
+counter:
+  mute_counter:
+    initial: 0
+    step: 1
+
 # Sensors
 sensor:
   # Hue custom component
@@ -82,14 +94,73 @@ sensor:
   - platform: template
     sensors:
       spotify_source:
-        value_template: '{{ states.media_player.spotify.attributes["source"] }}'
+        value_template: '{{ state_attr("media_player.spotify", "source") }}'
         friendly_name: 'Spotify Source'
-      bedroom_stereo_main_source:
-        value_template: '{{ states.media_player.bedroom_stereo_main.attributes["source"] }}'
-        friendly_name: 'Bedroom Stereo Source'
-      kitchen_stereo_main_source:
-        value_template: '{{ states.media_player.kitchen_stereo_main.attributes["source"] }}'
-        friendly_name: 'Kitchen Stereo Source'
+      living_room_volume:
+        value_template: '{{ state_attr("media_player.living_room_stereo_main", "volume_level") | float }}'
+        friendly_name: 'Living Room Volume'
+      bedroom_volume:
+        value_template: '{{ state_attr("media_player.bedroom_stereo_main", "volume_level") | float }}'
+        friendly_name: 'Bedroom Volume'
+      kitchen_volume:
+        value_template: '{{ state_attr("media_player.kitchen_stereo_main", "volume_level") | float }}'
+        friendly_name: 'Kitchen Volume'
+      basement_volume:
+        value_template: '{{ state_attr("media_player.basement_stereo_main", "volume_level") | float }}'
+        friendly_name: 'Basement Volume'
+      guest_room_volume:
+        value_template: '{{ state_attr("media_player.guest_room_stereo_main", "volume_level") | float }}'
+        friendly_name: 'Guest Room Volume'
+      gold_lamp_available:
+        friendly_name: "gold_lamp available"
+        unit_of_measurement: '%'
+        icon_template: mdi:battery-charging-100
+        value_template: >-
+          {% if is_state('light.gold_lamp','unavailable') %}
+            0
+          {% else %}
+            100
+          {% endif %}
+      elephant_lamp_available:
+        friendly_name: "elephant_lamp available"
+        unit_of_measurement: '%'
+        icon_template: mdi:battery-charging-100
+        value_template: >-
+          {% if is_state('light.elephant_lamp','unavailable') %}
+            0
+          {% else %}
+            100
+          {% endif %}
+      basement_light_1_available:
+        friendly_name: "basement_light_1 available"
+        unit_of_measurement: '%'
+        icon_template: mdi:battery-charging-100
+        value_template: >-
+          {% if is_state('light.basement_light_1','unavailable') %}
+            0
+          {% else %}
+            100
+          {% endif %}
+      basement_light_2_available:
+        friendly_name: "basement_light_2 available"
+        unit_of_measurement: '%'
+        icon_template: mdi:battery-charging-100
+        value_template: >-
+          {% if is_state('light.basement_light_2','unavailable') %}
+            0
+          {% else %}
+            100
+          {% endif %}
+      front_door_available:
+        friendly_name: "front_door available"
+        unit_of_measurement: '%'
+        icon_template: mdi:battery-charging-100
+        value_template: >-
+          {% if is_state('light.front_door','unavailable') %}
+            0
+          {% else %}
+            100
+          {% endif %}
 
 # Text to speech
 tts:
@@ -114,13 +185,11 @@ emulated_hue:
     - switch
   off_maps_to_on_domains:
     - script
-    - scene
   entities:
-    script.good_morning:
+    script.spotify_switch:
       hidden: true
-    switch.outdoor_switch_00420738:
-      name: "Backyard Lights"
-      hidden: false
+    script.standby:
+      hidden: true
 
 # Switch Templates for HomeKit
 switch:
@@ -162,6 +231,7 @@ homekit:
       - light
       - switch
       - script
+      - input_boolean
     include_entities:
       - binary_sensor.front_door
       - binary_sensor.side_door
@@ -170,19 +240,9 @@ homekit:
       - light.guest_room
       - light.porch_lamp
       - script.close_garage
-      - script.night_time
-      - media_player.den_tv
+      - script.spotify_switch
+      - media_player.vizio_smartcast
   entity_config:
-    light.living_room:
-      name: "Living Room Lights"
-    light.bedroom:
-      name: "Bedroom Lights"
-    light.basement:
-      name: "Basement Lights"
-    light.front_door:
-      name: "Front Door Light"
-    switch.outdoor_switch_00420738:
-      name: "Backyard Lights"
     media_player.living_room_stereo_main:
       name: "Living Room Stereo"
       feature_list:
@@ -203,10 +263,32 @@ homekit:
       name: "Guest Room Stereo"
       feature_list:
         - feature: on_off
-    media_player.vizio_smartcast:
-      name: "TV"
-      feature_list:
-        - feature: on_off
+    light.bedroom:
+      name: "Bedroom Lights"
+    light.gold_lamp:
+      linked_battery_sensor: sensor.gold_lamp_available
+      low_battery_threshold: 50
+    light.elephant_lamp:
+      linked_battery_sensor: sensor.elephant_lamp_available
+      low_battery_threshold: 50
+    light.living_room:
+      name: "Living Room Lights"
+      linked_battery_sensor: sensor.elephant_lamp_available
+      low_battery_threshold: 50
+    light.basement_light_1:
+      linked_battery_sensor: sensor.basement_light_1_available
+      low_battery_threshold: 50
+    light.basement_light_2:
+      linked_battery_sensor: sensor.basement_light_2_available
+      low_battery_threshold: 50
+    light.basement:
+      name: "Basement Lights"
+      linked_battery_sensor: sensor.basement_light_1_available
+      low_battery_threshold: 50
+    light.front_door:
+      name: "Front Door Light"
+      linked_battery_sensor: sensor.front_door_available
+      low_battery_threshold: 50
 
 # Hue
 hue:
