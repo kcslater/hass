@@ -36,25 +36,25 @@
       service: script.turn_on
       entity_id: script.goodnight
 # Disarms if any person arrives
-  - alias: 'Any Entry -> Standby'
-    trigger:
-      - platform: state
-        entity_id: device_tracker.kailins_iphone
-        to: 'home'
-      - platform: state
-        entity_id: device_tracker.meghans_iphone
-        to: 'home'
-      #- platform: event
-      #  event_type: abode_automation
-      #  event_data:
-      #    device_name: 'If any phone enters then Standby'
-    condition:
-      condition: state
-      entity_id: alarm_control_panel.abode
-      state: 'armed_away'
-    action:
-      - service: alarm_control_panel.alarm_disarm
-        entity_id: alarm_control_panel.abode
+#  - alias: 'Any Entry -> Standby'
+#    trigger:
+#      - platform: state
+#        entity_id: device_tracker.kailins_iphone
+#        to: 'home'
+#      - platform: state
+#        entity_id: device_tracker.meghans_iphone
+#        to: 'home'
+#      - platform: event
+#        event_type: abode_automation
+#        event_data:
+#          device_name: 'If any phone enters then Standby'
+#    condition:
+#      condition: state
+#      entity_id: alarm_control_panel.abode
+#      state: 'armed_away'
+#    action:
+#      - service: alarm_control_panel.alarm_disarm
+#        entity_id: alarm_control_panel.abode
 # Turns alarm to Standby if 5:30am and someone home
 # (Standby is redundant with Abode, but it also turns on media autos)
   - alias: '5:30 AM At Home -> Standby'
@@ -84,12 +84,12 @@
 # Turns on Front Door light if anyone gets home after sunset. Turns off after 5 minutes
   - alias: 'Any Entry After Sunset -> Porch On Then Off'
     trigger:
-      - platform: state
-        entity_id: device_tracker.kailins_iphone
-        to: 'home'
-      - platform: state
-        entity_id: device_tracker.meghans_iphone
-        to: 'home'
+      #- platform: state
+      #  entity_id: device_tracker.kailins_iphone
+      #  to: 'home'
+      #- platform: state
+      #  entity_id: device_tracker.meghans_iphone
+      #  to: 'home'
       - platform: event
         event_type: abode_automation
         event_data:
@@ -107,12 +107,12 @@
 # Turns on Living Room lights if first person gets home after sunset and before 11pm
   - alias: 'Any Entry After Sunset Before 10 -> Living Room On'
     trigger:
-      - platform: state
-        entity_id: device_tracker.kailins_iphone
-        to: 'home'
-      - platform: state
-        entity_id: device_tracker.meghans_iphone
-        to: 'home'
+      #- platform: state
+      #  entity_id: device_tracker.kailins_iphone
+      #  to: 'home'
+      #- platform: state
+      #  entity_id: device_tracker.meghans_iphone
+      #  to: 'home'
       - platform: event
         event_type: abode_automation
         event_data:
@@ -225,6 +225,18 @@
       - platform: state
         entity_id: media_player.spotify
         to: 'playing'
+      - platform: state
+        entity_id: sensor.spotify_source
+        to: 'Kitchen Echo Dot'
+      - platform: state
+        entity_id: sensor.spotify_source
+        to: 'Bedroom Echo Dot'
+      - platform: state
+        entity_id: sensor.spotify_source
+        to: 'Living Room Echo Dot'
+      - platform: state
+        entity_id: sensor.spotify_source
+        to: 'Guest Room Echo Dot'
     condition:
       condition: or
       conditions:

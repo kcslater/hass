@@ -84,6 +84,11 @@ counter:
     initial: 0
     step: 1
 
+# Dark Sky Weather API
+weather:
+  - platform: darksky
+    api_key: !secret dark_sky_api_key
+
 # Sensors
 sensor:
   # Hue custom component
@@ -168,13 +173,13 @@ tts:
     service_name: google_say
 
 # Device Tracker
-device_tracker:
-  - platform: netgear
-    password: !secret netgear_password
-    new_device_defaults:
-      track_new_devices: false
-    interval_seconds: 30
-    consider_home: 0:20
+#device_tracker:
+#  - platform: netgear
+#    password: !secret netgear_password
+#    new_device_defaults:
+#      track_new_devices: false
+#    interval_seconds: 30
+#    consider_home: 0:20
 
 emulated_hue:
   host_ip: !secret hassio_ip
