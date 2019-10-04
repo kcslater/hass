@@ -129,44 +129,6 @@
           entity_id: >
             script.spotify_{{ states("sensor.spotify_source").replace(" Echo Dot", "").replace(" ","_").lower() }}
 
-  - alias: 'Stereo On -> Spotify on Stereo'
-    trigger:
-      - platform: state
-        entity_id: media_player.living_room_stereo_main
-        from: 'off'
-      - platform: state
-        entity_id: media_player.kitchen_stereo_main
-        from: 'off'
-      - platform: state
-        entity_id: media_player.bedroom_stereo_main
-        from: 'off'
-      - platform: state
-        entity_id: media_player.basement_stereo_main
-        from: 'off'
-    condition:
-      - condition: state
-        entity_id: media_player.spotify
-        state: 'playing'
-      - condition: or
-        conditions:
-          - condition: state
-            entity_id: sensor.spotify_source
-            state: 'Kitchen Stereo'
-          - condition: state
-            entity_id: sensor.spotify_source
-            state: 'Bedroom Stereo'
-          - condition: state
-            entity_id: sensor.spotify_source
-            state: 'Basement Stereo'
-          - condition: state
-            entity_id: sensor.spotify_source
-            state: 'Guest Room Stereo'
-    action:
-      - service: script.turn_on
-        data_template:
-          entity_id: >
-            script.spotify_{{ trigger.entity_id.replace("media_player.", "").replace("_stereo_main", "") }}
-
   - alias: 'Stereo Volume Change -> Spotify on Stereo'
     trigger:
       - platform: state
