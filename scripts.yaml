@@ -62,16 +62,44 @@ tv_time:
 goodbye:
   alias: "Goodbye"
   sequence:
-    - service: script.turn_on
-      entity_id: script.everything_off
     - service: alarm_control_panel.alarm_arm_away
       entity_id: alarm_control_panel.abode
+    - service: script.turn_on
+      entity_id: script.everything_off
+    # in case of guests
+    - service: homeassistant.turn_off
+      entity_id: group.downstairs
 
 standby:
   alias: "Standby"
   sequence:
     - service: alarm_control_panel.alarm_disarm
       entity_id: alarm_control_panel.abode
+
+arrive_home_helper:
+  alias: "Arrive Home - Living Room Lights"
+  sequence:
+    - condition: time
+      after: '16:00:00'
+      before: '22:00:00'
+    - service: light.turn_on
+      entity_id: light.living_room
+
+arrive_home:
+  alias: "Arrive Home"
+  sequence:
+    - service: alarm_control_panel.alarm_disarm
+      entity_id: alarm_control_panel.abode
+    - condition: state
+      entity_id: sun.sun
+      state: 'below_horizon'
+    - service: script.turn_on
+      entity_id: script.arrive_home_helper
+    - service: light.turn_on
+      entity_id: light.front_door
+    - delay: 00:15
+    - service: light.turn_off
+      entity_id: light.front_door
 
 # SPECIAL MUSIC
 turntable:

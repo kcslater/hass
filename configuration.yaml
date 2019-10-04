@@ -67,6 +67,36 @@ sun:
 #iOS
 ios:
 
+# Alexa Smart Home Skill
+api:
+
+alexa:
+  smart_home:
+    filter:
+      include_domains:
+        - switch
+        - script
+      exclude_entities:
+        - script.spotify_switch
+        - script.standby
+        - script.arrive_home
+        - script.arrive_home_helper
+
+# emulated_hue:
+#   host_ip: !secret hassio_ip
+#   listen_port: 80
+#   expose_by_default: true
+#   exposed_domains:
+#     - script
+#     - switch
+#   off_maps_to_on_domains:
+#     - script
+#   entities:
+#     script.spotify_switch:
+#       hidden: true
+#     script.standby:
+#       hidden: true
+
 # Virtual Echo
 #rest_command:
 #  ask_alexa:
@@ -181,49 +211,34 @@ tts:
 #    interval_seconds: 30
 #    consider_home: 0:20
 
-emulated_hue:
-  host_ip: !secret hassio_ip
-  listen_port: 80
-  expose_by_default: true
-  exposed_domains:
-    - script
-    - switch
-  off_maps_to_on_domains:
-    - script
-  entities:
-    script.spotify_switch:
-      hidden: true
-    script.standby:
-      hidden: true
-
 # Switch Templates for HomeKit
-switch:
-  - platform: template
-    switches:
-      media_autos:
-        friendly_name: 'Media Automations'
-        value_template: "{{ is_state('group.media_autos', 'on') }}"
-        turn_on:
-          service: homeassistant.turn_on
-          entity_id: group.media_autos
-        turn_off:
-          service: homeassistant.turn_off
-          entity_id: group.media_autos
-      all_stereos:
-        friendly_name: 'All Stereos'
-        value_template: >-
-          {{  not is_state('media_player.living_room_stereo_main', 'off') or
-              not is_state('media_player.bedroom_stereo_main', 'off') or
-              not is_state('media_player.kitchen_stereo_main', 'off') or
-              not is_state('media_player.guest_room_stereo_main', 'off') or
-              not is_state('media_player.basement_stereo_main', 'off')
-          }}
-        turn_on:
-          service: homeassistant.turn_on
-          entity_id: group.all_stereos
-        turn_off:
-          service: homeassistant.turn_off
-          entity_id: group.all_stereos
+# switch:
+#   - platform: template
+    # switches:
+    #   media_autos:
+    #     friendly_name: 'Media Automations'
+    #     value_template: "{{ is_state('group.media_autos', 'on') }}"
+    #     turn_on:
+    #       service: homeassistant.turn_on
+    #       entity_id: group.media_autos
+    #     turn_off:
+    #       service: homeassistant.turn_off
+    #       entity_id: group.media_autos
+    #   all_stereos:
+    #     friendly_name: 'All Stereos'
+    #     value_template: >-
+    #       {{  not is_state('media_player.living_room_stereo_main', 'off') or
+    #           not is_state('media_player.bedroom_stereo_main', 'off') or
+    #           not is_state('media_player.kitchen_stereo_main', 'off') or
+    #           not is_state('media_player.guest_room_stereo_main', 'off') or
+    #           not is_state('media_player.basement_stereo_main', 'off')
+    #       }}
+    #     turn_on:
+    #       service: homeassistant.turn_on
+    #       entity_id: group.all_stereos
+    #     turn_off:
+    #       service: homeassistant.turn_off
+    #       entity_id: group.all_stereos
 
 # HomeKit
 homekit:
@@ -244,9 +259,10 @@ homekit:
       - light.backyard
       - light.guest_room
       - light.porch_lamp
+      - media_player.vizio_smartcast
       - script.close_garage
       - script.spotify_switch
-      - media_player.vizio_smartcast
+      - script.arrive_home_helper
   entity_config:
     media_player.living_room_stereo_main:
       name: "Living Room Stereo"

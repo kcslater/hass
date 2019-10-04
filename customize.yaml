@@ -10,7 +10,7 @@ media_player.vizio_smartcast:
   device_class: tv
   friendly_name: TV
 media_player.living_room_stereo_main:
-  icon: mdi:speaker
+  icon: mdi:audio-video
 media_player.kitchen_stereo_main:
   icon: mdi:speaker
 media_player.bedroom_stereo_main:
@@ -20,4 +20,4 @@ media_player.basement_stereo_main:
 media_player.guest_room_stereo_main:
   icon: mdi:speaker
 switch.backyard_lights:
-  icon: mdi:lightbulb
+  icon: mdi:outdoor-lamp
