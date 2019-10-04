@@ -52,6 +52,15 @@
       - service: homeassistant.turn_off
         entity_id: group.downstairs
 
+# Turns "sleeping" off if 6:30am
+  - alias: '6:30 AM -> Sleeping Off'
+    trigger:
+      - platform: time
+        at: '06:30:00'
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.sleeping
+
 # Mute Soundbar if volume down up down
   - alias: 'Soundbar down 0 -> 1'
     trigger:

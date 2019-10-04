@@ -107,6 +107,9 @@ input_boolean:
   guests_visiting:
     name: Guest Room Guests
     icon: mdi:account-multiple
+  sleeping:
+    name: Sleeping
+    icon: mdi:sleep
 
 # Counter for muting Guest Room Stereo
 counter:

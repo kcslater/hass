@@ -23,6 +23,8 @@ everything_off:
 goodnight:
   alias: "Goodnight"
   sequence:
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.sleeping
     - service: script.turn_on
       entity_id: script.everything_off
     - service: alarm_control_panel.alarm_arm_home
@@ -31,6 +33,8 @@ goodnight:
 time_for_bed:
   alias: "Time For Bed"
   sequence:
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.sleeping
     - service: light.turn_on
       entity_id: light.bedroom
     - service: alarm_control_panel.alarm_arm_home
@@ -93,6 +97,9 @@ arrive_home:
     - condition: state
       entity_id: sun.sun
       state: 'below_horizon'
+    - condition: state
+      entity_id: input_boolean.sleeping
+      state: 'off'
     - service: script.turn_on
       entity_id: script.arrive_home_helper
     - service: light.turn_on
