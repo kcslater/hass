@@ -6,7 +6,7 @@
       - platform: homeassistant
         event: start
     action:
-      - service: persistent_notification.dismiss
+      - service: persistent_notification.dismiss 
         data:
           notification_id: config_entry_discovery
 
