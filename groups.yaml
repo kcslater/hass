@@ -19,7 +19,12 @@
       - media_player.basement_stereo_main
       - media_player.guest_room_stereo_main
       - media_player.vizio_smartcast
-  
+  all_present:
+    name: All Present
+    entities:
+      - binary_sensor.k_present
+      - binary_sensor.m_present
+      - input_boolean.guests_visiting
   # Media Players
   #all_stereos:
   #  name: All Stereos
