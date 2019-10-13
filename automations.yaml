@@ -1,14 +1,26 @@
-# For starting Homekit - 1
-  - alias: 'Start HomeKit when media_player ready'
+  - alias: 'Remove new devices notification'
     trigger:
-      #- platform: event
-      #  event_type: media_player.network_ready
-      - platform: event
-        event_type: media_player.network_complete
-      #- platform: event
-      #  event_type: media_player.network_complete_some_dead
+      - platform: state
+        entity_id: persistent_notification.config_entry_discovery
+        to: notifying
+      - platform: homeassistant
+        event: start
     action:
-      - service: homekit.start
+      - service: persistent_notification.dismiss
+        data:
+          notification_id: config_entry_discovery
+
+# # For starting Homekit - 1
+#   - alias: 'Start HomeKit when media_player ready'
+#     trigger:
+#       #- platform: event
+#       #  event_type: media_player.network_ready
+#       - platform: event
+#         event_type: media_player.network_complete
+#       #- platform: event
+#       #  event_type: media_player.network_complete_some_dead
+#     action:
+#       - service: homekit.start
 
 # For starting Homekit - 2
   - alias: 'Start HomeKit'
@@ -16,7 +28,7 @@
       - platform: homeassistant
         event: start
     action:
-      - delay: 00:05  # Waits 5 minutes
+      - delay: 00:03  # Waits 3 minutes
       - service: homekit.start
 
 # Hue remote 1 hold
@@ -39,27 +51,131 @@
       service: script.turn_on
       entity_id: script.goodnight
 
-# Turns off devices if Abode goes to Away Mode
-  - alias: 'Abode to Away -> Everything Off'
+# LOCATION AUTOMATIONS
+  - alias: '5 AM Present, Standby'
+    trigger:
+      - platform: time
+        at: '05:00:00'
+    condition:
+      - condition: state
+        entity_id: group.all_present
+        state: 'on'
+    action:
+      - service: alarm_control_panel.alarm_disarm
+        entity_id: alarm_control_panel.abode
+
+  - alias: '11 PM Present, Home'
+    trigger:
+      - platform: time
+        at: '23:00:00'
+    condition:
+      - condition: state
+        entity_id: group.all_present
+        state: 'on'
+    action:
+      - service: alarm_control_panel.alarm_arm_home
+        entity_id: alarm_control_panel.abode
+
+  - alias: '2 AM Not Present, Everything Off'
+    trigger:
+      - platform: time
+        at: '02:00:00'
+    condition:
+      - condition: state
+        entity_id: group.all_present
+        state: 'off'
+    action:
+      - service: script.turn_on
+        entity_id: script.everything_off
+
+# Turns "sleeping" off if 6:30am
+  - alias: '6 AM, Sleeping Off'
+    trigger:
+      - platform: time
+        at: '06:00:00'
+    action:
+      - service: input_boolean.turn_off
+        entity_id: input_boolean.sleeping
+
+  - alias: 'Anyone Arrives, Standby'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.m_present
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.k_present
+        to: 'on'
+    condition:
+      - condition: state
+        entity_id: input_boolean.sleeping
+        state: 'off'
+    action:
+      - service: alarm_control_panel.alarm_disarm
+        entity_id: alarm_control_panel.abode
+
+  - alias: 'Anyone Arrives At Night, Porch Light'
+    trigger:
+      - platform: state
+        entity_id: binary_sensor.m_present
+        to: 'on'
+      - platform: state
+        entity_id: binary_sensor.k_present
+        to: 'on'
+    condition:
+      - condition: state
+        entity_id: input_boolean.sleeping
+        state: 'off'
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+    action:
+      - service: light.turn_on
+        entity_id: light.front_door
+      - delay: 00:15
+      - service: light.turn_off
+        entity_id: light.front_door
+
+  - alias: 'First Person Arrives At Night, Living Room Lights'
+    trigger:
+      - platform: state
+        entity_id: group.all_present
+        to: 'on'
+    condition:
+      - condition: state
+        entity_id: input_boolean.sleeping
+        state: 'off'
+      - condition: state
+        entity_id: sun.sun
+        state: 'below_horizon'
+      - condition: time
+        before: '22:00:00'
+    action:
+      service: light.turn_on
+      entity_id: light.living_room
+
+  - alias: 'Last Person Leaves, Goodbye'
+    trigger:
+      - platform: state
+        entity_id: group.all_present
+        to: 'off'
+    condition:
+      - condition: state
+        entity_id: input_boolean.sleeping
+        state: 'off'
+    action:
+      - service: script.turn_on
+        entity_id: script.goodbye
+
+  - alias: 'Abode to Away, Goodbye'
     trigger:
       - platform: state
         entity_id: alarm_control_panel.abode
         to: 'armed_away'
     action:
       - service: script.turn_on
-        entity_id: script.everything_off
-      # in case of guests
-      - service: homeassistant.turn_off
-        entity_id: group.downstairs
+        entity_id: script.goodbye
 
-# Turns "sleeping" off if 6:30am
-  - alias: '6:30 AM -> Sleeping Off'
-    trigger:
-      - platform: time
-        at: '06:30:00'
-    action:
-      - service: input_boolean.turn_off
-        entity_id: input_boolean.sleeping
+# MEDIA AUTOMATIONS
 
 # Mute Soundbar if volume down up down
   - alias: 'Soundbar down 0 -> 1'
@@ -173,3 +289,42 @@
         data_template:
           entity_id: >
             script.spotify_{{ trigger.entity_id.replace("sensor.", "").replace("_volume", "") }}
+
+# Switches Spotify to Stereo if Stereo turns on
+  - alias: 'Stereo On -> Spotify on Stereo'
+    trigger:
+      - platform: state
+        entity_id: media_player.living_room_stereo_main
+        from: 'off'
+      - platform: state
+        entity_id: media_player.kitchen_stereo_main
+        from: 'off'
+      - platform: state
+        entity_id: media_player.bedroom_stereo_main
+        from: 'off'
+      - platform: state
+        entity_id: media_player.basement_stereo_main
+        from: 'off'
+    condition:
+      - condition: state
+        entity_id: media_player.spotify
+        state: 'playing'
+      - condition: or
+        conditions:
+          - condition: state
+            entity_id: sensor.spotify_source
+            state: 'Kitchen Stereo'
+          - condition: state
+            entity_id: sensor.spotify_source
+            state: 'Bedroom Stereo'
+          - condition: state
+            entity_id: sensor.spotify_source
+            state: 'Basement Stereo'
+          - condition: state
+            entity_id: sensor.spotify_source
+            state: 'Guest Room Stereo'
+    action:
+      - service: script.turn_on
+        data_template:
+          entity_id: >
+            script.spotify_{{ trigger.entity_id.replace("media_player.", "").replace("_stereo_main", "") }}
