@@ -150,7 +150,7 @@ binary_sensor:
 
 # Sensors
 sensor:
-  # Hue custom component
+  # Hue custom component (installed in config/custom_components/huesensor/)
   - platform: huesensor
   # Weather prediction
   - platform: yr
