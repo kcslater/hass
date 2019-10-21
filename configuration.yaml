@@ -1,4 +1,5 @@
 homeassistant:
+  customize: !include customize.yaml
   # Name of the location where Home Assistant is running
   # name: Home
   # Location required to calculate the time the sun rises and sets
@@ -16,7 +17,6 @@ homeassistant:
   #   - type: trusted_networks
   #     trusted_networks:
   #       - !secret iphone_ip  # Customization file
-  customize: !include customize.yaml
 
 # Show links to resources in log and frontend
 #introduction:
@@ -117,6 +117,12 @@ input_boolean:
   m_present:
     name: M Home, Homekit
     icon: mdi:account
+  k_entered:
+    name: K Entered Wi-Fi
+    icon: mdi:wifi-star
+  m_entered:
+    name: M Entered Wi-Fi
+    icon: mdi:wifi-star
 
 # Counter for muting Guest Room Stereo
 counter:
@@ -287,6 +293,7 @@ homekit:
       - script
       - input_boolean
       - input_number
+      - lock
     include_entities:
       - binary_sensor.front_door
       - binary_sensor.side_door
@@ -297,6 +304,8 @@ homekit:
       - media_player.vizio_smartcast
       - script.close_garage
       - script.spotify_switch
+      - input_boolean.k_entered
+      - input_boolean.m_entered
   entity_config:
     input_boolean.k_present:
       name: "K Home"

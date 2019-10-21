@@ -7,6 +7,15 @@ good_morning:
         entity_id: light.bedroom
         brightness_pct: 100
 
+lock_if_closed:
+  alias: "Lock If Closed"
+  sequence:
+    - condition: state
+      entity_id: binary_sensor.front_door
+      state: 'off'
+    - service: lock.lock
+      entity_id: lock.home_door_lock
+
 everything_off:
   alias: "Everything Off"
   sequence:
@@ -26,6 +35,8 @@ goodnight:
     - service: input_boolean.turn_on
       entity_id: input_boolean.sleeping
     - service: script.turn_on
+      entity_id: script.lock_if_closed
+    - service: script.turn_on
       entity_id: script.everything_off
     - service: alarm_control_panel.alarm_arm_home
       entity_id: alarm_control_panel.abode
@@ -39,6 +50,8 @@ time_for_bed:
       entity_id: light.bedroom
     - service: alarm_control_panel.alarm_arm_home
       entity_id: alarm_control_panel.abode
+    - service: script.turn_on
+      entity_id: script.lock_if_closed
     - service: homeassistant.turn_off
       entity_id: group.upstairs
     - condition: state
@@ -71,6 +84,8 @@ goodbye:
     - service: input_boolean.turn_off
       entity_id: input_boolean.sleeping
     - service: script.turn_on
+      entity_id: script.lock_if_closed
+    - service: script.turn_on
       entity_id: script.everything_off
     # in case of guests
     - service: homeassistant.turn_off
@@ -97,7 +112,7 @@ turntable:
     - service: media_player.volume_set
       data:
         entity_id: media_player.living_room_stereo_main
-        volume_level: 0.7
+        volume_level: 0.6
 streaming:
   alias: "Streaming"
   sequence:
