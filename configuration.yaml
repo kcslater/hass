@@ -306,6 +306,7 @@ homekit:
       - script.spotify_switch
       - input_boolean.k_entered
       - input_boolean.m_entered
+      - script.lock_if_closed
   entity_config:
     input_boolean.k_present:
       name: "K Home"
