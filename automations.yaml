@@ -1,3 +1,13 @@
+  - alias: 'Porch Light Off After 20 Mins'
+    trigger:
+      - platform: state
+        entity_id: light.front_door
+        to: 'on'
+        for: '00:20:00'
+    action:
+      - service: light.turn_off
+        entity_id: light.front_door
+
   - alias: 'k_present Off, Turn Off k_entered'
     trigger:
       - platform: state
@@ -28,6 +38,9 @@
       - condition: state
         entity_id: input_boolean.k_entered
         state: 'off'
+      - condition: state
+        entity_id: alarm_control_panel.abode
+        state: 'disarmed'
     action:
       - service: lock.unlock
         entity_id: lock.home_door_lock
@@ -43,6 +56,9 @@
       - condition: state
         entity_id: input_boolean.m_entered
         state: 'off'
+      - condition: state
+        entity_id: alarm_control_panel.abode
+        state: 'disarmed'
     action:
       - service: lock.unlock
         entity_id: lock.home_door_lock
@@ -183,9 +199,6 @@
         state: 'below_horizon'
     action:
       - service: light.turn_on
-        entity_id: light.front_door
-      - delay: 00:15
-      - service: light.turn_off
         entity_id: light.front_door
 
   - alias: 'First Person Arrives At Night, Living Room Lights'

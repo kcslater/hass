@@ -132,7 +132,7 @@ close_garage:
   alias: "Close Garage"
   sequence:
     - service: cover.close_cover
-      entity_id: cover.garage_door
+      entity_id: cover.garage_door_2
 spotify_play:
   alias: "Spotify Play"
   sequence:

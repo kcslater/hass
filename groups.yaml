@@ -11,7 +11,7 @@
       - media_player.living_room_stereo_main
       - media_player.kitchen_stereo_main
       - switch.backyard_lights
-      - cover.garage_door
+      - cover.garage_door_2
   downstairs:
     name: Downstairs
     entities:
