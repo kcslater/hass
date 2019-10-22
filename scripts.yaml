@@ -8,7 +8,7 @@ good_morning:
         brightness_pct: 100
 
 lock_if_closed:
-  alias: "Lock If Closed"
+  alias: "Lock The Door"
   sequence:
     - condition: state
       entity_id: binary_sensor.front_door
