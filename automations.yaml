@@ -1,4 +1,5 @@
-  - alias: 'Porch Light Off After 20 Mins'
+  - id: porch_light_off_20mins
+    alias: 'Porch Light Off After 20 Mins'
     trigger:
       - platform: state
         entity_id: light.front_door
@@ -6,7 +7,8 @@
         for: '00:20:00'
     action:
       - service: light.turn_off
-        entity_id: light.front_door
+        data:
+          entity_id: light.front_door
 
 #   - alias: 'k_present Off, Turn Off k_entered'
 #     trigger:
@@ -65,7 +67,8 @@
 #       - service: input_boolean.turn_on
 #         entity_id: input_boolean.m_entered
 
-  - alias: 'Remove new devices notification'
+  - id: remove_new_devices_notification
+    alias: 'Remove new devices notification'
     trigger:
       - platform: state
         entity_id: persistent_notification.config_entry_discovery
@@ -90,7 +93,8 @@
 #       - service: homekit.start
 
 # For starting Homekit - 2
-  - alias: 'HA Starts, Wait 3 Mins + Start HomeKit'
+  - id: start_homekit2
+    alias: 'HA Starts, Wait 3 Mins + Start HomeKit'
     trigger:
       - platform: homeassistant
         event: start
@@ -99,27 +103,32 @@
       - service: homekit.start
 
 # Hue remote 1 hold
-  - alias: 'Hold Hue On Button, Time For Bed'
+  - id: time_for_bed_hue
+    alias: 'Hold Hue On Button, Time For Bed'
     trigger:
       - platform: state
         entity_id: sensor.hue_dimmer_switch_1
         to: '1_hold'
     action:
       service: script.turn_on
-      entity_id: script.time_for_bed
+      data:
+        entity_id: script.time_for_bed
 
 # Hue remote 4 hold
-  - alias: 'Hold Hue Off Button, Goodnight'
+  - id: goodnight_hue
+    alias: 'Hold Hue Off Button, Goodnight'
     trigger:
       - platform: state
         entity_id: sensor.hue_dimmer_switch_1
         to: '4_hold'
     action:
       service: script.turn_on
-      entity_id: script.goodnight
+      data:
+        entity_id: script.goodnight
 
 # LOCATION AUTOMATIONS
-  - alias: '5 AM Present, Standby'
+  - id: standby_5am
+    alias: '5 AM Present, Standby'
     trigger:
       - platform: time
         at: '05:00:00'
@@ -129,9 +138,11 @@
         state: 'on'
     action:
       - service: alarm_control_panel.alarm_disarm
-        entity_id: alarm_control_panel.abode_alarm
+        data:
+          entity_id: alarm_control_panel.abode_alarm
 
-  - alias: '11 PM Present, Home'
+  - id: home_11pm
+    alias: '11 PM Present, Home'
     trigger:
       - platform: time
         at: '23:00:00'
@@ -141,11 +152,14 @@
         state: 'on'
     action:
       - service: alarm_control_panel.alarm_arm_home
-        entity_id: alarm_control_panel.abode_alarm
+        data:
+          entity_id: alarm_control_panel.abode_alarm
       - service: lock.lock
-        entity_id: lock.home_door_lock
+        data:
+          entity_id: lock.home_door_lock
 
-  - alias: '2 AM Not Present, Everything Off'
+  - id: everything_off_2am
+    alias: '2 AM Not Present, Everything Off'
     trigger:
       - platform: time
         at: '02:00:00'
@@ -155,18 +169,22 @@
         state: 'off'
     action:
       - service: script.turn_on
-        entity_id: script.everything_off
+        data:
+          entity_id: script.everything_off
 
 # Turns "sleeping" off if 6:30am
-  - alias: '6 AM, Sleeping Off'
+  - id: sleeping_off_6am
+    alias: '6 AM, Sleeping Off'
     trigger:
       - platform: time
         at: '06:00:00'
     action:
       - service: input_boolean.turn_off
-        entity_id: input_boolean.sleeping
+        data:
+          entity_id: input_boolean.sleeping
 
-  - alias: 'Anyone Arrives, Standby'
+  - id: standby_arrival
+    alias: 'Anyone Arrives, Standby'
     trigger:
       - platform: state
         entity_id: binary_sensor.m_present
@@ -180,9 +198,11 @@
         state: 'off'
     action:
       - service: alarm_control_panel.alarm_disarm
-        entity_id: alarm_control_panel.abode_alarm
+        data:
+          entity_id: alarm_control_panel.abode_alarm
 
-  - alias: 'Anyone Arrives At Night, Porch Light'
+  - id: porch_light_on_arrival_night
+    alias: 'Anyone Arrives At Night, Porch Light'
     trigger:
       - platform: state
         entity_id: binary_sensor.m_present
@@ -199,9 +219,11 @@
         state: 'below_horizon'
     action:
       - service: light.turn_on
-        entity_id: light.front_door
+        data:
+          entity_id: light.front_door
 
-  - alias: 'First Person Arrives At Night, Living Room Lights'
+  - id: living_room_lights_on_first_arrival
+    alias: 'First Person Arrives At Night, Living Room Lights'
     trigger:
       - platform: state
         entity_id: group.all_present
@@ -217,9 +239,11 @@
         before: '22:00:00'
     action:
       service: light.turn_on
-      entity_id: light.living_room
+      data:
+        entity_id: light.living_room
 
-  - alias: 'Last Person Leaves, Goodbye'
+  - id: goodbye_last_exit
+    alias: 'Last Person Leaves, Goodbye'
     trigger:
       - platform: state
         entity_id: group.all_present
@@ -230,21 +254,25 @@
         state: 'off'
     action:
       - service: script.turn_on
-        entity_id: script.goodbye
+        data:
+          entity_id: script.goodbye
 
-  - alias: 'Abode_alarm to Away, Goodbye'
+  - id: goodbye_away
+    alias: 'Abode_alarm to Away, Goodbye'
     trigger:
       - platform: state
         entity_id: alarm_control_panel.abode_alarm
         to: 'armed_away'
     action:
       - service: script.turn_on
-        entity_id: script.goodbye
+        data:
+          entity_id: script.goodbye
 
 # MEDIA AUTOMATIONS
 
 # Mute Soundbar if volume down up down
-  - alias: 'Soundbar down 0 -> 1'
+  - id: mute_counter_1
+    alias: 'Soundbar down 0 -> 1'
     trigger:
       - platform: state
         entity_id: sensor.guest_room_volume
@@ -256,8 +284,10 @@
         value_template: '{{ trigger.to_state.state < trigger.from_state.state }}'
     action:
       - service: counter.increment
-        entity_id: counter.mute_counter
-  - alias: 'Soundbar up 1 -> 2'
+        data:
+          entity_id: counter.mute_counter
+  - id: mute_counter_2
+    alias: 'Soundbar up 1 -> 2'
     trigger:
       - platform: state
         entity_id: sensor.guest_room_volume
@@ -269,8 +299,10 @@
         value_template: '{{ trigger.to_state.state > trigger.from_state.state }}'
     action:
       - service: counter.increment
-        entity_id: counter.mute_counter
-  - alias: 'Soundbar down 2 -> mute'
+        data:
+          entity_id: counter.mute_counter
+  - id: mute_complete
+    alias: 'Soundbar down 2 -> mute'
     trigger:
       - platform: state
         entity_id: sensor.guest_room_volume
@@ -285,7 +317,8 @@
         data:
           entity_id: media_player.guest_room_stereo_main
           is_volume_muted: true
-  - alias: 'Mute Counter Idle -> 0'
+  - id: mute_counter_0_idle
+    alias: 'Mute Counter Idle -> 0'
     trigger:
       - platform: state
         entity_id: counter.mute_counter
@@ -297,10 +330,12 @@
         for: '00:00:03'
     action:
       - service: counter.reset
-        entity_id: counter.mute_counter
+        data:
+          entity_id: counter.mute_counter
     
 # Switch Spotify
-  - alias: 'Spotify on Echo -> Spotify on Stereo'
+  - id: spotify_stereo_echo
+    alias: 'Spotify on Echo -> Spotify on Stereo'
     trigger:
       - platform: state
         entity_id: sensor.spotify_source
@@ -320,7 +355,8 @@
           entity_id: >
             script.spotify_{{ states("sensor.spotify_source").replace(" Echo Dot", "").replace(" ","_").lower() }}
 
-  - alias: 'Stereo Volume Change -> Spotify on Stereo'
+  - id: spotify_stereo_volume
+    alias: 'Stereo Volume Change -> Spotify on Stereo'
     trigger:
       - platform: state
         entity_id: sensor.living_room_volume
@@ -357,7 +393,8 @@
             script.spotify_{{ trigger.entity_id.replace("sensor.", "").replace("_volume", "") }}
 
 # Switches Spotify to Stereo if Stereo turns on
-  - alias: 'Stereo On -> Spotify on Stereo'
+  - id: spotify_stereo_on
+    alias: 'Stereo On -> Spotify on Stereo'
     trigger:
       - platform: state
         entity_id: media_player.living_room_stereo_main
