@@ -8,62 +8,62 @@
       - service: light.turn_off
         entity_id: light.front_door
 
-  - alias: 'k_present Off, Turn Off k_entered'
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.k_present
-        to: 'off'
-    action:
-      - service: input_boolean.turn_off
-        entity_id: input_boolean.k_entered
+#   - alias: 'k_present Off, Turn Off k_entered'
+#     trigger:
+#       - platform: state
+#         entity_id: binary_sensor.k_present
+#         to: 'off'
+#     action:
+#       - service: input_boolean.turn_off
+#         entity_id: input_boolean.k_entered
 
-  - alias: 'm_present Off, Turn Off m_entered'
-    trigger:
-      - platform: state
-        entity_id: binary_sensor.m_present
-        to: 'off'
-    action:
-      - service: input_boolean.turn_off
-        entity_id: input_boolean.m_entered
+#   - alias: 'm_present Off, Turn Off m_entered'
+#     trigger:
+#       - platform: state
+#         entity_id: binary_sensor.m_present
+#         to: 'off'
+#     action:
+#       - service: input_boolean.turn_off
+#         entity_id: input_boolean.m_entered
 
-  - alias: 'K Enter WiFi First Time, Unlock Door'
-    trigger:
-      - platform: state
-        entity_id: device_tracker.k_iphone
-        to: 'home'
-      - platform: state
-        entity_id: device_tracker.k_watch
-        to: 'home'
-    condition:
-      - condition: state
-        entity_id: input_boolean.k_entered
-        state: 'off'
-      - condition: state
-        entity_id: alarm_control_panel.abode
-        state: 'disarmed'
-    action:
-      - service: lock.unlock
-        entity_id: lock.home_door_lock
-      - service: input_boolean.turn_on
-        entity_id: input_boolean.k_entered
+#   - alias: 'K Enter WiFi First Time, Unlock Door'
+#     trigger:
+#       - platform: state
+#         entity_id: device_tracker.k_iphone
+#         to: 'home'
+#       - platform: state
+#         entity_id: device_tracker.k_watch
+#         to: 'home'
+#     condition:
+#       - condition: state
+#         entity_id: input_boolean.k_entered
+#         state: 'off'
+#       - condition: state
+#         entity_id: alarm_control_panel.abode_alarm
+#         state: 'disarmed'
+#     action:
+#       - service: lock.unlock
+#         entity_id: lock.home_door_lock
+#       - service: input_boolean.turn_on
+#         entity_id: input_boolean.k_entered
 
-  - alias: 'M Enter WiFi First Time, Unlock Door'
-    trigger:
-      - platform: state
-        entity_id: device_tracker.m_iphone
-        to: 'home'
-    condition:
-      - condition: state
-        entity_id: input_boolean.m_entered
-        state: 'off'
-      - condition: state
-        entity_id: alarm_control_panel.abode
-        state: 'disarmed'
-    action:
-      - service: lock.unlock
-        entity_id: lock.home_door_lock
-      - service: input_boolean.turn_on
-        entity_id: input_boolean.m_entered
+#   - alias: 'M Enter WiFi First Time, Unlock Door'
+#     trigger:
+#       - platform: state
+#         entity_id: device_tracker.m_iphone
+#         to: 'home'
+#     condition:
+#       - condition: state
+#         entity_id: input_boolean.m_entered
+#         state: 'off'
+#       - condition: state
+#         entity_id: alarm_control_panel.abode_alarm
+#         state: 'disarmed'
+#     action:
+#       - service: lock.unlock
+#         entity_id: lock.home_door_lock
+#       - service: input_boolean.turn_on
+#         entity_id: input_boolean.m_entered
 
   - alias: 'Remove new devices notification'
     trigger:
@@ -129,7 +129,7 @@
         state: 'on'
     action:
       - service: alarm_control_panel.alarm_disarm
-        entity_id: alarm_control_panel.abode
+        entity_id: alarm_control_panel.abode_alarm
 
   - alias: '11 PM Present, Home'
     trigger:
@@ -141,7 +141,7 @@
         state: 'on'
     action:
       - service: alarm_control_panel.alarm_arm_home
-        entity_id: alarm_control_panel.abode
+        entity_id: alarm_control_panel.abode_alarm
       - service: lock.lock
         entity_id: lock.home_door_lock
 
@@ -180,7 +180,7 @@
         state: 'off'
     action:
       - service: alarm_control_panel.alarm_disarm
-        entity_id: alarm_control_panel.abode
+        entity_id: alarm_control_panel.abode_alarm
 
   - alias: 'Anyone Arrives At Night, Porch Light'
     trigger:
@@ -232,10 +232,10 @@
       - service: script.turn_on
         entity_id: script.goodbye
 
-  - alias: 'Abode to Away, Goodbye'
+  - alias: 'Abode_alarm to Away, Goodbye'
     trigger:
       - platform: state
-        entity_id: alarm_control_panel.abode
+        entity_id: alarm_control_panel.abode_alarm
         to: 'armed_away'
     action:
       - service: script.turn_on

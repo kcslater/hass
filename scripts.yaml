@@ -6,6 +6,8 @@ good_morning:
       data:
         entity_id: light.bedroom
         brightness_pct: 100
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.sleeping
 
 lock_if_closed:
   alias: "Lock The Door"
@@ -23,6 +25,8 @@ everything_off:
       entity_id: group.bedroom
     - service: homeassistant.turn_off
       entity_id: group.upstairs
+    - service: cover.close_cover
+      entity_id: cover.garage_door_2
     - condition: state
       entity_id: input_boolean.guests_visiting
       state: 'off'
@@ -39,7 +43,7 @@ goodnight:
     - service: script.turn_on
       entity_id: script.everything_off
     - service: alarm_control_panel.alarm_arm_home
-      entity_id: alarm_control_panel.abode
+      entity_id: alarm_control_panel.abode_alarm
 
 time_for_bed:
   alias: "Time For Bed"
@@ -49,11 +53,13 @@ time_for_bed:
     - service: light.turn_on
       entity_id: light.bedroom
     - service: alarm_control_panel.alarm_arm_home
-      entity_id: alarm_control_panel.abode
+      entity_id: alarm_control_panel.abode_alarm
     - service: script.turn_on
       entity_id: script.lock_if_closed
     - service: homeassistant.turn_off
       entity_id: group.upstairs
+    - service: cover.close_cover
+      entity_id: cover.garage_door_2
     - condition: state
       entity_id: input_boolean.guests_visiting
       state: 'off'
@@ -65,6 +71,8 @@ tv_time:
   sequence:
     - service: homeassistant.turn_off
       entity_id: group.upstairs
+    - service: cover.close_cover
+      entity_id: cover.garage_door_2
     - service: homeassistant.turn_off
       entity_id: group.bedroom
     - service: homeassistant.turn_off
@@ -80,7 +88,7 @@ goodbye:
   alias: "Goodbye"
   sequence:
     - service: alarm_control_panel.alarm_arm_away
-      entity_id: alarm_control_panel.abode
+      entity_id: alarm_control_panel.abode_alarm
     - service: input_boolean.turn_off
       entity_id: input_boolean.sleeping
     - service: script.turn_on
@@ -95,7 +103,7 @@ standby:
   alias: "Standby"
   sequence:
     - service: alarm_control_panel.alarm_disarm
-      entity_id: alarm_control_panel.abode
+      entity_id: alarm_control_panel.abode_alarm
 
 # SPECIAL MUSIC
 turntable:

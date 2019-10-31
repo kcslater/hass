@@ -117,12 +117,12 @@ input_boolean:
   m_present:
     name: M Home, Homekit
     icon: mdi:account
-  k_entered:
-    name: K Entered Wi-Fi
-    icon: mdi:wifi-star
-  m_entered:
-    name: M Entered Wi-Fi
-    icon: mdi:wifi-star
+#   k_entered:
+#     name: K Entered Wi-Fi
+#     icon: mdi:wifi-star
+#   m_entered:
+#     name: M Entered Wi-Fi
+#     icon: mdi:wifi-star
 
 # Counter for muting Guest Room Stereo
 counter:
@@ -375,7 +375,6 @@ cover:
 abode:
   username: !secret abode_username
   password: !secret abode_password
-  name: Abode
 
 # Yamaha and Spotify
 media_player:
