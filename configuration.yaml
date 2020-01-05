@@ -1,46 +1,11 @@
 homeassistant:
   customize: !include customize.yaml
-  # Name of the location where Home Assistant is running
-  # name: Home
-  # Location required to calculate the time the sun rises and sets
-  # latitude: !secret lat
-  # longitude: !secret long
-  # Impacts weather/sunrise data (altitude above sea level in meters)
-  # elevation: 0
-  # metric for Metric, imperial for Imperial
-  # unit_system: imperial
-  # Pick yours from here: http://en.wikipedia.org/wiki/List_of_tz_database_time_zones
-  # time_zone: America/Los_Angeles
-  # Trusted networks
-  # auth_providers:
-  #   - type: homeassistant
-  #   - type: trusted_networks
-  #     trusted_networks:
-  #       - !secret iphone_ip  # Customization file
 
-# Show links to resources in log and frontend
-#introduction:
-
-# Enables the frontend
-frontend:
-
-# Enables configuration UI
-config:
-
-# Enables system health
-system_health:
+# Add default configuration
+default_config:
 
 # Enables Hass IO UI
 hassio:
-
-# Checks for available updates
-# Note: This component will send some information about your system to
-# the developers to assist with development of Home Assistant.
-# For more information, please see:
-# https://home-assistant.io/blog/2016/10/25/explaining-the-updater/
-updater:
-  # Optional, allows Home Assistant developers to focus on popular components.
-  # include_used_components: true
 
 # Discover some devices automatically
 discovery:
@@ -53,9 +18,6 @@ discovery:
 # Allows you to issue voice commands from the frontend in enabled browsers
 conversation:
 
-# Enables support for tracking state changes over time
-history:
-
 # View all events in a logbook
 logbook:
   exclude:
@@ -63,12 +25,6 @@ logbook:
       - input_boolean.k_present
       - input_boolean.m_present
       - automation.remove_new_devices_notification
-
-# Enables a map showing the location of tracked devices
-# map:
-
-# Track the sun
-sun:
 
 # Alexa Smart Home Skill
 api:
@@ -82,26 +38,6 @@ alexa:
       exclude_entities:
         - script.spotify_switch
         - script.standby
-
-# emulated_hue:
-#   host_ip: !secret hassio_ip
-#   listen_port: 80
-#   expose_by_default: true
-#   exposed_domains:
-#     - script
-#     - switch
-#   off_maps_to_on_domains:
-#     - script
-#   entities:
-#     script.spotify_switch:
-#       hidden: true
-#     script.standby:
-#       hidden: true
-
-# Virtual Echo
-#rest_command:
-#  ask_alexa:
-#    url: !secret virtual_echo_url
 
 # Input booleans
 input_boolean:
@@ -117,12 +53,9 @@ input_boolean:
   m_present:
     name: M Home, Homekit
     icon: mdi:account
-#   k_entered:
-#     name: K Entered Wi-Fi
-#     icon: mdi:wifi-star
-#   m_entered:
-#     name: M Entered Wi-Fi
-#     icon: mdi:wifi-star
+  x_present:
+    name: Any Home, Homekit
+    icon: mdi:account
 
 # Counter for muting Guest Room Stereo
 counter:
@@ -131,11 +64,6 @@ counter:
     step: 1
     minimum: 0
     maximum: 2
-
-# Dark Sky Weather API
-# weather:
-#   - platform: darksky
-#     api_key: !secret dark_sky_api_key
 
 # Binary sensors
 binary_sensor:
@@ -146,8 +74,7 @@ binary_sensor:
         friendly_name: "K Home"
         value_template: >-
           {{ is_state('input_boolean.k_present','on') or 
-             is_state('device_tracker.k_iphone','home') or 
-             is_state('device_tracker.k_watch','home') }}
+             is_state('device_tracker.k_iphone','home') }}
       m_present:
         friendly_name: "M Home"
         value_template: >-
@@ -181,61 +108,6 @@ sensor:
       guest_room_volume:
         value_template: '{{ state_attr("media_player.guest_room_stereo_main", "volume_level") | float }}'
         friendly_name: 'Guest Room Volume'
-    #   gold_lamp_available:
-    #     friendly_name: "gold_lamp available"
-    #     unit_of_measurement: '%'
-    #     icon_template: mdi:battery-charging-100
-    #     value_template: >-
-    #       {% if is_state('light.gold_lamp','unavailable') %}
-    #         0
-    #       {% else %}
-    #         100
-    #       {% endif %}
-    #   elephant_lamp_available:
-    #     friendly_name: "elephant_lamp available"
-    #     unit_of_measurement: '%'
-    #     icon_template: mdi:battery-charging-100
-    #     value_template: >-
-    #       {% if is_state('light.elephant_lamp','unavailable') %}
-    #         0
-    #       {% else %}
-    #         100
-    #       {% endif %}
-    #   basement_light_1_available:
-    #     friendly_name: "basement_light_1 available"
-    #     unit_of_measurement: '%'
-    #     icon_template: mdi:battery-charging-100
-    #     value_template: >-
-    #       {% if is_state('light.basement_light_1','unavailable') %}
-    #         0
-    #       {% else %}
-    #         100
-    #       {% endif %}
-    #   basement_light_2_available:
-    #     friendly_name: "basement_light_2 available"
-    #     unit_of_measurement: '%'
-    #     icon_template: mdi:battery-charging-100
-    #     value_template: >-
-    #       {% if is_state('light.basement_light_2','unavailable') %}
-    #         0
-    #       {% else %}
-    #         100
-    #       {% endif %}
-    #   front_door_available:
-    #     friendly_name: "front_door available"
-    #     unit_of_measurement: '%'
-    #     icon_template: mdi:battery-charging-100
-    #     value_template: >-
-    #       {% if is_state('light.front_door','unavailable') %}
-    #         0
-    #       {% else %}
-    #         100
-    #       {% endif %}
-
-# Text to speech
-# tts:
-#   - platform: google_translate
-#     service_name: google_say
 
 # Device Tracker
 device_tracker:
@@ -244,41 +116,11 @@ device_tracker:
     devices:
       - !secret m_mac
       - !secret k_mac
-      - !secret k_watch_mac
     new_device_defaults:
       track_new_devices: false
       hide_if_away: false
     interval_seconds: 30
     consider_home: 3:00
-
-# Switch Templates for HomeKit
-# switch:
-#   - platform: template
-    # switches:
-    #   media_autos:
-    #     friendly_name: 'Media Automations'
-    #     value_template: "{{ is_state('group.media_autos', 'on') }}"
-    #     turn_on:
-    #       service: homeassistant.turn_on
-    #       entity_id: group.media_autos
-    #     turn_off:
-    #       service: homeassistant.turn_off
-    #       entity_id: group.media_autos
-    #   all_stereos:
-    #     friendly_name: 'All Stereos'
-    #     value_template: >-
-    #       {{  not is_state('media_player.living_room_stereo_main', 'off') or
-    #           not is_state('media_player.bedroom_stereo_main', 'off') or
-    #           not is_state('media_player.kitchen_stereo_main', 'off') or
-    #           not is_state('media_player.guest_room_stereo_main', 'off') or
-    #           not is_state('media_player.basement_stereo_main', 'off')
-    #       }}
-    #     turn_on:
-    #       service: homeassistant.turn_on
-    #       entity_id: group.all_stereos
-    #     turn_off:
-    #       service: homeassistant.turn_off
-    #       entity_id: group.all_stereos
 
 # HomeKit
 homekit:
@@ -307,6 +149,7 @@ homekit:
       - input_boolean.k_entered
       - input_boolean.m_entered
       - script.lock_if_closed
+      - script.spotify_living_room_check_if_on
   entity_config:
     input_boolean.k_present:
       name: "K Home"
@@ -334,30 +177,12 @@ homekit:
         - feature: on_off
     light.bedroom:
       name: "Bedroom Lights"
-    # light.gold_lamp:
-    #   linked_battery_sensor: sensor.gold_lamp_available
-    #   low_battery_threshold: 50
-    # light.elephant_lamp:
-    #   linked_battery_sensor: sensor.elephant_lamp_available
-    #   low_battery_threshold: 50
     light.living_room:
       name: "Living Room Lights"
-    #   linked_battery_sensor: sensor.elephant_lamp_available
-    #   low_battery_threshold: 50
-    # light.basement_light_1:
-    #   linked_battery_sensor: sensor.basement_light_1_available
-    #   low_battery_threshold: 50
-    # light.basement_light_2:
-    #   linked_battery_sensor: sensor.basement_light_2_available
-    #   low_battery_threshold: 50
     light.basement:
       name: "Basement Lights"
-    #   linked_battery_sensor: sensor.basement_light_1_available
-    #   low_battery_threshold: 50
     light.front_door:
       name: "Front Door Light"
-    #   linked_battery_sensor: sensor.front_door_available
-    #   low_battery_threshold: 50
 
 # Hue
 hue:
@@ -370,11 +195,6 @@ cover:
     username: !secret myq_user
     password: !secret myq_password
     type: chamberlain
-
-# Abode Alarm System
-abode:
-  username: !secret abode_username
-  password: !secret abode_password
 
 # Yamaha and Spotify
 media_player:
@@ -405,9 +225,6 @@ media_player:
       !secret lr_dot_alias: 'Living Room Echo Dot'
       !secret ki_dot_alias: 'Kitchen Echo Dot'
       !secret br_dot_alias: 'Bedroom Echo Dot'
-  - platform: vizio
-    host: !secret vizio_ip
-    access_token: !secret vizio_auth_token
 
 # Log to get Spotify aliases
 logger:
