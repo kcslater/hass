@@ -38,10 +38,8 @@ goodnight:
   sequence:
     - service: input_boolean.turn_on
       entity_id: input_boolean.sleeping
-    - service: script.turn_on
-      entity_id: script.lock_if_closed
-    - service: script.turn_on
-      entity_id: script.everything_off
+    - service: script.lock_if_closed
+    - service: script.everything_off
     - service: alarm_control_panel.alarm_arm_home
       entity_id: alarm_control_panel.abode_alarm
 
@@ -54,8 +52,7 @@ time_for_bed:
       entity_id: light.bedroom
     - service: alarm_control_panel.alarm_arm_home
       entity_id: alarm_control_panel.abode_alarm
-    - service: script.turn_on
-      entity_id: script.lock_if_closed
+    - service: script.lock_if_closed
     - service: homeassistant.turn_off
       entity_id: group.upstairs
     - service: cover.close_cover
@@ -91,10 +88,8 @@ goodbye:
       entity_id: alarm_control_panel.abode_alarm
     - service: input_boolean.turn_off
       entity_id: input_boolean.sleeping
-    - service: script.turn_on
-      entity_id: script.lock_if_closed
-    - service: script.turn_on
-      entity_id: script.everything_off
+    - service: script.lock_if_closed
+    - service: script.everything_off
     # in case of guests
     - service: homeassistant.turn_off
       entity_id: group.downstairs
@@ -202,18 +197,26 @@ spotify_down2:
         entity_id: >
           media_player.{{ states("sensor.spotify_source").replace(" ", "_").lower() }}_main
 
+spotify_living_room_check_if_on:
+  alias: "Spotify Living Room - Check if Stereo On"
+  sequence:
+    - condition: template
+      value_template: "{{ not is_state('media_player.living_room_stereo_main', 'off') }}"
+    - service: media_player.select_source
+      data:
+        entity_id: media_player.spotify
+        source: 'Living Room Stereo'
+
 spotify_living_room:
   alias: "Spotify Living Room"
   sequence:
+    - service: script.spotify_living_room_check_if_on
+    - condition: state
+      entity_id: media_player.living_room_stereo_main
+      state: 'off'
     - service: media_player.turn_on
       entity_id: media_player.living_room_stereo_main
-    - delay:
-        seconds: >
-          {% if is_state('media_player.living_room_stereo_main', 'off') %}
-            13
-          {% else %}
-            0
-          {% endif %}
+    - delay: '00:00:13'
     - service: media_player.select_source
       data:
         entity_id: media_player.spotify
@@ -232,11 +235,7 @@ spotify_switch:
     - delay: '00:00:02'
     - condition: template
       value_template: "is_state(media_player.{{ title.lower().replace(' ','_') }}_stereo_main, 'mc_link')"
-    - service: media_player.select_source
-      data:
-        entity_id: media_player.spotify
-        source: 'Living Room Stereo'
-
+    - service: script.spotify_living_room
 
 switch_to_tv:
   alias: "Switch to TV"
@@ -270,3 +269,33 @@ spotify_guest_room:
     - service: script.spotify_switch
       data:
         title: "Guest Room"
+
+# sonos_living_room_check_if_on:
+#   alias: "Sonos Living Room - Check If Stereo On"
+#   sequence:
+#     - condition: template
+#       value_template: "{{ not is_state('media_player.living_room_stereo_main', 'off') }}"
+#     - service: media_player.select_source
+#       data:
+#         entity_id: media_player.living_room_stereo_main
+#         source: 'audio2'
+
+# sonos_living_room:
+#   alias: "Sonos Living Room"
+#   sequence:
+#     - service: script.sonos_living_room_check_if_on
+#     - condition: state
+#       entity_id: media_player.living_room_stereo_main
+#       state: 'off'
+#     - service: media_player.media_pause
+#       entity_id: media_player.living_room
+#     - service: media_player.turn_on
+#       entity_id: media_player.living_room_stereo_main
+#     - delay: '00:00:13'
+#     - service: media_player.select_source
+#       data:
+#         entity_id: media_player.living_room_stereo_main
+#         source: 'audio2'
+#     - service: media_player.media_play
+#       entity_id: media_player.living_room
+
