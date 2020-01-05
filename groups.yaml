@@ -24,6 +24,13 @@
       - binary_sensor.k_present
       - binary_sensor.m_present
       - input_boolean.guests_visiting
+      - input_boolean.x_present
+  core_present:
+    name: K or M present
+    entities:
+      - binary_sensor.k_present
+      - binary_sensor.m_present
+
   # Media Players
   #all_stereos:
   #  name: All Stereos
