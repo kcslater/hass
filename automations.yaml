@@ -265,12 +265,14 @@
     platform: state
     to: Guest Room Echo Dot
   action:
-  - data_template:
-      entity_id: 'script.spotify_{{ states("sensor.spotify_source").replace(" Echo
-        Dot", "").replace(" ","_").lower() }}
+    service: script.spotify_switch_delay
+    data_template:
+      title: "{{ states('sensor.spotify_source').replace(' Echo Dot', '') }}"
+    # service: script.turn_on
+    # data_template:
+    #   entity_id: 'script.spotify_{{ states("sensor.spotify_source").replace(" Echo
+    #     Dot", "").replace(" ","_").lower() }}
 
-        '
-    service: script.turn_on
 - id: spotify_stereo_volume
   alias: Stereo Volume Change, Spotify on Stereo
   trigger:
@@ -300,6 +302,18 @@
     - condition: state
       entity_id: sensor.spotify_source
       state: Guest Room Stereo
+    - condition: state
+      entity_id: sensor.spotify_source
+      state: Kitchen Echo Dot
+    - condition: state
+      entity_id: sensor.spotify_source
+      state: Bedroom Echo Dot
+    - condition: state
+      entity_id: sensor.spotify_source
+      state: Living Room Echo Dot
+    - condition: state
+      entity_id: sensor.spotify_source
+      state: Guest Room Echo Dot
   - condition: template
     value_template: '{{ is_state(trigger.entity_id.replace(''sensor.'',''media_player.'').replace(''_volume'',''_stereo_main''),
       ''idle'') }}'

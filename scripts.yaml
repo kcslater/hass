@@ -237,6 +237,22 @@ spotify_switch:
       value_template: "is_state(media_player.{{ title.lower().replace(' ','_') }}_stereo_main, 'mc_link')"
     - service: script.spotify_living_room
 
+spotify_switch_delay:
+  alias: "Spotify Switch With Delay"
+  sequence: 
+    - service: media_player.turn_on
+      data_template:
+        entity_id: "media_player.{{ title.lower().replace(' ','_') }}_stereo_main"
+    - delay: '00:00:02'
+    - service: media_player.select_source
+      data_template:
+        entity_id: media_player.spotify
+        source: "{{ title }} Stereo"
+    - delay: '00:00:02'
+    - condition: template
+      value_template: "is_state(media_player.{{ title.lower().replace(' ','_') }}_stereo_main, 'mc_link')"
+    - service: script.spotify_living_room
+
 switch_to_tv:
   alias: "Switch to TV"
   sequence:
