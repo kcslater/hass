@@ -118,7 +118,6 @@ device_tracker:
       - !secret k_mac
     new_device_defaults:
       track_new_devices: false
-      hide_if_away: false
     interval_seconds: 30
     consider_home: 3:00
 
@@ -143,7 +142,7 @@ homekit:
       - light.backyard
       - light.guest_room
       - light.porch_lamp
-      - media_player.vizio_smartcast
+    #   - media_player.vizio_smartcast
       - script.close_garage
       - script.spotify_switch
       - input_boolean.k_entered
@@ -196,7 +195,7 @@ cover:
     password: !secret myq_password
     type: chamberlain
 
-# Yamaha and Spotify
+# Yamaha
 media_player:
   - platform: yamaha_musiccast
     host: !secret lr_stereo_ip
@@ -213,18 +212,20 @@ media_player:
   - platform: yamaha_musiccast
     host: !secret gr_stereo_ip
     port: 5009
-  - platform: spotify
-    client_id: !secret spotify_client_id
-    client_secret: !secret spotify_client_secret
-    aliases:
-      !secret lr_stereo_alias: 'Living Room Stereo'
-      !secret br_stereo_alias: 'Bedroom Stereo'
-      !secret gr_stereo_alias: 'Guest Room Stereo'
-      !secret ki_stereo_alias: 'Kitchen Stereo'
-      !secret ba_stereo_alias: 'Basement Stereo'
-      !secret lr_dot_alias: 'Living Room Echo Dot'
-      !secret ki_dot_alias: 'Kitchen Echo Dot'
-      !secret br_dot_alias: 'Bedroom Echo Dot'
+
+# Spotify
+spotify:
+  client_id: !secret spotify_client_id
+  client_secret: !secret spotify_client_secret
+    # aliases:
+    #   !secret lr_stereo_alias: 'Living Room Stereo'
+    #   !secret br_stereo_alias: 'Bedroom Stereo'
+    #   !secret gr_stereo_alias: 'Guest Room Stereo'
+    #   !secret ki_stereo_alias: 'Kitchen Stereo'
+    #   !secret ba_stereo_alias: 'Basement Stereo'
+    #   !secret lr_dot_alias: 'Living Room Echo Dot'
+    #   !secret ki_dot_alias: 'Kitchen Echo Dot'
+    #   !secret br_dot_alias: 'Bedroom Echo Dot'
 
 # Log to get Spotify aliases
 logger:
