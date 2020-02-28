@@ -5,10 +5,10 @@ group.all_scripts:
 sensor.basement_temperature: {}
 sun.sun:
   hidden: true
-media_player.vizio_smartcast:
-  icon: mdi:television
-  device_class: tv
-  friendly_name: TV
+# media_player.vizio_smartcast:
+#   icon: mdi:television
+#   device_class: tv
+#   friendly_name: TV
 media_player.living_room_stereo_main:
   icon: mdi:audio-video
 media_player.kitchen_stereo_main:
