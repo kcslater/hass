@@ -17,7 +17,7 @@
       - light.basement
       - media_player.basement_stereo_main
       - media_player.guest_room_stereo_main
-      - media_player.vizio_smartcast
+    #   - media_player.vizio_smartcast
   all_present:
     name: All Present
     entities:
