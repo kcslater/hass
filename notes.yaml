@@ -1,0 +1,51 @@
+turn power on
+then turn volume up or down
+down switches to that stereo (easy, not going to do it here)
+
+IGNORE THE BELOW: I THINK YOU CAN JUST DO Service sonos.join
+
+trigger: volume up
+condition: 
+    - trigger stereo is not playing
+action:
+    {% set stereodict = {'Upstairs': ['Bedroom','Kitchen','Living Room'], 
+        'Front': ['Kitchen','Living Room'], 
+          'Living Room': ['Living Room'], 
+          'Bedroom': ['Bedroom'], 
+          'Kitchen': ['Kitchen'] } %}
+    
+    {% set stereodict2 = {'Bedroom, Kitchen, Living Room': 'Upstairs', 
+          'Kitchen, Living Room': 'Front', 
+          'Living Room': 'Living Room', 
+          'Bedroom': 'Bedroom', 'Kitchen': 'Kitchen'} %}
+      
+      {% for stereo in stereodict %}
+      if that stereo is playing, make a list of stereodict['stereo'] plus the trigger stereo, and sort.
+      then do list|join(", ") to get the key, and look up stereodict2['key']
+      set Sonos to that value
+
+
+    {{ dict1['foo2'] }}
+    
+    
+from https://www.home-assistant.io/integrations/sonos/:
+
+Move music to another room:
+It’s possible to have the music follow you to another room by using the grouping feature. To move music from the Living Room to the Kitchen, do the following:
+ 
+
+    Click on “Group” next to Living Room.
+    Add in Kitchen, and uncheck Living Room.
+    Click “Done” and the music will stop playing in Living Room, but continue playing in the Kitchen, right where you left off.
+    
+    
+Also from https://en.community.sonos.com/announcements-228985/sonos-now-playing-with-alexa-groups-6817588
+
+Please note, microphone enabled Sonos speakers can only be in one Alexa Group at one time for now, but the non-microphone enabled ones can be in multiple groups.
+
+
+This blog post has great ideas: https://philhawthorne.com/making-music-follow-you-around-the-home-with-home-assistant-and-sonos/
+- the end of it talks about switching the master controller. 
+  you could have an automation where, if a stereo starts playing 
+  and the master controller is not playing, that stereo becomes 
+  the master controller.
