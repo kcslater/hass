@@ -80,6 +80,11 @@ binary_sensor:
         value_template: >-
           {{ is_state('input_boolean.m_present','on') or 
              is_state('device_tracker.m_iphone','home') }}
+      unlocked_closed:
+        friendly_name: "Front Door Unlocked and Closed"
+        value_template: >-
+          {{ is_state('lock.home_door_lock','unlocked') and 
+             is_state('binary_sensor.front_door','off') }}
 
 # Sensors
 sensor:

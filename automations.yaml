@@ -260,9 +260,6 @@
     to: Bedroom Echo Dot
   - entity_id: sensor.spotify_source
     platform: state
-    to: Living Room Echo Dot
-  - entity_id: sensor.spotify_source
-    platform: state
     to: Guest Room Echo Dot
   action:
     service: script.spotify_switch_delay
@@ -272,6 +269,14 @@
     # data_template:
     #   entity_id: 'script.spotify_{{ states("sensor.spotify_source").replace(" Echo
     #     Dot", "").replace(" ","_").lower() }}
+- id: spotify_stereo_lr_echo
+  alias: Spotify on Living Room Echo, Spotify on Living Room Stereo
+  trigger:
+  - entity_id: sensor.spotify_source
+    platform: state
+    to: Living Room Echo Dot
+  action:
+    service: script.spotify_living_room
 
 - id: spotify_stereo_volume
   alias: Stereo Volume Change, Spotify on Stereo
@@ -318,12 +323,11 @@
     value_template: '{{ is_state(trigger.entity_id.replace(''sensor.'',''media_player.'').replace(''_volume'',''_stereo_main''),
       ''idle'') }}'
   action:
-  - data_template:
+    service: script.turn_on
+    data_template:
       entity_id: 'script.spotify_{{ trigger.entity_id.replace("sensor.", "").replace("_volume",
         "") }}
-
         '
-    service: script.turn_on
 - id: spotify_stereo_on
   alias: Stereo On, Spotify on Stereo
   trigger:
@@ -375,14 +379,14 @@
   action:
   - data: {}
     service: script.sonos_living_room
-- id: '1575260491525'
+- id: auto_lock
   alias: Lock After 20 Minutes
   description: ''
   trigger:
-  - entity_id: lock.home_door_lock
+  - entity_id: binary_sensor.unlocked_closed
     for: 00:20:00
     platform: state
-    to: unlocked
+    to: 'on'
   condition: []
   action:
   - data:
