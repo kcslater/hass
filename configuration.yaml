@@ -133,21 +133,21 @@ homekit:
     include_domains:
       - cover
       - media_player
-      - alarm_control_panel
+      #- alarm_control_panel
       - light
       - switch
       - script
       - input_boolean
       - input_number
-      - lock
-    include_entities:
-      - binary_sensor.front_door
-      - binary_sensor.side_door
+      #- lock
+    # include_entities:
+    #   - binary_sensor.front_door
+    #   - binary_sensor.side_door
     exclude_entities:
       - light.backyard
       - light.guest_room
       - light.porch_lamp
-    #   - media_player.vizio_smartcast
+      #- media_player.vizio_smartcast
       - script.close_garage
       - script.spotify_switch
       - input_boolean.k_entered
