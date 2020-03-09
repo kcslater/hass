@@ -101,15 +101,15 @@ sensor:
       living_room_volume:
         value_template: '{{ state_attr("media_player.living_room_stereo_main", "volume_level") | float }}'
         friendly_name: 'Living Room Volume'
-      bedroom_volume:
-        value_template: '{{ state_attr("media_player.bedroom_stereo_main", "volume_level") | float }}'
-        friendly_name: 'Bedroom Volume'
+    #   bedroom_volume:
+    #     value_template: '{{ state_attr("media_player.bedroom_stereo_main", "volume_level") | float }}'
+    #     friendly_name: 'Bedroom Volume'
       kitchen_volume:
         value_template: '{{ state_attr("media_player.kitchen_stereo_main", "volume_level") | float }}'
         friendly_name: 'Kitchen Volume'
-      basement_volume:
-        value_template: '{{ state_attr("media_player.basement_stereo_main", "volume_level") | float }}'
-        friendly_name: 'Basement Volume'
+    #   basement_volume:
+    #     value_template: '{{ state_attr("media_player.basement_stereo_main", "volume_level") | float }}'
+    #     friendly_name: 'Basement Volume'
       guest_room_volume:
         value_template: '{{ state_attr("media_player.guest_room_stereo_main", "volume_level") | float }}'
         friendly_name: 'Guest Room Volume'
@@ -167,14 +167,14 @@ homekit:
       name: "Kitchen Stereo"
       feature_list:
         - feature: on_off
-    media_player.bedroom_stereo_main:
-      name: "Bedroom Stereo"
-      feature_list:
-        - feature: on_off
-    media_player.basement_stereo_main:
-      name: "Basement Stereo"
-      feature_list:
-        - feature: on_off
+    #media_player.bedroom_stereo_main:
+    #  name: "Bedroom Stereo"
+    #  feature_list:
+    #    - feature: on_off
+    # media_player.basement_stereo_main:
+    #   name: "Basement Stereo"
+    #   feature_list:
+    #     - feature: on_off
     media_player.guest_room_stereo_main:
       name: "Guest Room Stereo"
       feature_list:
@@ -208,12 +208,12 @@ media_player:
   - platform: yamaha_musiccast
     host: !secret ki_stereo_ip
     port: 5006
-  - platform: yamaha_musiccast
-    host: !secret br_stereo_ip
-    port: 5007
-  - platform: yamaha_musiccast
-    host: !secret ba_stereo_ip
-    port: 5008
+  #- platform: yamaha_musiccast
+  #  host: !secret br_stereo_ip
+  #  port: 5007
+  #- platform: yamaha_musiccast
+  #  host: !secret ba_stereo_ip
+  #  port: 5008
   - platform: yamaha_musiccast
     host: !secret gr_stereo_ip
     port: 5009
