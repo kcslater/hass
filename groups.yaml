@@ -1,21 +1,20 @@
   bedroom:
     name: Bedroom
     entities:
-      - media_player.bedroom_stereo_main
-      - light.bedroom
+      - media_player.bedroom
+      - light.bedroom_lights
   upstairs:
     name: Upstairs, Garage, No Bedroom
     entities:
-      - light.living_room
-      - light.front_door
-      - media_player.living_room_stereo_main
-      - media_player.kitchen_stereo_main
+      - light.living_room_lights
+      - light.front_door_light
+      - media_player.living_room
+      - media_player.kitchen
       - switch.backyard_lights
   downstairs:
     name: Downstairs
     entities:
-      - light.basement
-      - media_player.basement_stereo_main
+      - light.basement_lights
       - media_player.guest_room_stereo_main
     #   - media_player.vizio_smartcast
   all_present:

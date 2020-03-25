@@ -11,11 +11,11 @@ sun.sun:
 #   friendly_name: TV
 media_player.living_room_stereo_main:
   icon: mdi:audio-video
-media_player.kitchen_stereo_main:
+media_player.living_room:
   icon: mdi:speaker
-media_player.bedroom_stereo_main:
+media_player.kitchen:
   icon: mdi:speaker
-media_player.basement_stereo_main:
+media_player.bedroom:
   icon: mdi:speaker
 media_player.guest_room_stereo_main:
   icon: mdi:speaker

@@ -38,6 +38,15 @@ alexa:
       exclude_entities:
         - script.spotify_switch
         - script.standby
+        - script.sonos_group
+        - script.sonos_ungroup
+        - script.sonos_set_controller
+        - switch.if_11pm_home_then_home
+        - switch.if_5_30am_home_then_standby
+        - switch.if_anyone_arrives_then_standby
+        - switch.if_last_person_leaves_then_away
+      exclude_domains:
+        - automation
 
 # Input booleans
 input_boolean:
@@ -56,6 +65,15 @@ input_boolean:
   x_present:
     name: Any Home, Homekit
     icon: mdi:account
+
+# Input Select
+input_select:
+  music_controller:
+    name: Music Controller
+    options:
+      - bedroom
+      - kitchen
+      - living_room
 
 # Counter for muting Guest Room Stereo
 counter:
@@ -99,17 +117,14 @@ sensor:
         value_template: '{{ state_attr("media_player.spotify", "source") }}'
         friendly_name: 'Spotify Source'
       living_room_volume:
-        value_template: '{{ state_attr("media_player.living_room_stereo_main", "volume_level") | float }}'
+        value_template: '{{ state_attr("media_player.living_room", "volume_level") | float }}'
         friendly_name: 'Living Room Volume'
-    #   bedroom_volume:
-    #     value_template: '{{ state_attr("media_player.bedroom_stereo_main", "volume_level") | float }}'
-    #     friendly_name: 'Bedroom Volume'
+      bedroom_volume:
+        value_template: '{{ state_attr("media_player.bedroom", "volume_level") | float }}'
+        friendly_name: 'Bedroom Volume'
       kitchen_volume:
-        value_template: '{{ state_attr("media_player.kitchen_stereo_main", "volume_level") | float }}'
+        value_template: '{{ state_attr("media_player.kitchen", "volume_level") | float }}'
         friendly_name: 'Kitchen Volume'
-    #   basement_volume:
-    #     value_template: '{{ state_attr("media_player.basement_stereo_main", "volume_level") | float }}'
-    #     friendly_name: 'Basement Volume'
       guest_room_volume:
         value_template: '{{ state_attr("media_player.guest_room_stereo_main", "volume_level") | float }}'
         friendly_name: 'Guest Room Volume'
@@ -126,6 +141,27 @@ device_tracker:
     interval_seconds: 30
     consider_home: 3:00
 
+light:
+  - platform: group
+    name: Bedroom Lights
+    entities:
+      - light.kailin_s_lamp
+      - light.meghan_s_lamp
+  - platform: group
+    name: Living Room Lights
+    entities:
+      - light.elephant_lamp
+      - light.gold_lamp
+  - platform: group
+    name: Basement Lights
+    entities:
+      - light.basement_light_1
+      - light.basement_light_2
+  - platform: group
+    name: Front Door Light
+    entities:
+      - light.porch_lamp
+
 # HomeKit
 homekit:
   auto_start: False
@@ -139,7 +175,7 @@ homekit:
       - script
       - input_boolean
       - input_number
-      #- lock
+      - lock
     # include_entities:
     #   - binary_sensor.front_door
     #   - binary_sensor.side_door
@@ -150,10 +186,16 @@ homekit:
       #- media_player.vizio_smartcast
       - script.close_garage
       - script.spotify_switch
+      - script.sonos_group
+      - script.sonos_ungroup
+      - script.sonos_set_controller
       - input_boolean.k_entered
       - input_boolean.m_entered
       - script.lock_if_closed
-      - script.spotify_living_room_check_if_on
+      - switch.if_11pm_home_then_home
+      - switch.if_5_30am_home_then_standby
+      - switch.if_anyone_arrives_then_standby
+      - switch.if_last_person_leaves_then_away
   entity_config:
     input_boolean.k_present:
       name: "K Home"
@@ -163,14 +205,14 @@ homekit:
       name: "Living Room Stereo"
       feature_list:
         - feature: on_off
-    media_player.kitchen_stereo_main:
-      name: "Kitchen Stereo"
-      feature_list:
-        - feature: on_off
-    #media_player.bedroom_stereo_main:
+    # media_player.kitchen_stereo_main:
+    #   name: "Kitchen Stereo"
+    #   feature_list:
+    #     - feature: on_off
+    # media_player.bedroom_stereo_main:
     #  name: "Bedroom Stereo"
     #  feature_list:
-    #    - feature: on_off
+    #     - feature: on_off
     # media_player.basement_stereo_main:
     #   name: "Basement Stereo"
     #   feature_list:
@@ -179,14 +221,14 @@ homekit:
       name: "Guest Room Stereo"
       feature_list:
         - feature: on_off
-    light.bedroom:
-      name: "Bedroom Lights"
-    light.living_room:
-      name: "Living Room Lights"
-    light.basement:
-      name: "Basement Lights"
-    light.front_door:
-      name: "Front Door Light"
+    # light.bedroom:
+    #   name: "Bedroom Lights"
+    # light.living_room:
+    #   name: "Living Room Lights"
+    # light.basement:
+    #   name: "Basement Lights"
+    # light.front_door:
+    #   name: "Front Door Light"
 
 # Hue
 hue:
@@ -205,9 +247,9 @@ media_player:
   - platform: yamaha_musiccast
     host: !secret lr_stereo_ip
     port: 5005
-  - platform: yamaha_musiccast
-    host: !secret ki_stereo_ip
-    port: 5006
+  #- platform: yamaha_musiccast
+  #  host: !secret ki_stereo_ip
+  #  port: 5006
   #- platform: yamaha_musiccast
   #  host: !secret br_stereo_ip
   #  port: 5007

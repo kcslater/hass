@@ -2,13 +2,13 @@
   alias: Porch Light Off After 20 Mins
   trigger:
   - platform: state
-    entity_id: light.front_door
+    entity_id: light.front_door_light
     to: 'on'
     for: 00:20:00
   action:
   - service: light.turn_off
     data:
-      entity_id: light.front_door
+      entity_id: light.front_door_light
 - id: remove_new_devices_notification
   alias: Remove new devices notification
   trigger:
@@ -140,7 +140,7 @@
     condition: time
   action:
   - data:
-      entity_id: light.front_door
+      entity_id: light.front_door_light
     service: light.turn_on
 - id: living_room_lights_on_first_arrival
   alias: First Person Arrives At Night, Living Room Lights
@@ -162,7 +162,7 @@
     condition: time
   action:
   - data:
-      entity_id: light.living_room
+      entity_id: light.living_room_lights
     service: light.turn_on
 - id: goodbye_last_exit
   alias: Last Person Leaves, Goodbye
@@ -249,136 +249,91 @@
   - service: counter.reset
     data:
       entity_id: counter.mute_counter
-- id: spotify_stereo_echo
-  alias: Spotify on Echo, Spotify on Stereo
-  trigger:
-  - entity_id: sensor.spotify_source
-    platform: state
-    to: Kitchen Echo Dot
-  - entity_id: sensor.spotify_source
-    platform: state
-    to: Bedroom Echo Dot
-  - entity_id: sensor.spotify_source
-    platform: state
-    to: Guest Room Echo Dot
-  action:
-    service: script.spotify_switch_delay
-    data_template:
-      title: "{{ states('sensor.spotify_source').replace(' Echo Dot', '') }}"
-    # service: script.turn_on
-    # data_template:
-    #   entity_id: 'script.spotify_{{ states("sensor.spotify_source").replace(" Echo
-    #     Dot", "").replace(" ","_").lower() }}
-- id: spotify_stereo_lr_echo
-  alias: Spotify on Living Room Echo, Spotify on Living Room Stereo
-  trigger:
-  - entity_id: sensor.spotify_source
-    platform: state
-    to: Living Room Echo Dot
-  action:
-    service: script.spotify_living_room
-
-- id: spotify_stereo_volume
-  alias: Stereo Volume Change, Spotify on Stereo
-  trigger:
-  - entity_id: sensor.living_room_volume
-    platform: state
-  - entity_id: sensor.kitchen_volume
-    platform: state
-  - entity_id: sensor.bedroom_volume
-    platform: state
-  - entity_id: sensor.basement_volume
-    platform: state
-  condition:
-  - condition: state
-    entity_id: media_player.spotify
-    state: playing
-  - condition: or
-    conditions:
-    - condition: state
-      entity_id: sensor.spotify_source
-      state: Kitchen Stereo
-    - condition: state
-      entity_id: sensor.spotify_source
-      state: Bedroom Stereo
-    - condition: state
-      entity_id: sensor.spotify_source
-      state: Basement Stereo
-    - condition: state
-      entity_id: sensor.spotify_source
-      state: Guest Room Stereo
-    - condition: state
-      entity_id: sensor.spotify_source
-      state: Kitchen Echo Dot
-    - condition: state
-      entity_id: sensor.spotify_source
-      state: Bedroom Echo Dot
-    - condition: state
-      entity_id: sensor.spotify_source
-      state: Living Room Echo Dot
-    - condition: state
-      entity_id: sensor.spotify_source
-      state: Guest Room Echo Dot
-  - condition: template
-    value_template: '{{ is_state(trigger.entity_id.replace(''sensor.'',''media_player.'').replace(''_volume'',''_stereo_main''),
-      ''idle'') }}'
-  action:
-    service: script.turn_on
-    data_template:
-      entity_id: 'script.spotify_{{ trigger.entity_id.replace("sensor.", "").replace("_volume",
-        "") }}
-        '
-- id: spotify_stereo_on
-  alias: Stereo On, Spotify on Stereo
-  trigger:
-  - entity_id: media_player.living_room_stereo_main
-    from: 'off'
-    platform: state
-  - entity_id: media_player.kitchen_stereo_main
-    from: 'off'
-    platform: state
-  - entity_id: media_player.bedroom_stereo_main
-    from: 'off'
-    platform: state
-  - entity_id: media_player.basement_stereo_main
-    from: 'off'
-    platform: state
-  condition:
-  - condition: state
-    entity_id: media_player.spotify
-    state: playing
-  - condition: or
-    conditions:
-    - condition: state
-      entity_id: sensor.spotify_source
-      state: Kitchen Stereo
-    - condition: state
-      entity_id: sensor.spotify_source
-      state: Bedroom Stereo
-    - condition: state
-      entity_id: sensor.spotify_source
-      state: Basement Stereo
-    - condition: state
-      entity_id: sensor.spotify_source
-      state: Guest Room Stereo
-  action:
-  - data_template:
-      entity_id: 'script.spotify_{{ trigger.entity_id.replace("media_player.", "").replace("_stereo_main",
-        "") }}
-
-        '
-    service: script.turn_on
-- id: '1574539432290'
-  alias: Sonos Plays, Sonos Living Room
+- id: sonos_lr_on
+  alias: Sonos Plays in LR with LR on
   description: ''
   trigger:
   - entity_id: media_player.living_room
     platform: state
     to: playing
-  condition: []
+  condition: 
+  - condition: template
+    value_template: "{{ not is_state('media_player.living_room_stereo_main', 'off') }}"
   action:
-  - data: {}
-    service: script.sonos_living_room
+  - service: media_player.select_source
+    data:
+      entity_id: media_player.living_room_stereo_main
+      source: 'audio1'
+  - service: media_player.volume_set
+    data:
+      entity_id: media_player.living_room_stereo_main
+      volume_level: 0.77
+- id: sonos_lr_off_ungrouped
+  alias: Sonos Plays in LR with LR off ungrouped
+  description: ''
+  trigger:
+  - entity_id: media_player.living_room
+    platform: state
+    to: playing
+  condition:
+  - condition: state
+    entity_id: media_player.living_room_stereo_main
+    state: 'off'
+  - condition: template
+    value_template: >
+      {{ state_attr('media_player.living_room', 'sonos_group')|length == 1 }}
+  action:
+  - service: media_player.media_pause
+    entity_id: media_player.living_room
+  - service: media_player.turn_on
+    entity_id: media_player.living_room_stereo_main
+  - delay: '00:00:12'
+  - service: media_player.select_source
+    data:
+      entity_id: media_player.living_room_stereo_main
+      source: 'audio1'
+  - service: media_player.volume_set
+    data:
+      entity_id: media_player.living_room_stereo_main
+      volume_level: 0.77
+  - service: media_player.media_play
+    entity_id: media_player.living_room
+- id: sonos_lr_off_grouped
+  alias: Sonos Plays in LR with LR off grouped
+  description: ''
+  trigger:
+  - entity_id: media_player.living_room
+    platform: state
+    to: playing
+  condition:
+  - condition: state
+    entity_id: media_player.living_room_stereo_main
+    state: 'off'
+  - condition: template
+    value_template: >
+      {{ state_attr('media_player.living_room', 'sonos_group')|length > 1 }}
+  action:
+  - service: media_player.turn_on
+    entity_id: media_player.living_room_stereo_main
+  - service: media_player.select_source
+    data:
+      entity_id: media_player.living_room_stereo_main
+      source: 'audio1'
+  - service: media_player.volume_set
+    data:
+      entity_id: media_player.living_room_stereo_main
+      volume_level: 0.77
+  - delay: '00:00:12'
+  - service: media_player.select_source
+    data:
+      entity_id: media_player.living_room_stereo_main
+      source: 'audio1'
+  - service: media_player.volume_set
+    data:
+      entity_id: media_player.living_room_stereo_main
+      volume_level: 0.77
+  - service: media_player.media_play
+    entity_id: media_player.living_room
 - id: auto_lock
   alias: Lock After 20 Minutes
   description: ''
@@ -392,3 +347,64 @@
   - data:
       entity_id: lock.home_door_lock
     service: lock.lock
+- id: sonos_volume_group
+  alias: Volume Change, Sonos Group
+  description: ''
+  trigger:
+  - entity_id: sensor.bedroom_volume
+    platform: state
+  - entity_id: sensor.kitchen_volume
+    platform: state
+  - entity_id: sensor.living_room_volume
+    platform: state
+  condition:
+  - condition: template
+    value_template: >
+      {{ not is_state('media_player.'+trigger.entity_id.replace('sensor.', '').replace('_volume',''), 'playing') }}
+  - condition: template
+    value_template: >
+      {{ is_state('media_player.' + states('input_select.music_controller'), 'playing') }}
+  action:
+  - data_template:
+      target_player: media_player.{{ trigger.entity_id.replace('sensor.', '').replace('_volume',
+        '') }}
+    service: script.sonos_group
+- id: sonos_volume_ungroup
+  alias: Volume Change, Sonos Ungroup
+  description: ''
+  trigger:
+  - entity_id: sensor.bedroom_volume
+    platform: state
+  - entity_id: sensor.kitchen_volume
+    platform: state
+  - entity_id: sensor.living_room_volume
+    platform: state
+  condition:
+  - condition: template
+    value_template: >
+      {{ not is_state('media_player.'+trigger.entity_id.replace('sensor.', '').replace('_volume',''), 'playing') }}
+  - condition: template
+    value_template: >
+      {{ not is_state('media_player.' + states('input_select.music_controller'), 'playing') }}
+  action:
+  - service: sonos.unjoin
+    data_template:
+      entity_id: "{{ 'media_player.'+trigger.entity_id.replace('sensor.', '').replace('_volume','') }}"
+- id: sonos_play_change_controller
+  alias: Sonos Play, Change Music Controller
+  description: ''
+  trigger:
+  - entity_id: media_player.bedroom
+    platform: state
+    to: playing
+  - entity_id: media_player.kitchen
+    platform: state
+    to: playing
+  - entity_id: media_player.living_room
+    platform: state
+    to: playing
+  condition: []
+  action:
+  - data_template:
+      target_player: '{{ trigger.entity_id }}'
+    service: script.sonos_set_controller
