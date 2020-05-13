@@ -48,6 +48,18 @@ alexa:
       exclude_domains:
         - automation
 
+# iOS
+ios:
+  push:
+    categories:
+      - name: garage_trigger
+        identifier: 'garage'
+        actions:
+          - identifier: 'GARAGE_CLOSE'
+            title: 'Close Garage'
+            authenticationRequired: no
+            destructive: no
+
 # Input booleans
 input_boolean:
   guests_visiting:
@@ -65,6 +77,9 @@ input_boolean:
   x_present:
     name: Any Home, Homekit
     icon: mdi:account
+  show_printer:
+    name: Show Printer Info
+    icon: mdi:printer
 
 # Input Select
 input_select:
@@ -188,9 +203,14 @@ homekit:
       - script.spotify_switch
       - script.sonos_group
       - script.sonos_ungroup
+      - script.sonos_move
+      - script.sonos_group_if_playing
+      - script.sonos_move_if_playing
       - script.sonos_set_controller
+      - script.sonos_check_controller
       - input_boolean.k_entered
       - input_boolean.m_entered
+      - input_boolean.show_printer
       - script.lock_if_closed
       - switch.if_11pm_home_then_home
       - switch.if_5_30am_home_then_standby
@@ -201,34 +221,19 @@ homekit:
       name: "K Home"
     input_boolean.m_present:
       name: "M Home"
-    media_player.living_room_stereo_main:
-      name: "Living Room Stereo"
+    media_player.living_room:
       feature_list:
         - feature: on_off
-    # media_player.kitchen_stereo_main:
-    #   name: "Kitchen Stereo"
-    #   feature_list:
-    #     - feature: on_off
-    # media_player.bedroom_stereo_main:
-    #  name: "Bedroom Stereo"
-    #  feature_list:
-    #     - feature: on_off
-    # media_player.basement_stereo_main:
-    #   name: "Basement Stereo"
-    #   feature_list:
-    #     - feature: on_off
+    media_player.kitchen:
+      feature_list:
+        - feature: play_pause
+    media_player.bedroom:
+      feature_list:
+        - feature: play_pause
     media_player.guest_room_stereo_main:
       name: "Guest Room Stereo"
       feature_list:
         - feature: on_off
-    # light.bedroom:
-    #   name: "Bedroom Lights"
-    # light.living_room:
-    #   name: "Living Room Lights"
-    # light.basement:
-    #   name: "Basement Lights"
-    # light.front_door:
-    #   name: "Front Door Light"
 
 # Hue
 hue:
@@ -244,18 +249,18 @@ cover:
 
 # Yamaha
 media_player:
-  - platform: yamaha_musiccast
-    host: !secret lr_stereo_ip
-    port: 5005
-  #- platform: yamaha_musiccast
-  #  host: !secret ki_stereo_ip
-  #  port: 5006
-  #- platform: yamaha_musiccast
-  #  host: !secret br_stereo_ip
-  #  port: 5007
-  #- platform: yamaha_musiccast
-  #  host: !secret ba_stereo_ip
-  #  port: 5008
+  # - platform: yamaha_musiccast
+  #   host: !secret lr_stereo_ip
+  #   port: 5005
+  # - platform: yamaha_musiccast
+  #   host: !secret ki_stereo_ip
+  #   port: 5006
+  # - platform: yamaha_musiccast
+  #   host: !secret br_stereo_ip
+  #   port: 5007
+  # - platform: yamaha_musiccast
+  #   host: !secret ba_stereo_ip
+  #   port: 5008
   - platform: yamaha_musiccast
     host: !secret gr_stereo_ip
     port: 5009
@@ -279,6 +284,10 @@ logger:
   default: warning
   logs:
     homeassistant.components.media_player.spotify: info
+
+sonos:
+  media_player:
+    advertise_addr: 192.168.1.17
 
 http:
   base_url: !secret base_url

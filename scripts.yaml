@@ -27,6 +27,12 @@ everything_off:
       entity_id: group.upstairs
     - service: cover.close_cover
       entity_id: cover.garage_door_2
+    - service: media_player.media_pause
+      entity_id: media_player.bedroom
+    - service: media_player.media_pause
+      entity_id: media_player.kitchen
+    - service: media_player.media_pause
+      entity_id: media_player.living_room
     - condition: state
       entity_id: input_boolean.guests_visiting
       state: 'off'
@@ -64,6 +70,10 @@ time_for_bed:
     - service: script.lock_if_closed
     - service: homeassistant.turn_off
       entity_id: group.upstairs
+    - service: media_player.media_pause
+      entity_id: media_player.kitchen
+    - service: media_player.media_pause
+      entity_id: media_player.living_room
     - service: cover.close_cover
       entity_id: cover.garage_door_2
     - condition: state
@@ -83,6 +93,12 @@ tv_time:
       entity_id: group.bedroom
     - service: light.turn_off
       entity_id: light.basement_lights
+    - service: media_player.media_pause
+      entity_id: media_player.bedroom
+    - service: media_player.media_pause
+      entity_id: media_player.kitchen
+    - service: media_player.media_pause
+      entity_id: media_player.living_room
     - service: media_player.turn_on
       entity_id: media_player.guest_room_stereo_main
     - service: media_player.select_source
@@ -113,33 +129,12 @@ standby:
 turntable:
   alias: "Turntable"
   sequence:
-    - service: media_player.turn_on
-      data:
-        entity_id: media_player.living_room_stereo_main
-    - delay: '00:00:02'
     - service: media_player.select_source
       data:
-        entity_id: media_player.living_room_stereo_main
-        source: phono
-    - service: media_player.volume_set
-      data:
-        entity_id: media_player.living_room_stereo_main
-        volume_level: 0.6
-streaming:
-  alias: "Streaming"
-  sequence:
-    - service: media_player.turn_on
-      data:
-        entity_id: media_player.living_room_stereo_main
-    - delay: '00:00:02'
-    - service: media_player.select_source
-      data:
-        entity_id: media_player.living_room_stereo_main
-        source: spotify
-    - service: media_player.volume_set
-      data:
-        entity_id: media_player.living_room_stereo_main
-        volume_level: 0.55
+        entity_id: media_player.living_room
+        source: Line-in
+    - service: media_player.media_play
+      entity_id: media_player.living_room
 close_garage:
   alias: "Close Garage"
   sequence:
@@ -193,11 +188,7 @@ sonos_group:
             {{ target_player }}
           {% endif %}
         volume_level: >
-          {% if target_player == 'bedroom' or target_player == 'kitchen' %}
-            {{ state_attr('media_player.' + states('input_select.music_controller'), 'volume_level') }}
-          {% elif target_player == 'living_room' %}
-            {{ [state_attr('media_player.' + states('input_select.music_controller'), 'volume_level') + 0.4, 1]|min|round(2) }}
-          {% endif %}
+          {{ state_attr('media_player.' + states('input_select.music_controller'), 'volume_level') }}
 
 sonos_ungroup:
   alias: "Sonos Ungroup"
@@ -234,6 +225,65 @@ sonos_ungroup:
           {% if target_player is not none %}
             {{ target_player }}
           {% endif %}
+
+sonos_move:
+  alias: "Sonos Move"
+  sequence:
+    - service: script.sonos_group
+      data_template:
+        target_player: '{{ new_player }}'
+    - service: sonos.unjoin
+      data_template:
+        entity_id: '{{ old_player }}'
+    - service: script.sonos_set_controller
+      data_template:
+        target_player: '{{ new_player }}'
+
+sonos_check_controller:
+  alias: "If Music Controller is not playing, switch to playing device"
+  sequence:
+    - condition: template
+      value_template: >
+        {{ not is_state('media_player.'+ states('input_select.music_controller'), 'playing') }}
+    - service: script.sonos_set_controller
+      data_template:
+        target_player: >
+          {% if is_state('media_player.living_room', 'playing') and 'media_player.living_room' == state_attr('media_player.living_room', 'sonos_group')[0] %}
+            media_player.living_room
+          {% elif is_state('media_player.kitchen', 'playing') and 'media_player.kitchen' == state_attr('media_player.kitchen', 'sonos_group')[0] %}
+            media_player.kitchen
+          {% elif is_state('media_player.bedroom', 'playing') and 'media_player.bedroom' == state_attr('media_player.bedroom', 'sonos_group')[0] %}
+            media_player.bedroom
+          {% endif %}
+
+sonos_group_if_playing:
+  alias: "Sonos Group if Music Controller is playing"
+  sequence:
+    - service: script.sonos_check_controller
+    - wait_template: >
+        {{ is_state('media_player.' + states('input_select.music_controller'), 'playing') }}
+      timeout: '00:00:05'
+    - condition: template
+      value_template: >
+        {{ is_state('media_player.' + states('input_select.music_controller'), 'playing') }}
+    - service: script.sonos_group
+      data_template:
+        target_player: '{{ target_player }}'
+
+sonos_move_if_playing:
+  alias: "Sonos Move if Music Controller is playing"
+  sequence:
+    - service: script.sonos_check_controller
+    - wait_template: >
+        {{ is_state('media_player.' + states('input_select.music_controller'), 'playing') }}
+      timeout: '00:00:05'
+    - condition: template
+      value_template: >
+        {{ is_state('media_player.' + states('input_select.music_controller'), 'playing') }}
+    - service: script.sonos_move
+      data_template:
+        new_player: '{{ new_player }}'
+        old_player: '{{ ''media_player.'' + states(''input_select.music_controller'') }}'
 
 sonos_group_bedroom:
   alias: "Sonos Group Bedroom"
@@ -313,9 +363,40 @@ sonos_set_controller:
     - delay: 00:00:01
     - condition: template
       value_template: >
+        {{ target_player is not none and target_player != false and target_player != '' }}
+    - condition: template
+      value_template: >
         {{ target_player == state_attr(target_player, 'sonos_group')[0] }}
     - service: input_select.select_option
       data_template:
         option: >
           {{ target_player.replace('media_player.', '') }}
       entity_id: input_select.music_controller
+
+sonos_pause:
+  alias: "Sonos Pause"
+  sequence:
+    - service: media_player.media_pause
+      data_template:
+        entity_id: '{{ "media_player." + states("input_select.music_controller") }}'
+
+sonos_play:
+  alias: "Sonos Play"
+  sequence:
+    - service: media_player.media_play
+      data_template:
+        entity_id: '{{ "media_player." + states("input_select.music_controller") }}'
+
+sonos_next:
+  alias: "Sonos Next"
+  sequence:
+    - service: media_player.media_next_track
+      data_template:
+        entity_id: '{{ "media_player." + states("input_select.music_controller") }}'
+
+sonos_previous:
+  alias: "Sonos Previous"
+  sequence:
+    - service: media_player.media_previous_track
+      data_template:
+        entity_id: '{{ "media_player." + states("input_select.music_controller") }}'
