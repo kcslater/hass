@@ -421,6 +421,14 @@
   - data_template:
       entity_id: '{{ trigger.entity_id }}'
     service: media_player.media_next_track
+- id: spotify_guest_room_echo
+  alias: Spotify from Guest Room Echo to Stereo
+  trigger:
+  - entity_id: sensor.spotify_source
+    platform: state
+    to: Guest Room Echo Dot
+  action:
+    service: script.spotify_guest_room
 - id: apple_watch_group
   alias: AW Group
   trigger:
@@ -464,7 +472,7 @@
           badge: 0
           category: garage
       message: >
-        The garage has been open for {{ trigger.for[2:4].replace('00','60') }}.
+        Hey silly, the garage has been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
       title: Garage Open
     service: notify.mobile_app_eye_phone
   - data_template:
@@ -473,7 +481,7 @@
           badge: 0
           category: garage
       message: >
-        The garage has been open for {{ trigger.for[2:4].replace('00','60') }}.
+        Hey silly, the garage has been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
       title: Garage Open
     service: notify.mobile_app_meghans_iphone
 - id: ios_garage_triggered
@@ -486,3 +494,46 @@
   action:
   - entity_id: cover.garage_door_2
     service: cover.close_cover
+
+- id: notify_door
+  alias: Notify When A Door Is Open
+  description: ''
+  trigger:
+  - entity_id: binary_sensor.front_door
+    for: 00:20:00
+    platform: state
+    to: 'on'
+  - entity_id: binary_sensor.front_door
+    for: 00:40:00
+    platform: state
+    to: 'on'
+  - entity_id: binary_sensor.front_door
+    for: 01:00:00
+    platform: state
+    to: 'on'
+  - entity_id: binary_sensor.side_door
+    for: 00:20:00
+    platform: state
+    to: 'on'
+  - entity_id: binary_sensor.side_door
+    for: 00:40:00
+    platform: state
+    to: 'on'
+  - entity_id: binary_sensor.side_door
+    for: 01:00:00
+    platform: state
+    to: 'on'
+  condition: []
+  action:
+  - data_template:
+      message: >
+        Hey silly, the {{ state_attr(trigger.entity_id, 'friendly_name')|lower }} has been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
+      title: >
+        {{ state_attr(trigger.entity_id, 'friendly_name') }} Open
+    service: notify.mobile_app_eye_phone
+  - data_template:
+      message: >
+        Hey silly, the {{ state_attr(trigger.entity_id, 'friendly_name')|lower }} has been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
+      title: >
+        {{ state_attr(trigger.entity_id, 'friendly_name') }} Open
+    service: notify.mobile_app_meghans_iphone
