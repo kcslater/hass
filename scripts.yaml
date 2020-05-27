@@ -303,6 +303,30 @@ sonos_move_if_playing:
         new_player: '{{ new_player }}'
         old_player: '{{ ''media_player.'' + states(''input_select.music_controller'') }}'
 
+sonos_move_bedroom:
+  alias: "Sonos Move Bedroom"
+  sequence:
+    - service: script.sonos_move
+      data_template:
+        new_player: 'media_player.bedroom'
+        old_player: '{{ ''media_player.'' + states(''input_select.music_controller'') }}'
+
+sonos_move_kitchen:
+  alias: "Sonos Move Kitchen"
+  sequence:
+    - service: script.sonos_move
+      data_template:
+        new_player: 'media_player.kitchen'
+        old_player: '{{ ''media_player.'' + states(''input_select.music_controller'') }}'
+
+sonos_move_living_room:
+  alias: "Sonos Move Living Room"
+  sequence:
+    - service: script.sonos_move
+      data_template:
+        new_player: 'media_player.living_room'
+        old_player: '{{ ''media_player.'' + states(''input_select.music_controller'') }}'
+
 sonos_group_bedroom:
   alias: "Sonos Group Bedroom"
   sequence:
