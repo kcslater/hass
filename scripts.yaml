@@ -9,14 +9,32 @@ good_morning:
     - service: input_boolean.turn_off
       entity_id: input_boolean.sleeping
 
-lock_if_closed:
-  alias: "Lock The Door"
+lock_if_closed_1:
+  alias: "Lock The Door If Closed"
   sequence:
     - condition: state
       entity_id: binary_sensor.front_door
       state: 'off'
     - service: lock.lock
       entity_id: lock.home_door_lock
+
+lock_if_closed:
+  alias: "Lock The Door Or Notify That It Is Open"
+  sequence:
+    - service: script.lock_if_closed_1
+    - condition: state
+      entity_id: binary_sensor.front_door
+      state: 'on'
+    - service: notify.mobile_app_eye_phone
+      data_template:
+        message: >
+          Hey silly, you asked me to lock the front door, but you have to close it first!
+        title: Front Door Open
+    - service: notify.mobile_app_meghans_iphone
+      data_template:
+        message: >
+          Hey silly, you asked me to lock the front door, but you have to close it first!
+        title: Front Door Open
 
 everything_off:
   alias: "Everything Off"
@@ -400,3 +418,39 @@ sonos_previous:
     - service: media_player.media_previous_track
       data_template:
         entity_id: '{{ "media_player." + states("input_select.music_controller") }}'
+
+### SPOTIFY SCRIPTS
+
+spotify_switch:
+  alias: "Spotify Switch"
+  sequence: 
+    - service: media_player.select_source
+      data_template:
+        entity_id: media_player.spotify
+        source: "{{ title }}"
+
+spotify_bedroom:
+  alias: "Spotify Bedroom"
+  sequence:
+    - service: script.spotify_switch
+      data:
+        title: "Bedroom"
+spotify_kitchen:
+  alias: "Spotify Kitchen"
+  sequence:
+    - service: script.spotify_switch
+      data:
+        title: "Kitchen"
+spotify_living_room:
+  alias: "Spotify Living Room"
+  sequence:
+    - service: script.spotify_switch
+      data:
+        title: "Living Room"
+spotify_guest_room:
+  alias: "Spotify Guest Room"
+  sequence:
+    - service: script.spotify_switch
+      data:
+        title: "Guest Room Stereo"
+
