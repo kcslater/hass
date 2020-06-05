@@ -11,7 +11,6 @@ hassio:
 discovery:
   ignore:
     - google_cast
-    - igd
     - homekit
     - yamaha
 
@@ -198,8 +197,10 @@ homekit:
       - light.backyard
       - light.guest_room
       - light.porch_lamp
+      - media_player.spotify
       #- media_player.vizio_smartcast
       - script.close_garage
+      - script.lock_if_closed_1
       - script.spotify_switch
       - script.sonos_group
       - script.sonos_ungroup
@@ -223,7 +224,7 @@ homekit:
       name: "M Home"
     media_player.living_room:
       feature_list:
-        - feature: on_off
+        - feature: play_pause
     media_player.kitchen:
       feature_list:
         - feature: play_pause
@@ -240,27 +241,8 @@ hue:
   bridges:
     - host: !secret hue_ip
 
-# Garage Door
-cover:
-  - platform: myq
-    username: !secret myq_user
-    password: !secret myq_password
-    type: chamberlain
-
 # Yamaha
 media_player:
-  # - platform: yamaha_musiccast
-  #   host: !secret lr_stereo_ip
-  #   port: 5005
-  # - platform: yamaha_musiccast
-  #   host: !secret ki_stereo_ip
-  #   port: 5006
-  # - platform: yamaha_musiccast
-  #   host: !secret br_stereo_ip
-  #   port: 5007
-  # - platform: yamaha_musiccast
-  #   host: !secret ba_stereo_ip
-  #   port: 5008
   - platform: yamaha_musiccast
     host: !secret gr_stereo_ip
     port: 5009
@@ -290,7 +272,6 @@ sonos:
     advertise_addr: 192.168.1.17
 
 http:
-  base_url: !secret base_url
   ssl_certificate: /ssl/fullchain.pem
   ssl_key: /ssl/privkey.pem
 
