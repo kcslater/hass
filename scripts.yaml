@@ -10,11 +10,14 @@ good_morning:
       entity_id: input_boolean.sleeping
 
 lock_if_closed_1:
-  alias: "Lock The Door If Closed"
+  alias: "Lock The Door If Closed And Unlocked"
   sequence:
     - condition: state
       entity_id: binary_sensor.front_door
       state: 'off'
+    - condition: state
+      entity_id: lock.home_door_lock
+      state: 'unlocked'
     - service: lock.lock
       entity_id: lock.home_door_lock
 
@@ -44,7 +47,7 @@ everything_off:
     - service: homeassistant.turn_off
       entity_id: group.upstairs
     - service: cover.close_cover
-      entity_id: cover.garage_door_2
+      entity_id: cover.garage_door
     - service: media_player.media_pause
       entity_id: media_player.bedroom
     - service: media_player.media_pause
@@ -93,7 +96,7 @@ time_for_bed:
     - service: media_player.media_pause
       entity_id: media_player.living_room
     - service: cover.close_cover
-      entity_id: cover.garage_door_2
+      entity_id: cover.garage_door
     - condition: state
       entity_id: input_boolean.guests_visiting
       state: 'off'
@@ -106,7 +109,7 @@ tv_time:
     - service: homeassistant.turn_off
       entity_id: group.upstairs
     - service: cover.close_cover
-      entity_id: cover.garage_door_2
+      entity_id: cover.garage_door
     - service: homeassistant.turn_off
       entity_id: group.bedroom
     - service: light.turn_off
@@ -157,7 +160,7 @@ close_garage:
   alias: "Close Garage"
   sequence:
     - service: cover.close_cover
-      entity_id: cover.garage_door_2
+      entity_id: cover.garage_door
 
 switch_to_tv:
   alias: "Switch to TV"

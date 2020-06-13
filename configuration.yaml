@@ -178,7 +178,7 @@ light:
 
 # HomeKit
 homekit:
-  auto_start: False
+  #auto_start: False
   filter:
     include_domains:
       - cover
@@ -260,6 +260,12 @@ spotify:
     #   !secret lr_dot_alias: 'Living Room Echo Dot'
     #   !secret ki_dot_alias: 'Kitchen Echo Dot'
     #   !secret br_dot_alias: 'Bedroom Echo Dot'
+
+# MyQ
+cover:
+  - platform: myq
+    username: !secret myq_user
+    password: !secret myq_password
 
 # Log to get Spotify aliases
 logger:
