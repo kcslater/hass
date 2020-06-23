@@ -171,6 +171,7 @@ light:
     entities:
       - light.basement_light_1
       - light.basement_light_2
+      - light.basement_light_3
   - platform: group
     name: Front Door Light
     entities:
@@ -195,7 +196,6 @@ homekit:
     #   - binary_sensor.side_door
     exclude_entities:
       - light.backyard
-      - light.guest_room
       - light.porch_lamp
       - media_player.spotify
       #- media_player.vizio_smartcast
@@ -236,11 +236,6 @@ homekit:
       feature_list:
         - feature: on_off
 
-# Hue
-hue:
-  bridges:
-    - host: !secret hue_ip
-
 # Yamaha
 media_player:
   - platform: yamaha_musiccast
@@ -262,10 +257,10 @@ spotify:
     #   !secret br_dot_alias: 'Bedroom Echo Dot'
 
 # MyQ
-cover:
-  - platform: myq
-    username: !secret myq_user
-    password: !secret myq_password
+# cover:
+#   - platform: myq
+#     username: !secret myq_user
+#     password: !secret myq_password
 
 # Log to get Spotify aliases
 logger:

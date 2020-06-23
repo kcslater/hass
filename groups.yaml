@@ -12,6 +12,7 @@
     name: Downstairs
     entities:
       - light.basement_lights
+      - light.guest_room
       - media_player.guest_room_stereo_main
     #   - media_player.vizio_smartcast
   all_present:

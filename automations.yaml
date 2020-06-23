@@ -537,3 +537,30 @@
       title: >
         {{ state_attr(trigger.entity_id, 'friendly_name') }} Open
     service: notify.mobile_app_meghans_iphone
+
+- id: soundbar_off_light_on
+  alias: Soundbar Off, Light On
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: media_player.guest_room_stereo_main
+    to: 'off'
+  condition:
+  - condition: state
+    entity_id: input_boolean.guests_visiting
+    state: 'off'
+  - condition: time
+    after: '20:00'
+  action:
+  - service: light.turn_on
+    entity_id: light.living_room_lights
+  - service: light.turn_on
+    entity_id: light.bedroom_lights
+  - service: light.turn_on
+    data:
+      entity_id: light.guest_room
+      brightness_pct: 100
+  - service: light.turn_off
+    data:
+      entity_id: light.guest_room
+      transition: 300

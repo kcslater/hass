@@ -63,10 +63,6 @@ everything_off:
 goodnight:
   alias: "Goodnight"
   sequence:
-    - service: media_player.volume_set
-      data:
-        entity_id: media_player.bedroom
-        volume_level: 0.03
     - service: input_boolean.turn_on
       entity_id: input_boolean.sleeping
     - service: script.lock_if_closed
@@ -126,6 +122,16 @@ tv_time:
       data:
         entity_id: media_player.guest_room_stereo_main
         source: 'tv'
+    - after: '20:00'
+      condition: time
+    - service: light.turn_on
+      data:
+        entity_id: light.guest_room
+        brightness_pct: 100
+    - service: light.turn_off
+      data:
+        entity_id: light.guest_room
+        transition: 300
 
 goodbye:
   alias: "Goodbye"
