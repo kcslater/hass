@@ -13,6 +13,7 @@ discovery:
     - google_cast
     - homekit
     - yamaha
+    - philips_hue
 
 # Allows you to issue voice commands from the frontend in enabled browsers
 conversation:
@@ -35,6 +36,8 @@ alexa:
         - switch
         - script
       exclude_entities:
+        - script.base_off
+        - script.nighttime
         - script.spotify_switch
         - script.standby
         - script.sonos_group
@@ -184,23 +187,21 @@ homekit:
     include_domains:
       - cover
       - media_player
-      #- alarm_control_panel
       - light
       - switch
       - script
       - input_boolean
       - input_number
       - lock
-    # include_entities:
-    #   - binary_sensor.front_door
-    #   - binary_sensor.side_door
     exclude_entities:
       - light.backyard
       - light.porch_lamp
       - media_player.spotify
-      #- media_player.vizio_smartcast
+      # - media_player.vizio_smartcast
       - script.close_garage
       - script.lock_if_closed_1
+      - script.base_off
+      - script.nighttime
       - script.spotify_switch
       - script.sonos_group
       - script.sonos_ungroup
@@ -240,7 +241,7 @@ homekit:
 media_player:
   - platform: yamaha_musiccast
     host: !secret gr_stereo_ip
-    port: 5009
+    port: !secret gr_stereo_port
 
 # Spotify
 spotify:
@@ -270,7 +271,12 @@ logger:
 
 sonos:
   media_player:
-    advertise_addr: 192.168.1.17
+    advertise_addr: !secret sonos_advertise_addr
+
+hue:
+  bridges:
+    - host: !secret hue_ip
+      allow_hue_groups: false
 
 http:
   ssl_certificate: /ssl/fullchain.pem

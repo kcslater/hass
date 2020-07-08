@@ -39,109 +39,103 @@ lock_if_closed:
           Hey silly, you asked me to lock the front door, but you have to close it first!
         title: Front Door Open
 
-everything_off:
-  alias: "Everything Off"
+base_off:
+  alias: "Base Off"
   sequence:
-    - service: homeassistant.turn_off
-      entity_id: group.bedroom
-    - service: homeassistant.turn_off
-      entity_id: group.upstairs
-    - service: cover.close_cover
-      entity_id: cover.garage_door
+    # Pause Sonos speakers
     - service: media_player.media_pause
       entity_id: media_player.bedroom
     - service: media_player.media_pause
       entity_id: media_player.kitchen
     - service: media_player.media_pause
       entity_id: media_player.living_room
+    # Turn off upstairs stuff
+    - service: homeassistant.turn_off
+      entity_id: group.upstairs
+    # If no guests, turn off downstairs
     - condition: state
       entity_id: input_boolean.guests_visiting
       state: 'off'
     - service: homeassistant.turn_off
       entity_id: group.downstairs
+
+nighttime:
+  alias: "Night-time"
+  sequence:
+    - service: script.base_off
+    # Sleep mode
+    - service: input_boolean.turn_on
+      entity_id: input_boolean.sleeping
+    # Set alarm
+    - service: alarm_control_panel.alarm_arm_home
+      entity_id: alarm_control_panel.abode_alarm
+    # Lock door
+    - service: script.lock_if_closed
+    # Close garage
+    - service: cover.close_cover
+      entity_id: cover.garage_door
+
+everything_off:
+  alias: "Everything Off"
+  sequence:
+    - service: script.base_off
+    - service: light.turn_off
+      entity_id: light.bedroom_lights
 
 goodnight:
   alias: "Goodnight"
   sequence:
-    - service: input_boolean.turn_on
-      entity_id: input_boolean.sleeping
-    - service: script.lock_if_closed
-    - service: script.everything_off
-    - service: alarm_control_panel.alarm_arm_home
-      entity_id: alarm_control_panel.abode_alarm
-    - delay: 00:00:10
-    - service: media_player.volume_set
+    - service: script.nighttime
+    - service: light.turn_off
       data:
-        entity_id: media_player.bedroom
-        volume_level: 0.2
+        entity_id: light.bedroom_lights
+        transition: 300
 
 time_for_bed:
   alias: "Time For Bed"
   sequence:
-    - service: input_boolean.turn_on
-      entity_id: input_boolean.sleeping
+    - service: script.nighttime
     - service: light.turn_on
       entity_id: light.bedroom_lights
-    - service: alarm_control_panel.alarm_arm_home
-      entity_id: alarm_control_panel.abode_alarm
-    - service: script.lock_if_closed
-    - service: homeassistant.turn_off
-      entity_id: group.upstairs
-    - service: media_player.media_pause
-      entity_id: media_player.kitchen
-    - service: media_player.media_pause
-      entity_id: media_player.living_room
-    - service: cover.close_cover
-      entity_id: cover.garage_door
-    - condition: state
-      entity_id: input_boolean.guests_visiting
-      state: 'off'
-    - service: homeassistant.turn_off
-      entity_id: group.downstairs
 
 tv_time:
   alias: "TV Time"
   sequence:
-    - service: homeassistant.turn_off
-      entity_id: group.upstairs
-    - service: cover.close_cover
-      entity_id: cover.garage_door
-    - service: homeassistant.turn_off
-      entity_id: group.bedroom
-    - service: light.turn_off
-      entity_id: light.basement_lights
-    - service: media_player.media_pause
-      entity_id: media_player.bedroom
-    - service: media_player.media_pause
-      entity_id: media_player.kitchen
-    - service: media_player.media_pause
-      entity_id: media_player.living_room
+    - service: script.everything_off
+    - delay: 00:00:01
+    # Set soundbar to correct input
     - service: media_player.turn_on
       entity_id: media_player.guest_room_stereo_main
     - service: media_player.select_source
       data:
         entity_id: media_player.guest_room_stereo_main
         source: 'tv'
+   # Turn on lamp and fade out
     - after: '20:00'
       condition: time
     - service: light.turn_on
       data:
-        entity_id: light.guest_room
+        entity_id: light.guest_room_light
         brightness_pct: 100
     - service: light.turn_off
       data:
-        entity_id: light.guest_room
+        entity_id: light.guest_room_light
         transition: 300
 
 goodbye:
   alias: "Goodbye"
   sequence:
+    - service: script.everything_off
+    # Arm alarm system for Away
     - service: alarm_control_panel.alarm_arm_away
       entity_id: alarm_control_panel.abode_alarm
+    # Turn off sleep mode
     - service: input_boolean.turn_off
       entity_id: input_boolean.sleeping
     - service: script.lock_if_closed
-    - service: script.everything_off
+    # Close garage
+    - service: cover.close_cover
+      entity_id: cover.garage_door
     # in case of guests
     - service: homeassistant.turn_off
       entity_id: group.downstairs

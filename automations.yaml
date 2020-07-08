@@ -1,10 +1,24 @@
-- id: porch_light_off_20mins
-  alias: Porch Light Off After 20 Mins
+- id: porch_light_on_front_door_opens
+  alias: Porch Light On When Front Door Opens
+  trigger:
+  - platform: state
+    entity_id: binary_sensor.front_door
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: sun.sun
+    state: below_horizon
+  action:
+  - service: light.turn_on
+    data:
+      entity_id: light.front_door_light
+- id: porch_light_off_10mins
+  alias: Porch Light Off After 10 Mins
   trigger:
   - platform: state
     entity_id: light.front_door_light
     to: 'on'
-    for: 00:20:00
+    for: 00:10:00
   action:
   - service: light.turn_off
     data:
@@ -558,9 +572,9 @@
     entity_id: light.bedroom_lights
   - service: light.turn_on
     data:
-      entity_id: light.guest_room
+      entity_id: light.guest_room_light
       brightness_pct: 100
   - service: light.turn_off
     data:
-      entity_id: light.guest_room
+      entity_id: light.guest_room_light
       transition: 300
