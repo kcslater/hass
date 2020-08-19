@@ -89,9 +89,7 @@
   - service: alarm_control_panel.alarm_arm_home
     data:
       entity_id: alarm_control_panel.abode_alarm
-  - service: lock.lock
-    data:
-      entity_id: lock.home_door_lock
+  - service: script.lock_if_closed
 - id: everything_off_2am
   alias: 2 AM Not Present, Everything Off
   trigger:
@@ -102,9 +100,12 @@
     entity_id: group.all_present
     state: 'off'
   action:
-  - service: script.turn_on
-    data:
-      entity_id: script.everything_off
+  - service: script.everything_off
+  # Lock door
+  - service: script.lock_if_closed
+  # Close garage
+  - service: cover.close_cover
+    entity_id: cover.garage_door
 - id: sleeping_off_6am
   alias: 6 AM, Sleeping Off
   trigger:
@@ -553,7 +554,7 @@
     service: notify.mobile_app_meghans_iphone
 
 - id: soundbar_off_light_on
-  alias: Soundbar Off, Light On
+  alias: Soundbar Off, Lights On
   description: ''
   trigger:
   - platform: state
@@ -561,20 +562,16 @@
     to: 'off'
   condition:
   - condition: state
+    entity_id: input_boolean.sleeping
+    state: 'off'
+  - condition: state
     entity_id: input_boolean.guests_visiting
     state: 'off'
   - condition: time
     after: '20:00'
   action:
   - service: light.turn_on
-    entity_id: light.living_room_lights
-  - service: light.turn_on
-    entity_id: light.bedroom_lights
-  - service: light.turn_on
-    data:
-      entity_id: light.guest_room_light
-      brightness_pct: 100
+    entity_id: light.guest_room_lights
+  - delay: 00:05:00
   - service: light.turn_off
-    data:
-      entity_id: light.guest_room_light
-      transition: 300
+    entity_id: light.guest_room_lights

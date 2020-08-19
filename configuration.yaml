@@ -170,11 +170,15 @@ light:
       - light.elephant_lamp
       - light.gold_lamp
   - platform: group
+    name: Guest Room Lights
+    entities:
+      - light.guest_room_light_1
+      - light.guest_room_light_2
+  - platform: group
     name: Basement Lights
     entities:
       - light.basement_light_1
       - light.basement_light_2
-      - light.basement_light_3
   - platform: group
     name: Front Door Light
     entities:
@@ -273,10 +277,10 @@ sonos:
   media_player:
     advertise_addr: !secret sonos_advertise_addr
 
-hue:
-  bridges:
-    - host: !secret hue_ip
-      allow_hue_groups: false
+# hue:
+#   bridges:
+#     - host: !secret hue_ip
+#       allow_hue_groups: false
 
 http:
   ssl_certificate: /ssl/fullchain.pem

@@ -89,7 +89,7 @@ goodnight:
     - service: light.turn_off
       data:
         entity_id: light.bedroom_lights
-        transition: 300
+        # transition: 120
 
 time_for_bed:
   alias: "Time For Bed"
@@ -114,13 +114,10 @@ tv_time:
     - after: '20:00'
       condition: time
     - service: light.turn_on
-      data:
-        entity_id: light.guest_room_light
-        brightness_pct: 100
+      entity_id: light.guest_room_lights
+    - delay: 00:05:00
     - service: light.turn_off
-      data:
-        entity_id: light.guest_room_light
-        transition: 300
+      entity_id: light.guest_room_lights
 
 goodbye:
   alias: "Goodbye"
