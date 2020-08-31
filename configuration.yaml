@@ -47,6 +47,7 @@ alexa:
         - switch.if_5_30am_home_then_standby
         - switch.if_anyone_arrives_then_standby
         - switch.if_last_person_leaves_then_away
+        - switch.kitchen_light
       exclude_domains:
         - automation
 

@@ -119,6 +119,17 @@ tv_time:
     - service: light.turn_off
       entity_id: light.guest_room_lights
 
+coming_up:
+  alias: "Coming Up"
+  sequence:
+    - service: light.turn_on
+      entity_id: switch.kitchen_light
+    - service: light.turn_on
+      entity_id: light.guest_room_lights
+    - delay: 00:05:00
+    - service: light.turn_off
+      entity_id: light.guest_room_lights
+
 goodbye:
   alias: "Goodbye"
   sequence:

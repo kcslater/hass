@@ -8,6 +8,7 @@
       - light.living_room_lights
       - light.front_door_light
       - switch.backyard_lights
+      - switch.kitchen_light
   downstairs:
     name: Downstairs
     entities:

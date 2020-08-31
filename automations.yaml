@@ -570,8 +570,4 @@
   - condition: time
     after: '20:00'
   action:
-  - service: light.turn_on
-    entity_id: light.guest_room_lights
-  - delay: 00:05:00
-  - service: light.turn_off
-    entity_id: light.guest_room_lights
+  - service: script.coming_up
