@@ -49,15 +49,11 @@ base_off:
       entity_id: media_player.kitchen
     - service: media_player.media_pause
       entity_id: media_player.living_room
-    # Turn off upstairs stuff
+    # Turn off upstairs and basement
     - service: homeassistant.turn_off
       entity_id: group.upstairs
-    # If no guests, turn off downstairs
-    - condition: state
-      entity_id: input_boolean.guests_visiting
-      state: 'off'
-    - service: homeassistant.turn_off
-      entity_id: group.downstairs
+    - service: light.turn_off
+      entity_id: light.basement_lights
 
 nighttime:
   alias: "Night-time"
@@ -74,6 +70,12 @@ nighttime:
     # Close garage
     - service: cover.close_cover
       entity_id: cover.garage_door
+    # If no guests, turn off guest room
+    - condition: state
+      entity_id: input_boolean.guests_visiting
+      state: 'off'
+    - service: homeassistant.turn_off
+      entity_id: group.guest_room
 
 everything_off:
   alias: "Everything Off"
@@ -81,6 +83,8 @@ everything_off:
     - service: script.base_off
     - service: light.turn_off
       entity_id: light.bedroom_lights
+    - service: homeassistant.turn_off
+      entity_id: group.guest_room
 
 goodnight:
   alias: "Goodnight"
@@ -101,8 +105,7 @@ time_for_bed:
 tv_time:
   alias: "TV Time"
   sequence:
-    - service: script.everything_off
-    - delay: 00:00:01
+    - service: script.base_off
     # Set soundbar to correct input
     - service: media_player.turn_on
       entity_id: media_player.guest_room_stereo_main
@@ -111,8 +114,13 @@ tv_time:
         entity_id: media_player.guest_room_stereo_main
         source: 'tv'
    # Turn on lamp and fade out
-    - after: '20:00'
-      condition: time
+    - condition: or
+      conditions:
+        - condition: state
+          entity_id: sun.sun
+          state: 'below_horizon'
+        - condition: time
+          after: '20:00:00'
     - service: light.turn_on
       entity_id: light.guest_room_lights
     - delay: 00:05:00
@@ -122,7 +130,7 @@ tv_time:
 coming_up:
   alias: "Coming Up"
   sequence:
-    - service: light.turn_on
+    - service: switch.turn_on
       entity_id: switch.kitchen_light
     - service: light.turn_on
       entity_id: light.guest_room_lights
@@ -144,15 +152,21 @@ goodbye:
     # Close garage
     - service: cover.close_cover
       entity_id: cover.garage_door
-    # in case of guests
-    - service: homeassistant.turn_off
-      entity_id: group.downstairs
 
 standby:
   alias: "Standby"
   sequence:
     - service: alarm_control_panel.alarm_disarm
       entity_id: alarm_control_panel.abode_alarm
+
+toggle_gr_lights_if_volume_down_up:
+  alias: "Toggle Guest Room Lights if Volumne Down Up"
+  sequence:
+    - condition: state
+      entity_id: counter.mute_counter
+      state: '2'
+    - service: light.toggle
+      entity_id: light.guest_room_lights
 
 # SPECIAL MUSIC
 turntable:

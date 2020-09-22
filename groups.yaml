@@ -9,13 +9,12 @@
       - light.front_door_light
       - switch.backyard_lights
       - switch.kitchen_light
-  downstairs:
-    name: Downstairs
+  guest_room:
+    name: Guest Room
     entities:
-      - light.basement_lights
       - light.guest_room_lights
       - media_player.guest_room_stereo_main
-    #   - media_player.vizio_smartcast
+      - media_player.vizio_smartcast
   all_present:
     name: All Present
     entities:

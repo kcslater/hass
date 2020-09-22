@@ -36,13 +36,19 @@ alexa:
         - switch
         - script
       exclude_entities:
+        - script.lock_if_closed_1
         - script.base_off
         - script.nighttime
         - script.spotify_switch
         - script.standby
         - script.sonos_group
         - script.sonos_ungroup
+        - script.sonos_move
+        - script.sonos_group_if_playing
+        - script.sonos_move_if_playing
         - script.sonos_set_controller
+        - script.sonos_check_controller
+        - script.toggle_gr_lights_if_volume_down_up
         - switch.if_11pm_home_then_home
         - switch.if_5_30am_home_then_standby
         - switch.if_anyone_arrives_then_standby
@@ -215,6 +221,7 @@ homekit:
       - script.sonos_move_if_playing
       - script.sonos_set_controller
       - script.sonos_check_controller
+      - script.toggle_gr_lights_if_volume_down_up
       - input_boolean.k_entered
       - input_boolean.m_entered
       - input_boolean.show_printer

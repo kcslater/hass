@@ -245,6 +245,9 @@
   - condition: template
     value_template: '{{ trigger.to_state.state < trigger.from_state.state }}'
   action:
+  - service: counter.increment
+    data:
+      entity_id: counter.mute_counter
   - service: media_player.volume_mute
     data:
       entity_id: media_player.guest_room_stereo_main
@@ -261,6 +264,7 @@
     to: '2'
     for: 00:00:03
   action:
+  - service: script.toggle_gr_lights_if_volume_down_up
   - service: counter.reset
     data:
       entity_id: counter.mute_counter
