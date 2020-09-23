@@ -54,8 +54,6 @@ alexa:
         - switch.if_anyone_arrives_then_standby
         - switch.if_last_person_leaves_then_away
         - switch.kitchen_light
-      exclude_domains:
-        - automation
 
 # iOS
 ios:
@@ -89,6 +87,9 @@ input_boolean:
   show_printer:
     name: Show Printer Info
     icon: mdi:printer
+  tv_off_recent:
+    name: TV Off Recent
+    icon: mdi:television-off
 
 # Input Select
 input_select:
@@ -127,6 +128,11 @@ binary_sensor:
         value_template: >-
           {{ is_state('lock.home_door_lock','unlocked') and 
              is_state('binary_sensor.front_door','off') }}
+      closed_light:
+        friendly_name: "Front Door Unlocked and Closed and Light On"
+        value_template: >-
+          {{ is_state('binary_sensor.front_door','off') and
+             is_state('light.front_door_light','on') }}
 
 # Sensors
 sensor:
@@ -208,7 +214,7 @@ homekit:
       - light.backyard
       - light.porch_lamp
       - media_player.spotify
-      # - media_player.vizio_smartcast
+      - media_player.vizio_smartcast
       - script.close_garage
       - script.lock_if_closed_1
       - script.base_off
@@ -225,16 +231,13 @@ homekit:
       - input_boolean.k_entered
       - input_boolean.m_entered
       - input_boolean.show_printer
+      - input_boolean.tv_off_recent
       - script.lock_if_closed
       - switch.if_11pm_home_then_home
       - switch.if_5_30am_home_then_standby
       - switch.if_anyone_arrives_then_standby
       - switch.if_last_person_leaves_then_away
   entity_config:
-    input_boolean.k_present:
-      name: "K Home"
-    input_boolean.m_present:
-      name: "M Home"
     media_player.living_room:
       feature_list:
         - feature: play_pause
@@ -259,36 +262,10 @@ media_player:
 spotify:
   client_id: !secret spotify_client_id
   client_secret: !secret spotify_client_secret
-    # aliases:
-    #   !secret lr_stereo_alias: 'Living Room Stereo'
-    #   !secret br_stereo_alias: 'Bedroom Stereo'
-    #   !secret gr_stereo_alias: 'Guest Room Stereo'
-    #   !secret ki_stereo_alias: 'Kitchen Stereo'
-    #   !secret ba_stereo_alias: 'Basement Stereo'
-    #   !secret lr_dot_alias: 'Living Room Echo Dot'
-    #   !secret ki_dot_alias: 'Kitchen Echo Dot'
-    #   !secret br_dot_alias: 'Bedroom Echo Dot'
-
-# MyQ
-# cover:
-#   - platform: myq
-#     username: !secret myq_user
-#     password: !secret myq_password
-
-# Log to get Spotify aliases
-logger:
-  default: warning
-  logs:
-    homeassistant.components.media_player.spotify: info
 
 sonos:
   media_player:
     advertise_addr: !secret sonos_advertise_addr
-
-# hue:
-#   bridges:
-#     - host: !secret hue_ip
-#       allow_hue_groups: false
 
 http:
   ssl_certificate: /ssl/fullchain.pem

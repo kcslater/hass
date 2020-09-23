@@ -5,9 +5,13 @@
     entity_id: binary_sensor.front_door
     to: 'on'
   condition:
-  - condition: state
-    entity_id: sun.sun
-    state: below_horizon
+    condition: or
+    conditions:
+      - condition: time
+        after: '20:00'
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
   action:
   - service: light.turn_on
     data:
@@ -16,7 +20,7 @@
   alias: Porch Light Off After 10 Mins
   trigger:
   - platform: state
-    entity_id: light.front_door_light
+    entity_id: binary_sensor.closed_light
     to: 'on'
     for: 00:10:00
   action:
@@ -148,11 +152,15 @@
   - condition: state
     entity_id: input_boolean.sleeping
     state: 'off'
-  - condition: state
-    entity_id: sun.sun
-    state: below_horizon
   - before: '23:59'
     condition: time
+  - condition: or
+    conditions:
+      - condition: time
+        after: '20:00'
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
   action:
   - data:
       entity_id: light.front_door_light
@@ -170,11 +178,15 @@
   - condition: state
     entity_id: input_boolean.sleeping
     state: 'off'
-  - condition: state
-    entity_id: sun.sun
-    state: below_horizon
-  - before: '22:00:00'
+  - before: '22:00'
     condition: time
+  - condition: or
+    conditions:
+      - condition: time
+        after: '20:00'
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
   action:
   - data:
       entity_id: light.living_room_lights
@@ -213,7 +225,7 @@
     entity_id: counter.mute_counter
     state: '0'
   - condition: template
-    value_template: '{{ trigger.to_state.state < trigger.from_state.state }}'
+    value_template:  '{{ trigger.to_state.state < trigger.from_state.state }}'
   action:
   - service: counter.increment
     data:
@@ -228,7 +240,7 @@
     entity_id: counter.mute_counter
     state: '1'
   - condition: template
-    value_template: '{{ trigger.to_state.state > trigger.from_state.state }}'
+    value_template:  '{{ trigger.to_state.state > trigger.from_state.state }}'
   action:
   - service: counter.increment
     data:
@@ -243,7 +255,7 @@
     entity_id: counter.mute_counter
     state: '2'
   - condition: template
-    value_template: '{{ trigger.to_state.state < trigger.from_state.state }}'
+    value_template:  '{{ trigger.to_state.state < trigger.from_state.state }}'
   action:
   - service: counter.increment
     data:
@@ -263,11 +275,19 @@
     entity_id: counter.mute_counter
     to: '2'
     for: 00:00:03
+  - platform: state
+    entity_id: counter.mute_counter
+    to: '3'
+    for: 00:00:03
+  variables:
+    counter2: "{{ is_state(trigger.to_state, '2') }}"
   action:
-  - service: script.toggle_gr_lights_if_volume_down_up
   - service: counter.reset
-    data:
-      entity_id: counter.mute_counter
+    entity_id: counter.mute_counter
+  - condition: template
+    value_template: "{{ counter2 }}"
+  - service: light.toggle
+    entity_id: light.guest_room_lights
 - id: auto_lock
   alias: Lock After 20 Minutes
   description: ''
@@ -293,17 +313,13 @@
     platform: state
   condition:
   - condition: template
-    value_template: '{{ trigger.to_state.state > trigger.from_state.state }}'
+    value_template:  '{{ trigger.to_state.state > trigger.from_state.state }}'
   - condition: template
-    value_template: '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'',
-      '''').replace(''_volume'',''''), ''playing'') }}
-
-      '
+    value_template:  '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'','''').replace(''_volume'',''''), ''playing'') }}'
   action:
-  - data_template:
-      target_player: media_player.{{ trigger.entity_id.replace('sensor.', '').replace('_volume',
-        '') }}
-    service: script.sonos_group_if_playing
+  - service: script.sonos_group_if_playing
+    data_template:
+      target_player: "media_player.{{ trigger.entity_id.replace('sensor.', '').replace('_volume','') }}"
 - id: sonos_volume_down_move
   alias: Volume Down, Sonos Move
   description: ''
@@ -316,19 +332,14 @@
     platform: state
   condition:
   - condition: template
-    value_template: '{{ trigger.to_state.state < trigger.from_state.state }}'
+    value_template:  '{{ trigger.to_state.state < trigger.from_state.state }}'
   - condition: template
-    value_template: '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'',
-      '''').replace(''_volume'',''''), ''playing'') }}
-
-      '
+    value_template:  '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'','''').replace(''_volume'',''''), ''playing'') }}'
   action:
   - service: script.sonos_move_if_playing
     data_template:
-      new_player: '{{ trigger.entity_id.replace(''sensor.'', ''media_player.'').replace(''_volume'',
-        '''') }}'
-      old_player: '{{ ''media_player.'' + states(''input_select.music_controller'')
-        }}'
+      new_player: '{{ trigger.entity_id.replace(''sensor.'', ''media_player.'').replace(''_volume'','''') }}'
+      old_player: '{{ ''media_player.'' + states(''input_select.music_controller'')  }}'
 - id: sonos_volume_ungroup
   alias: Volume Change, Sonos Ungroup
   description: ''
@@ -341,15 +352,9 @@
     platform: state
   condition:
   - condition: template
-    value_template: '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'',
-      '''').replace(''_volume'',''''), ''playing'') }}
-
-      '
+    value_template:  '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'','''').replace(''_volume'',''''), ''playing'') }}'
   - condition: template
-    value_template: '{{ not is_state(''media_player.'' + states(''input_select.music_controller''),
-      ''playing'') }}
-
-      '
+    value_template:  '{{ not is_state(''media_player.'' + states(''input_select.music_controller''),''playing'') }}'
   action:
   - service: sonos.unjoin
     data_template:
@@ -557,21 +562,72 @@
         {{ state_attr(trigger.entity_id, 'friendly_name') }} Open
     service: notify.mobile_app_meghans_iphone
 
-- id: soundbar_off_light_on
-  alias: Soundbar Off, Lights On
+- id: soundbar_or_tv_off_lights_on
+  alias: Soundbar or TV Off, Lights On
   description: ''
   trigger:
   - platform: state
     entity_id: media_player.guest_room_stereo_main
     to: 'off'
+  - platform: state
+    entity_id: media_player.vizio_smartcast
+    to: 'off'
   condition:
   - condition: state
-    entity_id: input_boolean.sleeping
+    entity_id: media_player.guest_room_stereo_main
     state: 'off'
   - condition: state
-    entity_id: input_boolean.guests_visiting
+    entity_id: media_player.vizio_smartcast
     state: 'off'
-  - condition: time
-    after: '20:00'
+  - condition: or
+    conditions:
+      - condition: state
+        entity_id: input_boolean.guests_visiting
+        state: 'off'
+      - condition: state
+        entity_id: input_boolean.sleeping
+        state: 'off'
+  - condition: or
+    conditions:
+      - condition: time
+        after: '20:00'
+      - condition: state
+        entity_id: sun.sun
+        state: below_horizon
   action:
   - service: script.coming_up
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.tv_off_recent
+  - delay: 00:00:01
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.tv_off_recent
+- id: turn_off_tv_off_recent
+  alias: Turn Off TV-Off-Recent Indicator After 1 Minute
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: input_boolean.tv_off_recent
+    to: 'on'
+    for: 00:01:00
+  action:
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.tv_off_recent
+- id: tv_on_turn_off_kitchen_light
+  alias: TV Back On, Turn Off Kitchen Light
+  description: ''
+  trigger:
+  - platform: state
+    entity_id: media_player.guest_room_stereo_main
+    to: 'on'
+  - platform: state
+    entity_id: media_player.vizio_smartcast
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: input_boolean.tv_off_recent
+    state: 'on'
+  action:
+  - service: light.turn_off
+    entity_id: switch.kitchen_lights
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.tv_off_recent

@@ -159,15 +159,6 @@ standby:
     - service: alarm_control_panel.alarm_disarm
       entity_id: alarm_control_panel.abode_alarm
 
-toggle_gr_lights_if_volume_down_up:
-  alias: "Toggle Guest Room Lights if Volumne Down Up"
-  sequence:
-    - condition: state
-      entity_id: counter.mute_counter
-      state: '2'
-    - service: light.toggle
-      entity_id: light.guest_room_lights
-
 # SPECIAL MUSIC
 turntable:
   alias: "Turntable"
