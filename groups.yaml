@@ -1,18 +1,18 @@
   bedroom:
     name: Bedroom
     entities:
-      - light.bedroom_lights
+      - light.bedroom
   upstairs:
     name: Upstairs, Garage, No Bedroom
     entities:
-      - light.living_room_lights
-      - light.front_door_light
+      - light.living_room
+      - light.front_door
       - switch.backyard_lights
       - switch.kitchen_light
   guest_room:
     name: Guest Room
     entities:
-      - light.guest_room_lights
+      - light.guest_room
       - media_player.guest_room_stereo_main
       - media_player.vizio_smartcast
   all_present:

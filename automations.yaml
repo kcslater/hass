@@ -15,7 +15,7 @@
   action:
   - service: light.turn_on
     data:
-      entity_id: light.front_door_light
+      entity_id: light.front_door
 - id: porch_light_off_10mins
   alias: Porch Light Off After 10 Mins
   trigger:
@@ -25,8 +25,7 @@
     for: 00:10:00
   action:
   - service: light.turn_off
-    data:
-      entity_id: light.front_door_light
+    entity_id: light.front_door
 - id: remove_new_devices_notification
   alias: Remove new devices notification
   trigger:
@@ -163,7 +162,7 @@
         state: below_horizon
   action:
   - data:
-      entity_id: light.front_door_light
+      entity_id: light.front_door
     service: light.turn_on
 - id: living_room_lights_on_first_arrival
   alias: First Person Arrives At Night, Living Room Lights
@@ -189,7 +188,7 @@
         state: below_horizon
   action:
   - data:
-      entity_id: light.living_room_lights
+      entity_id: light.living_room
     service: light.turn_on
 - id: goodbye_last_exit
   alias: Last Person Leaves, Goodbye
@@ -287,7 +286,7 @@
   - condition: template
     value_template: "{{ counter2 }}"
   - service: light.toggle
-    entity_id: light.guest_room_lights
+    entity_id: light.guest_room
 - id: auto_lock
   alias: Lock After 20 Minutes
   description: ''
@@ -569,9 +568,11 @@
   - platform: state
     entity_id: media_player.guest_room_stereo_main
     to: 'off'
+    from: 'on'
   - platform: state
     entity_id: media_player.vizio_smartcast
     to: 'off'
+    from: 'on'
   condition:
   - condition: state
     entity_id: media_player.guest_room_stereo_main
@@ -579,14 +580,12 @@
   - condition: state
     entity_id: media_player.vizio_smartcast
     state: 'off'
-  - condition: or
-    conditions:
-      - condition: state
-        entity_id: input_boolean.guests_visiting
-        state: 'off'
-      - condition: state
-        entity_id: input_boolean.sleeping
-        state: 'off'
+  - condition: state
+    entity_id: input_boolean.guests_visiting
+    state: 'off'
+  - condition: state
+    entity_id: input_boolean.sleeping
+    state: 'off'
   - condition: or
     conditions:
       - condition: time
@@ -595,12 +594,11 @@
         entity_id: sun.sun
         state: below_horizon
   action:
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.tv_off_recent
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.tv_off_recent
   - service: script.coming_up
-  - service: input_boolean.turn_on
-    entity_id: input_boolean.tv_off_recent
-  - delay: 00:00:01
-  - service: input_boolean.turn_on
-    entity_id: input_boolean.tv_off_recent
 - id: turn_off_tv_off_recent
   alias: Turn Off TV-Off-Recent Indicator After 1 Minute
   description: ''
@@ -627,7 +625,7 @@
     entity_id: input_boolean.tv_off_recent
     state: 'on'
   action:
-  - service: light.turn_off
+  - service: switch.turn_off
     entity_id: switch.kitchen_lights
   - service: input_boolean.turn_off
     entity_id: input_boolean.tv_off_recent

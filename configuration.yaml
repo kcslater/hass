@@ -132,7 +132,7 @@ binary_sensor:
         friendly_name: "Front Door Unlocked and Closed and Light On"
         value_template: >-
           {{ is_state('binary_sensor.front_door','off') and
-             is_state('light.front_door_light','on') }}
+             is_state('light.front_door','on') }}
 
 # Sensors
 sensor:
@@ -171,31 +171,31 @@ device_tracker:
     interval_seconds: 30
     consider_home: 3:00
 
-light:
-  - platform: group
-    name: Bedroom Lights
-    entities:
-      - light.kailin_s_lamp
-      - light.meghan_s_lamp
-  - platform: group
-    name: Living Room Lights
-    entities:
-      - light.elephant_lamp
-      - light.gold_lamp
-  - platform: group
-    name: Guest Room Lights
-    entities:
-      - light.guest_room_light_1
-      - light.guest_room_light_2
-  - platform: group
-    name: Basement Lights
-    entities:
-      - light.basement_light_1
-      - light.basement_light_2
-  - platform: group
-    name: Front Door Light
-    entities:
-      - light.porch_lamp
+# light:
+#   - platform: group
+#     name: Bedroom Lights
+#     entities:
+#       - light.kailin_s_lamp
+#       - light.meghan_s_lamp
+#   - platform: group
+#     name: Living Room Lights
+#     entities:
+#       - light.elephant_lamp
+#       - light.gold_lamp
+#   - platform: group
+#     name: Guest Room Lights
+#     entities:
+#       - light.guest_room_light_1
+#       - light.guest_room_light_2
+#   - platform: group
+#     name: Basement Lights
+#     entities:
+#       - light.basement_light_1
+#       - light.basement_light_2
+#   - platform: group
+#     name: Front Door Light
+#     entities:
+#       - light.porch_lamp
 
 # HomeKit
 homekit:
@@ -238,6 +238,16 @@ homekit:
       - switch.if_anyone_arrives_then_standby
       - switch.if_last_person_leaves_then_away
   entity_config:
+    light.bedroom:
+      name: "Bedroom Lights"
+    light.living_room:
+      name: "Living Room Lights"
+    light.guest_room:
+      name: "Guest Room Lights"
+    light.front_door:
+      name: "Front Door Light"
+    light.basement:
+      name: "Basement Lights"
     media_player.living_room:
       feature_list:
         - feature: play_pause

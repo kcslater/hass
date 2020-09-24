@@ -4,7 +4,7 @@ good_morning:
   sequence:
     - service: light.turn_on
       data:
-        entity_id: light.bedroom_lights
+        entity_id: light.bedroom
         brightness_pct: 100
     - service: input_boolean.turn_off
       entity_id: input_boolean.sleeping
@@ -53,7 +53,7 @@ base_off:
     - service: homeassistant.turn_off
       entity_id: group.upstairs
     - service: light.turn_off
-      entity_id: light.basement_lights
+      entity_id: light.basement
 
 nighttime:
   alias: "Night-time"
@@ -82,7 +82,7 @@ everything_off:
   sequence:
     - service: script.base_off
     - service: light.turn_off
-      entity_id: light.bedroom_lights
+      entity_id: light.bedroom
     - service: homeassistant.turn_off
       entity_id: group.guest_room
 
@@ -92,7 +92,7 @@ goodnight:
     - service: script.nighttime
     - service: light.turn_off
       data:
-        entity_id: light.bedroom_lights
+        entity_id: light.bedroom
         # transition: 120
 
 time_for_bed:
@@ -100,7 +100,7 @@ time_for_bed:
   sequence:
     - service: script.nighttime
     - service: light.turn_on
-      entity_id: light.bedroom_lights
+      entity_id: light.bedroom
 
 tv_time:
   alias: "TV Time"
@@ -122,10 +122,10 @@ tv_time:
         - condition: time
           after: '20:00:00'
     - service: light.turn_on
-      entity_id: light.guest_room_lights
+      entity_id: light.guest_room
     - delay: 00:05:00
     - service: light.turn_off
-      entity_id: light.guest_room_lights
+      entity_id: light.guest_room
 
 coming_up:
   alias: "Coming Up"
@@ -133,10 +133,10 @@ coming_up:
     - service: switch.turn_on
       entity_id: switch.kitchen_light
     - service: light.turn_on
-      entity_id: light.guest_room_lights
+      entity_id: light.guest_room
     - delay: 00:05:00
     - service: light.turn_off
-      entity_id: light.guest_room_lights
+      entity_id: light.guest_room
 
 goodbye:
   alias: "Goodbye"
