@@ -183,6 +183,42 @@ switch_to_tv:
         entity_id: media_player.guest_room_stereo_main
         source: "tv"
 
+down_up_down_mute:
+  alias: "Down Up Down, Mute"
+  sequence:
+    - wait_for_trigger:
+        - platform: state
+          entity_id: sensor.guest_room_volume
+      timeout: 1
+      continue_on_timeout: false
+    - condition: template
+      value_template: "{{ states('sensor.guest_room_volume') > vol_new }}"
+    - wait_for_trigger:
+        - platform: state
+          entity_id: sensor.guest_room_volume
+      timeout: 1
+      continue_on_timeout: false
+    - condition: template
+      value_template: "{{ states('sensor.guest_room_volume') < vol_old }}"
+    - service: media_player.volume_mute
+      data:
+        entity_id: media_player.guest_room_stereo_main
+        is_volume_muted: true  
+
+up_down_lights:
+  alias: "Up Down, Lights"
+  sequence:
+    - wait_for_trigger:
+        - platform: state
+          entity_id: sensor.guest_room_volume
+      timeout: 1
+      continue_on_timeout: false
+    - condition: template
+      value_template: "{{ states('sensor.guest_room_volume') < vol_new }}"
+    - service: light.toggle
+      entity_id: light.guest_room
+    - delay: 00:00:03
+
 ### SONOS SCRIPTS
 
 sonos_group:
@@ -478,12 +514,20 @@ spotify_bedroom:
 spotify_kitchen:
   alias: "Spotify Kitchen"
   sequence:
+    - service: media_player.volume_set
+      data:
+        entity_id: media_player.kitchen
+        volume_level: 0.14
     - service: script.spotify_switch
       data:
         title: "Kitchen"
 spotify_living_room:
   alias: "Spotify Living Room"
   sequence:
+    - service: media_player.volume_set
+      data:
+        entity_id: media_player.living_room
+        volume_level: 0.17
     - service: script.spotify_switch
       data:
         title: "Living Room"
