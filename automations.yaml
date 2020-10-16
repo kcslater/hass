@@ -72,7 +72,7 @@
     data:
       entity_id: alarm_control_panel.abode_alarm
 - id: home_11pm
-  alias: 11 PM Present, Home
+  alias: 11 PM Present, Home-Lock-Nightlight
   trigger:
   - platform: time
     at: '23:00:00'
@@ -85,6 +85,9 @@
     data:
       entity_id: alarm_control_panel.abode_alarm
   - service: script.lock_if_closed
+  - service: input_boolean.turn_on
+    data:
+      entity_id: input_boolean.alexa_ha_nightlight
 - id: everything_off_2am
   alias: 2 AM Not Present, Everything Off
   trigger:
@@ -99,8 +102,8 @@
   - service: script.lock_if_closed
   - service: cover.close_cover
     entity_id: cover.garage_door
-- id: sleeping_off_6am
-  alias: 6 AM, Sleeping Off
+- id: sleeping_nightlight_off_6am
+  alias: 6 AM, Sleeping and Nightlight Off
   trigger:
   - platform: time
     at: 06:00:00
@@ -108,6 +111,9 @@
   - service: input_boolean.turn_off
     data:
       entity_id: input_boolean.sleeping
+  - service: input_boolean.turn_off
+    data:
+      entity_id: input_boolean.alexa_ha_nightlight
 - id: standby_arrival
   alias: Anyone Arrives, Standby
   trigger:

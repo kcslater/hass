@@ -9,6 +9,7 @@
       - light.front_door
       - switch.backyard_lights
       - switch.kitchen_light
+      - input_boolean.alexa_ha_plug
   guest_room:
     name: Guest Room
     entities:

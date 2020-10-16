@@ -27,14 +27,22 @@ logbook:
       - automation.remove_new_devices_notification
 
 # Alexa Smart Home Skill
-api:
+# api:
 
 alexa:
   smart_home:
+    endpoint: "https://api.amazonalexa.com/v3/events"
+    client_id: !secret alexa_client_id
+    client_secret: !secret alexa_client_secret
     filter:
       include_domains:
         - switch
         - script
+      include_entities:
+        - binary_sensor.alexa_ha_nightlight
+        - binary_sensor.alexa_ha_plug
+        - input_boolean.alexa_ha_nightlight
+        - input_boolean.alexa_ha_plug
       exclude_entities:
         - script.lock_if_closed_1
         - script.base_off
@@ -54,6 +62,13 @@ alexa:
         - switch.if_anyone_arrives_then_standby
         - switch.if_last_person_leaves_then_away
         - switch.kitchen_light
+    entity_config:
+      input_boolean.alexa_ha_nightlight:
+        name: "Alexa HA - Nightlight"
+        display_categories: LIGHT
+      input_boolean.alexa_ha_plug:
+        name: "Alexa HA - Plug"
+        display_categories: LIGHT
 
 # iOS
 ios:
@@ -122,6 +137,14 @@ binary_sensor:
         value_template: >-
           {{ is_state('binary_sensor.front_door','off') and
              is_state('light.front_door','on') }}
+      alexa_ha_nightlight:
+        friendly_name: "Alexa HA - Nightlight"
+        device_class: window
+        value_template: "{{ is_state('input_boolean.alexa_ha_nightlight', 'on') }}"
+      alexa_ha_plug:
+        friendly_name: "Alexa HA - Plug"
+        device_class: window
+        value_template: "{{ is_state('input_boolean.alexa_ha_plug', 'on') }}"
 
 # Sensors
 sensor:
@@ -133,8 +156,8 @@ sensor:
   - platform: template
     sensors:
       spotify_source:
-        value_template: '{{ state_attr("media_player.spotify", "source") }}'
-        friendly_name: 'Spotify Source'
+        value_template: "{{ state_attr('media_player.spotify', 'source') }}"
+        friendly_name: "Spotify Source"
       living_room_volume:
         value_template: '{{ state_attr("media_player.living_room", "volume_level") | float }}'
         friendly_name: 'Living Room Volume'
