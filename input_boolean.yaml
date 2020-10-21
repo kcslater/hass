@@ -1,0 +1,24 @@
+  guests_visiting:
+    name: Guest Room Guests
+    icon: mdi:account-multiple
+  sleeping:
+    name: Sleeping boolean
+    icon: mdi:sleep
+  k_present:
+    name: K Home, Homekit
+    icon: mdi:account
+  m_present:
+    name: M Home, Homekit
+    icon: mdi:account
+  x_present:
+    name: Any Home, Homekit
+    icon: mdi:account
+  tv_off_recent:
+    name: TV Off Recent
+    icon: mdi:television-off
+  alexa_ha_plug:
+    name: Christmas Tree
+    icon: mdi:pine-tree
+  alexa_ha_nightlight:
+    name: Nightlight
+    icon: mdi:dome-light

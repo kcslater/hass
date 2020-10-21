@@ -129,7 +129,9 @@ tv_time:
         - condition: time
           after: '20:00:00'
     - service: light.turn_on
-      entity_id: light.guest_room
+      data:
+        entity_id: light.guest_room
+        brightness_pct: 100
     - delay: 00:05:00
     - service: light.turn_off
       entity_id: light.guest_room
@@ -140,7 +142,9 @@ coming_up:
     - service: switch.turn_on
       entity_id: switch.kitchen_light
     - service: light.turn_on
-      entity_id: light.guest_room
+      data:
+        entity_id: light.guest_room
+        brightness_pct: 100
     - delay: 00:05:00
     - service: light.turn_off
       entity_id: light.guest_room

@@ -1,0 +1,40 @@
+smart_home:
+  endpoint: "https://api.amazonalexa.com/v3/events"
+  client_id: !secret alexa_client_id
+  client_secret: !secret alexa_client_secret
+  filter:
+    include_domains:
+      - switch
+      - script
+    include_entities:
+      - binary_sensor.alexa_ha_nightlight
+      - binary_sensor.alexa_ha_plug
+      - input_boolean.alexa_ha_nightlight
+      - input_boolean.alexa_ha_plug
+      - light.upstairs_lights
+    exclude_entities:
+      - script.lock_if_closed_1
+      - script.base_off
+      - script.nighttime
+      - script.spotify_switch
+      - script.standby
+      - script.sonos_group
+      - script.sonos_ungroup
+      - script.sonos_move
+      - script.sonos_group_if_playing
+      - script.sonos_move_if_playing
+      - script.sonos_set_controller
+      - script.sonos_check_controller
+      - script.toggle_gr_lights_if_volume_down_up
+      - switch.if_11pm_home_then_home
+      - switch.if_5_30am_home_then_standby
+      - switch.if_anyone_arrives_then_standby
+      - switch.if_last_person_leaves_then_away
+      - switch.kitchen_light
+  entity_config:
+    input_boolean.alexa_ha_nightlight:
+      name: "Alexa HA - Nightlight"
+      display_categories: LIGHT
+    input_boolean.alexa_ha_plug:
+      name: "Alexa HA - Plug"
+      display_categories: LIGHT

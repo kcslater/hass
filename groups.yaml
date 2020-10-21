@@ -3,11 +3,17 @@
     entities:
       - light.bedroom
   upstairs:
-    name: Upstairs, Garage, No Bedroom
+    name: Upstairs, No Bedroom
     entities:
       - light.living_room
       - light.front_door
       - switch.backyard_lights
+      - switch.kitchen_light
+      - input_boolean.alexa_ha_plug
+  upstairs_lights:
+    name: Upstairs Lights
+    entities:
+      - light.living_room
       - switch.kitchen_light
       - input_boolean.alexa_ha_plug
   guest_room:

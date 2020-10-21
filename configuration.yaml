@@ -26,51 +26,21 @@ logbook:
       - input_boolean.m_present
       - automation.remove_new_devices_notification
 
-# Alexa Smart Home Skill
-# api:
+# Upstairs lights
+light:
+  - platform: template
+    lights:
+      upstairs_lights:
+        friendly_name: "Upstairs Lights"
+        value_template: "{{ is_state('group.upstairs_lights', 'on') }}"
+        turn_on:
+          service: homeassistant.turn_on
+          entity_id: group.upstairs_lights
+        turn_off:
+          service: homeassistant.turn_off
+          entity_id: group.upstairs_lights
 
-alexa:
-  smart_home:
-    endpoint: "https://api.amazonalexa.com/v3/events"
-    client_id: !secret alexa_client_id
-    client_secret: !secret alexa_client_secret
-    filter:
-      include_domains:
-        - switch
-        - script
-      include_entities:
-        - binary_sensor.alexa_ha_nightlight
-        - binary_sensor.alexa_ha_plug
-        - input_boolean.alexa_ha_nightlight
-        - input_boolean.alexa_ha_plug
-      exclude_entities:
-        - script.lock_if_closed_1
-        - script.base_off
-        - script.nighttime
-        - script.spotify_switch
-        - script.standby
-        - script.sonos_group
-        - script.sonos_ungroup
-        - script.sonos_move
-        - script.sonos_group_if_playing
-        - script.sonos_move_if_playing
-        - script.sonos_set_controller
-        - script.sonos_check_controller
-        - script.toggle_gr_lights_if_volume_down_up
-        - switch.if_11pm_home_then_home
-        - switch.if_5_30am_home_then_standby
-        - switch.if_anyone_arrives_then_standby
-        - switch.if_last_person_leaves_then_away
-        - switch.kitchen_light
-    entity_config:
-      input_boolean.alexa_ha_nightlight:
-        name: "Alexa HA - Nightlight"
-        display_categories: LIGHT
-      input_boolean.alexa_ha_plug:
-        name: "Alexa HA - Plug"
-        display_categories: LIGHT
-
-# iOS
+# iOS garage alert action
 ios:
   push:
     categories:
@@ -82,28 +52,7 @@ ios:
             authenticationRequired: no
             destructive: no
 
-# Input booleans
-input_boolean:
-  guests_visiting:
-    name: Guest Room Guests
-    icon: mdi:account-multiple
-  sleeping:
-    name: Sleeping boolean
-    icon: mdi:sleep
-  k_present:
-    name: K Home, Homekit
-    icon: mdi:account
-  m_present:
-    name: M Home, Homekit
-    icon: mdi:account
-  x_present:
-    name: Any Home, Homekit
-    icon: mdi:account
-  tv_off_recent:
-    name: TV Off Recent
-    icon: mdi:television-off
-
-# Input Select
+# Music Controller
 input_select:
   music_controller:
     name: Music Controller
@@ -112,66 +61,7 @@ input_select:
       - kitchen
       - living_room
 
-# Binary sensors
-binary_sensor:
-  # K present
-  - platform: template
-    sensors:
-      k_present:
-        friendly_name: "K Home"
-        value_template: >-
-          {{ is_state('input_boolean.k_present','on') or 
-             is_state('device_tracker.k_iphone','home') }}
-      m_present:
-        friendly_name: "M Home"
-        value_template: >-
-          {{ is_state('input_boolean.m_present','on') or 
-             is_state('device_tracker.m_iphone','home') }}
-      unlocked_closed:
-        friendly_name: "Front Door Unlocked and Closed"
-        value_template: >-
-          {{ is_state('lock.home_door_lock','unlocked') and 
-             is_state('binary_sensor.front_door','off') }}
-      closed_light:
-        friendly_name: "Front Door Unlocked and Closed and Light On"
-        value_template: >-
-          {{ is_state('binary_sensor.front_door','off') and
-             is_state('light.front_door','on') }}
-      alexa_ha_nightlight:
-        friendly_name: "Alexa HA - Nightlight"
-        device_class: window
-        value_template: "{{ is_state('input_boolean.alexa_ha_nightlight', 'on') }}"
-      alexa_ha_plug:
-        friendly_name: "Alexa HA - Plug"
-        device_class: window
-        value_template: "{{ is_state('input_boolean.alexa_ha_plug', 'on') }}"
-
-# Sensors
-sensor:
-  # Hue custom component (installed in config/custom_components/huesensor/)
-  - platform: huesensor
-  # Weather prediction
-  # - platform: yr
-  # Spotify source
-  - platform: template
-    sensors:
-      spotify_source:
-        value_template: "{{ state_attr('media_player.spotify', 'source') }}"
-        friendly_name: "Spotify Source"
-      living_room_volume:
-        value_template: '{{ state_attr("media_player.living_room", "volume_level") | float }}'
-        friendly_name: 'Living Room Volume'
-      bedroom_volume:
-        value_template: '{{ state_attr("media_player.bedroom", "volume_level") | float }}'
-        friendly_name: 'Bedroom Volume'
-      kitchen_volume:
-        value_template: '{{ state_attr("media_player.kitchen", "volume_level") | float }}'
-        friendly_name: 'Kitchen Volume'
-      guest_room_volume:
-        value_template: '{{ state_attr("media_player.guest_room_stereo_main", "volume_level") | float }}'
-        friendly_name: 'Guest Room Volume'
-
-# Device Tracker
+# Netgear
 device_tracker:
   - platform: netgear
     password: !secret netgear_password
@@ -182,96 +72,6 @@ device_tracker:
       track_new_devices: false
     interval_seconds: 30
     consider_home: 3:00
-
-# light:
-#   - platform: group
-#     name: Bedroom Lights
-#     entities:
-#       - light.kailin_s_lamp
-#       - light.meghan_s_lamp
-#   - platform: group
-#     name: Living Room Lights
-#     entities:
-#       - light.elephant_lamp
-#       - light.gold_lamp
-#   - platform: group
-#     name: Guest Room Lights
-#     entities:
-#       - light.guest_room_light_1
-#       - light.guest_room_light_2
-#   - platform: group
-#     name: Basement Lights
-#     entities:
-#       - light.basement_light_1
-#       - light.basement_light_2
-#   - platform: group
-#     name: Front Door Light
-#     entities:
-#       - light.porch_lamp
-
-# HomeKit
-homekit:
-  #auto_start: False
-  filter:
-    include_domains:
-      - cover
-      - media_player
-      - light
-      - switch
-      - script
-      - input_boolean
-      - input_number
-      - lock
-    exclude_entities:
-      - light.backyard
-      - light.porch_lamp
-      - media_player.spotify
-      - media_player.vizio_smartcast
-      - script.close_garage
-      - script.lock_if_closed_1
-      - script.base_off
-      - script.nighttime
-      - script.spotify_switch
-      - script.sonos_group
-      - script.sonos_ungroup
-      - script.sonos_move
-      - script.sonos_group_if_playing
-      - script.sonos_move_if_playing
-      - script.sonos_set_controller
-      - script.sonos_check_controller
-      - script.toggle_gr_lights_if_volume_down_up
-      - script.down_up_down_mute
-      - script.up_down_lights
-      - input_boolean.tv_off_recent
-      - script.lock_if_closed
-      - switch.if_11pm_home_then_home
-      - switch.if_5_30am_home_then_standby
-      - switch.if_anyone_arrives_then_standby
-      - switch.if_last_person_leaves_then_away
-  entity_config:
-    light.bedroom:
-      name: "Bedroom Lights"
-    light.living_room:
-      name: "Living Room Lights"
-    light.guest_room:
-      name: "Guest Room Lights"
-    light.front_door:
-      name: "Front Door Light"
-    light.basement:
-      name: "Basement Lights"
-    media_player.living_room:
-      feature_list:
-        - feature: play_pause
-    media_player.kitchen:
-      feature_list:
-        - feature: play_pause
-    media_player.bedroom:
-      feature_list:
-        - feature: play_pause
-    media_player.guest_room_stereo_main:
-      name: "Guest Room Stereo"
-      feature_list:
-        - feature: on_off
 
 # Yamaha
 media_player:
@@ -284,6 +84,7 @@ spotify:
   client_id: !secret spotify_client_id
   client_secret: !secret spotify_client_secret
 
+# Sonos
 sonos:
   media_player:
     advertise_addr: !secret sonos_advertise_addr
@@ -292,6 +93,11 @@ http:
   ssl_certificate: /ssl/fullchain.pem
   ssl_key: /ssl/privkey.pem
 
+input_boolean: !include input_boolean.yaml
+sensor: !include sensor.yaml
+binary_sensor: !include binary_sensor.yaml
+alexa: !include alexa.yaml
+homekit: !include homekit.yaml
 group: !include groups.yaml
 automation: !include automations.yaml
 script: !include scripts.yaml

@@ -1,0 +1,20 @@
+# Hue custom component (installed in config/custom_components/huesensor/)
+- platform: huesensor
+# Spotify source
+- platform: template
+  sensors:
+    spotify_source:
+      value_template: "{{ state_attr('media_player.spotify', 'source') }}"
+      friendly_name: "Spotify Source"
+    living_room_volume:
+      value_template: '{{ state_attr("media_player.living_room", "volume_level") | float }}'
+      friendly_name: 'Living Room Volume'
+    bedroom_volume:
+      value_template: '{{ state_attr("media_player.bedroom", "volume_level") | float }}'
+      friendly_name: 'Bedroom Volume'
+    kitchen_volume:
+      value_template: '{{ state_attr("media_player.kitchen", "volume_level") | float }}'
+      friendly_name: 'Kitchen Volume'
+    guest_room_volume:
+      value_template: '{{ state_attr("media_player.guest_room_stereo_main", "volume_level") | float }}'
+      friendly_name: 'Guest Room Volume'
