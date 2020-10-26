@@ -233,6 +233,13 @@ up_down_lights:
 
 ### SONOS SCRIPTS
 
+# sonos_pause_play_skip:
+#   alias: "Sonos Pause Play, Skip"
+#   sequence:
+#     - wait_for_trigger:
+#         - platform: state
+          
+
 sonos_group:
   alias: "Sonos Group"
   sequence:
@@ -275,38 +282,24 @@ sonos_group:
 sonos_ungroup:
   alias: "Sonos Ungroup"
   sequence:
+    # target_player must be non-missing
     - condition: template
       value_template: >
-        {% if target_player is not none and target_player != false and target_player != '' %}
-          true
-        {% else %}
-          false
-        {% endif %}
-   
+        {{ target_player is not none and target_player != false and target_player != '' }}
+        
     # The target player must be playing
     - condition: template
       value_template: >
-        {% if states(target_player) == 'playing' %}
-          true
-        {% else %}
-          false
-        {% endif %}
+        {{ states(target_player) == 'playing' }}
    
     # The target must not be the co-ordinator
     - condition: template
       value_template: >
-        {% if target_player != 'media_player.' + states('input_select.music_controller') %}
-          true
-        {% else %}
-          false
-        {% endif %}
+        {{ target_player != 'media_player.' + states('input_select.music_controller') }}
     
     - service: sonos.unjoin
       data_template:
-        entity_id: >
-          {% if target_player is not none %}
-            {{ target_player }}
-          {% endif %}
+        entity_id: '{{ target_player }}'
 
 sonos_move:
   alias: "Sonos Move"
@@ -320,52 +313,6 @@ sonos_move:
     - service: script.sonos_set_controller
       data_template:
         target_player: '{{ new_player }}'
-
-sonos_check_controller:
-  alias: "If Music Controller is not playing, switch to playing device"
-  sequence:
-    - condition: template
-      value_template: >
-        {{ not is_state('media_player.'+ states('input_select.music_controller'), 'playing') }}
-    - service: script.sonos_set_controller
-      data_template:
-        target_player: >
-          {% if is_state('media_player.living_room', 'playing') and 'media_player.living_room' == state_attr('media_player.living_room', 'sonos_group')[0] %}
-            media_player.living_room
-          {% elif is_state('media_player.kitchen', 'playing') and 'media_player.kitchen' == state_attr('media_player.kitchen', 'sonos_group')[0] %}
-            media_player.kitchen
-          {% elif is_state('media_player.bedroom', 'playing') and 'media_player.bedroom' == state_attr('media_player.bedroom', 'sonos_group')[0] %}
-            media_player.bedroom
-          {% endif %}
-
-sonos_group_if_playing:
-  alias: "Sonos Group if Music Controller is playing"
-  sequence:
-    - service: script.sonos_check_controller
-    - wait_template: >
-        {{ is_state('media_player.' + states('input_select.music_controller'), 'playing') }}
-      timeout: '00:00:05'
-    - condition: template
-      value_template: >
-        {{ is_state('media_player.' + states('input_select.music_controller'), 'playing') }}
-    - service: script.sonos_group
-      data_template:
-        target_player: '{{ target_player }}'
-
-sonos_move_if_playing:
-  alias: "Sonos Move if Music Controller is playing"
-  sequence:
-    - service: script.sonos_check_controller
-    - wait_template: >
-        {{ is_state('media_player.' + states('input_select.music_controller'), 'playing') }}
-      timeout: '00:00:05'
-    - condition: template
-      value_template: >
-        {{ is_state('media_player.' + states('input_select.music_controller'), 'playing') }}
-    - service: script.sonos_move
-      data_template:
-        new_player: '{{ new_player }}'
-        old_player: '{{ ''media_player.'' + states(''input_select.music_controller'') }}'
 
 sonos_move_bedroom:
   alias: "Sonos Move Bedroom"

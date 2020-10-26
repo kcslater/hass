@@ -117,15 +117,12 @@
 - id: standby_arrival
   alias: Anyone Arrives, Standby
   trigger:
-  - entity_id: binary_sensor.m_present
-    platform: state
+  - platform: state
     to: 'on'
-  - entity_id: binary_sensor.k_present
-    platform: state
-    to: 'on'
-  - entity_id: input_boolean.x_present
-    platform: state
-    to: 'on'
+    entity_id:
+    - binary_sensor.m_present
+    - binary_sensor.k_present
+    - input_boolean.x_present
   condition:
   - condition: state
     entity_id: input_boolean.sleeping
@@ -137,12 +134,11 @@
 - id: porch_light_on_arrival_night
   alias: Anyone Arrives At Night, Porch Light
   trigger:
-  - entity_id: binary_sensor.m_present
-    platform: state
+  - platform: state
     to: 'on'
-  - entity_id: binary_sensor.k_present
-    platform: state
-    to: 'on'
+    entity_id:
+    - binary_sensor.m_present
+    - binary_sensor.k_present
   condition:
   - condition: state
     entity_id: input_boolean.sleeping
@@ -163,12 +159,11 @@
 - id: living_room_lights_on_first_arrival
   alias: First Person Arrives At Night, Living Room Lights
   trigger:
-  - entity_id: group.all_present
-    platform: state
+  - platform: state
     to: 'on'
-  - entity_id: group.core_present
-    platform: state
-    to: 'on'
+    entity_id:
+    - group.all_present
+    - group.core_present
   condition:
   - condition: state
     entity_id: input_boolean.sleeping
@@ -211,19 +206,16 @@
     data:
       entity_id: script.goodbye
 - id: mute_dn_up_dn
-  alias: Down Up Down, Mute
-  mode: single
+  alias: Soundbar Down Up Down, Mute
   trigger:
   - platform: state
     entity_id: sensor.guest_room_volume
-  variables:
-    vol_old: '{{ trigger.from_state.state }}'
-    vol_new: '{{ trigger.to_state.state }}'
   condition:
   - condition: template
     value_template: '{{ vol_new < vol_old }}'
   - condition: template
-    value_template: "{{ not is_state('media_player.guest_room_stereo_main', 'off') }}"
+    value_template: '{{ not is_state(''media_player.guest_room_stereo_main'', ''off'')
+      }}'
   - condition: state
     entity_id: script.down_up_down_mute
     state: 'off'
@@ -235,20 +227,21 @@
     data_template:
       vol_old: '{{ vol_old }}'
       vol_new: '{{ vol_new }}'
-- id: lights_up_dn
-  alias: Up Down, Lights
   mode: single
-  trigger:
-  - platform: state
-    entity_id: sensor.guest_room_volume
   variables:
     vol_old: '{{ trigger.from_state.state }}'
     vol_new: '{{ trigger.to_state.state }}'
+- id: lights_up_dn
+  alias: Soundbar Up Down, Lights
+  trigger:
+  - platform: state
+    entity_id: sensor.guest_room_volume
   condition:
   - condition: template
     value_template: '{{ vol_new > vol_old }}'
   - condition: template
-    value_template: "{{ not is_state('media_player.guest_room_stereo_main', 'off') }}"
+    value_template: '{{ not is_state(''media_player.guest_room_stereo_main'', ''off'')
+      }}'
   - condition: state
     entity_id: script.down_up_down_mute
     state: 'off'
@@ -260,6 +253,10 @@
     data_template:
       vol_old: '{{ vol_old }}'
       vol_new: '{{ vol_new }}'
+  mode: single
+  variables:
+    vol_old: '{{ trigger.from_state.state }}'
+    vol_new: '{{ trigger.to_state.state }}'
 - id: auto_lock
   alias: Lock After 20 Minutes
   description: ''
@@ -277,20 +274,24 @@
   alias: Volume Up, Sonos Group
   description: ''
   trigger:
-  - entity_id: sensor.bedroom_volume
-    platform: state
-  - entity_id: sensor.kitchen_volume
-    platform: state
-  - entity_id: sensor.living_room_volume
-    platform: state
+  - platform: state
+    entity_id:
+    - sensor.bedroom_volume
+    - sensor.kitchen_volume
+    - sensor.living_room_volume
   condition:
   - condition: template
     value_template: '{{ trigger.to_state.state > trigger.from_state.state }}'
   - condition: template
     value_template: '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'','''').replace(''_volume'',''''),
       ''playing'') }}'
+  - condition: template
+    value_template: '{{ is_state(''media_player.'' + states(''input_select.music_controller''),
+      ''playing'') }}
+
+      '
   action:
-  - service: script.sonos_group_if_playing
+  - service: script.sonos_group
     data_template:
       target_player: media_player.{{ trigger.entity_id.replace('sensor.', '').replace('_volume','')
         }}
@@ -298,20 +299,24 @@
   alias: Volume Down, Sonos Move
   description: ''
   trigger:
-  - entity_id: sensor.bedroom_volume
-    platform: state
-  - entity_id: sensor.kitchen_volume
-    platform: state
-  - entity_id: sensor.living_room_volume
-    platform: state
+  - platform: state
+    entity_id:
+    - sensor.bedroom_volume
+    - sensor.kitchen_volume
+    - sensor.living_room_volume
   condition:
   - condition: template
     value_template: '{{ trigger.to_state.state < trigger.from_state.state }}'
   - condition: template
     value_template: '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'','''').replace(''_volume'',''''),
       ''playing'') }}'
+  - condition: template
+    value_template: '{{ is_state(''media_player.'' + states(''input_select.music_controller''),
+      ''playing'') }}
+
+      '
   action:
-  - service: script.sonos_move_if_playing
+  - service: script.sonos_move
     data_template:
       new_player: '{{ trigger.entity_id.replace(''sensor.'', ''media_player.'').replace(''_volume'','''')
         }}'
@@ -320,12 +325,11 @@
   alias: Volume Change, Sonos Ungroup
   description: ''
   trigger:
-  - entity_id: sensor.bedroom_volume
-    platform: state
-  - entity_id: sensor.kitchen_volume
-    platform: state
-  - entity_id: sensor.living_room_volume
-    platform: state
+  - platform: state
+    entity_id:
+    - sensor.bedroom_volume
+    - sensor.kitchen_volume
+    - sensor.living_room_volume
   condition:
   - condition: template
     value_template: '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'','''').replace(''_volume'',''''),
@@ -342,84 +346,61 @@
   alias: Sonos Play, Change Music Controller
   description: ''
   trigger:
-  - entity_id: media_player.bedroom
-    platform: state
+  - platform: state
     to: playing
-  - entity_id: media_player.kitchen
-    platform: state
-    to: playing
-  - entity_id: media_player.living_room
-    platform: state
-    to: playing
-  condition: []
+    entity_id:
+    - media_player.bedroom
+    - media_player.kitchen
+    - media_player.living_room
+  condition:
+  - condition: template
+    value_template: '{{ trigger.entity_id != ''media_player.'' + states(''input_select.music_controller'')
+      }}'
   action:
   - data_template:
       target_player: '{{ trigger.entity_id }}'
     service: script.sonos_set_controller
-- id: '1585541724720'
-  alias: Reset pressed_pause
+- id: sonos_stop_change_controller
+  alias: Sonos Stop, Change Music Controller
   description: ''
   trigger:
-  - entity_id: input_boolean.pressed_pause_bedroom
-    for: 00:00:03
-    platform: state
-    to: 'on'
-  - entity_id: input_boolean.pressed_pause_kitchen
-    for: 00:00:03
-    platform: state
-    to: 'on'
-  - entity_id: input_boolean.pressed_pause_living_room
-    for: 00:00:03
-    platform: state
-    to: 'on'
-  condition: []
-  action:
-  - data_template:
-      entity_id: '{{ trigger.entity_id }}'
-    service: input_boolean.turn_off
-- id: '1585541805967'
-  alias: Press Pause, Turn On pressed_pause
-  description: ''
-  trigger:
-  - entity_id: media_player.bedroom
+  - platform: state
     from: playing
-    platform: state
-    to: paused
-  - entity_id: media_player.kitchen
-    from: playing
-    platform: state
-    to: paused
-  - entity_id: media_player.living_room
-    from: playing
-    platform: state
-    to: paused
-  condition: []
-  action:
-  - data_template:
-      entity_id: '{{ trigger.entity_id.replace(''media_player.'', ''input_boolean.pressed_pause_'')
-        }}'
-    service: input_boolean.turn_on
-- id: '1585541929094'
-  alias: Press Play With pressed_pause On, Next Track
-  description: ''
-  trigger:
-  - entity_id: media_player.bedroom
-    from: paused
-    platform: state
-    to: playing
-  - entity_id: media_player.kitchen
-    from: paused
-    platform: state
-    to: playing
-  - entity_id: media_player.living_room
-    from: paused
-    platform: state
-    to: playing
+    for: 00:00:03
+    entity_id:
+    - media_player.bedroom
+    - media_player.kitchen
+    - media_player.living_room
   condition:
   - condition: template
-    value_template: '{{ is_state(trigger.entity_id.replace(''media_player.'', ''input_boolean.pressed_pause_''),
-      ''on'') }}'
+    value_template: '{{ trigger.entity_id == ''media_player.'' + states(''input_select.music_controller'')
+      }}'
   action:
+  - service: script.sonos_set_controller
+    data_template:
+      target_player: "{% if is_state('media_player.living_room', 'playing') and 'media_player.living_room'\
+        \ == state_attr('media_player.living_room', 'sonos_group')[0] %}\n  media_player.living_room\n\
+        {% elif is_state('media_player.kitchen', 'playing') and 'media_player.kitchen'\
+        \ == state_attr('media_player.kitchen', 'sonos_group')[0] %}\n  media_player.kitchen\n\
+        {% elif is_state('media_player.bedroom', 'playing') and 'media_player.bedroom'\
+        \ == state_attr('media_player.bedroom', 'sonos_group')[0] %}\n  media_player.bedroom\n\
+        {% endif %}\n"
+- id: pause_play_skip
+  alias: Pause Play, Skip
+  description: ''
+  trigger:
+  - platform: state
+    from: playing
+    to: paused
+    entity_id:
+    - media_player.bedroom
+    - media_player.kitchen
+    - media_player.living_room
+  condition: []
+  action:
+  - wait_template: '{{ is_state(trigger.entity_id, ''playing'') }}'
+    timeout: 2
+    continue_on_timeout: false
   - data_template:
       entity_id: '{{ trigger.entity_id }}'
     service: media_player.media_next_track
@@ -434,18 +415,13 @@
 - id: apple_watch_group
   alias: AW Group
   trigger:
-  - event_data:
-      actionName: bedroom
+  - platform: event
     event_type: ios.action_fired
-    platform: event
-  - event_data:
-      actionName: kitchen
-    event_type: ios.action_fired
-    platform: event
-  - event_data:
-      actionName: living_room
-    event_type: ios.action_fired
-    platform: event
+    event_data:
+      actionName:
+      - bedroom
+      - kitchen
+      - living_room
   action:
   - service: script.sonos_group
     data_template:
@@ -454,18 +430,13 @@
   alias: Notify When Garage Is Open
   description: ''
   trigger:
-  - entity_id: cover.garage_door
-    for: 00:20:00
-    platform: state
+  - platform: state
     to: open
-  - entity_id: cover.garage_door
-    for: 00:40:00
-    platform: state
-    to: open
-  - entity_id: cover.garage_door
-    for: 01:00:00
-    platform: state
-    to: open
+    entity_id: cover.garage_door
+    for:
+    - 00:20:00
+    - 00:40:00
+    - 01:00:00
   condition: []
   action:
   - data_template:
@@ -504,30 +475,15 @@
   alias: Notify When A Door Is Open
   description: ''
   trigger:
-  - entity_id: binary_sensor.front_door
-    for: 00:20:00
-    platform: state
+  - platform: state
     to: 'on'
-  - entity_id: binary_sensor.front_door
-    for: 00:40:00
-    platform: state
-    to: 'on'
-  - entity_id: binary_sensor.front_door
-    for: 01:00:00
-    platform: state
-    to: 'on'
-  - entity_id: binary_sensor.side_door
-    for: 00:20:00
-    platform: state
-    to: 'on'
-  - entity_id: binary_sensor.side_door
-    for: 00:40:00
-    platform: state
-    to: 'on'
-  - entity_id: binary_sensor.side_door
-    for: 01:00:00
-    platform: state
-    to: 'on'
+    entity_id:
+    - binary_sensor.front_door
+    - binary_sensor.side_door
+    for:
+    - 00:20:00
+    - 00:40:00
+    - 01:00:00
   condition: []
   action:
   - data_template:
@@ -555,13 +511,10 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: media_player.guest_room_stereo_main
     to: 'off'
-    from: 'on'
-  - platform: state
-    entity_id: media_player.vizio_smartcast
-    to: 'off'
-    from: 'on'
+    entity_id:
+    - media_player.guest_room_stereo_main
+    - media_player.vizio_smartcast
   condition:
   - condition: state
     entity_id: input_boolean.guests_visiting
@@ -574,8 +527,6 @@
       entity_id: sun.sun
       state: below_horizon
   action:
-  - service: input_boolean.turn_on
-    entity_id: input_boolean.tv_off_recent
   - service: input_boolean.turn_on
     entity_id: input_boolean.tv_off_recent
   - service: script.coming_up
@@ -596,11 +547,10 @@
   description: ''
   trigger:
   - platform: state
-    entity_id: media_player.guest_room_stereo_main
     to: 'on'
-  - platform: state
-    entity_id: media_player.vizio_smartcast
-    to: 'on'
+    entity_id:
+    - media_player.guest_room_stereo_main
+    - media_player.vizio_smartcast
   condition:
   - condition: state
     entity_id: input_boolean.tv_off_recent
