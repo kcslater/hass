@@ -85,9 +85,9 @@
     data:
       entity_id: alarm_control_panel.abode_alarm
   - service: script.lock_if_closed
-  - service: input_boolean.turn_on
-    data:
-      entity_id: input_boolean.alexa_ha_nightlight
+  # - service: input_boolean.turn_on
+  #   data:
+  #     entity_id: input_boolean.alexa_ha_nightlight
 - id: everything_off_2am
   alias: 2 AM Not Present, Everything Off
   trigger:
@@ -111,9 +111,9 @@
   - service: input_boolean.turn_off
     data:
       entity_id: input_boolean.sleeping
-  - service: input_boolean.turn_off
-    data:
-      entity_id: input_boolean.alexa_ha_nightlight
+  # - service: input_boolean.turn_off
+  #   data:
+  #     entity_id: input_boolean.alexa_ha_nightlight
 - id: standby_arrival
   alias: Anyone Arrives, Standby
   trigger:
@@ -512,9 +512,11 @@
   trigger:
   - platform: state
     to: 'off'
-    entity_id:
-    - media_player.guest_room_stereo_main
-    - media_player.vizio_smartcast
+    entity_id: media_player.guest_room_stereo_main
+  - platform: state
+    to: 'off'
+    from: 'on'
+    entity_id: media_player.vizio_smartcast
   condition:
   - condition: state
     entity_id: input_boolean.guests_visiting

@@ -8,8 +8,6 @@ good_morning:
         brightness_pct: 100
     - service: input_boolean.turn_off
       entity_id: input_boolean.sleeping
-    - service: input_boolean.turn_off
-      entity_id: input_boolean.nightlight
 
 lock_if_closed_1:
   alias: "Lock The Door If Closed And Unlocked"
@@ -78,9 +76,6 @@ nighttime:
       state: 'off'
     - service: homeassistant.turn_off
       entity_id: group.guest_room
-    # Turn on nightlight
-    - service: input_boolean.turn_on
-      entity_id: input_boolean.alexa_ha_nightlight
 
 everything_off:
   alias: "Everything Off"
