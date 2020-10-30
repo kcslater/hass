@@ -12,7 +12,7 @@ filter:
     - light.backyard
     - light.porch_lamp
     - media_player.spotify
-    - media_player.vizio_smartcast
+    - media_player.television
     - script.close_garage
     - script.lock_if_closed_1
     - script.base_off

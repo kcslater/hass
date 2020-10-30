@@ -115,7 +115,9 @@ tv_time:
       data:
         entity_id: media_player.guest_room_stereo_main
         source: 'tv'
-   # Turn on lamp and fade out
+    - service: media_player.turn_on
+      entity_id: media_player.television
+    # Turn on lamp and fade out
     - condition: or
       conditions:
         - condition: state

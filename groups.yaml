@@ -15,13 +15,12 @@
     entities:
       - light.living_room
       - switch.kitchen_light
-      - input_boolean.alexa_ha_plug
   guest_room:
     name: Guest Room
     entities:
       - light.guest_room
       - media_player.guest_room_stereo_main
-      - media_player.vizio_smartcast
+      - media_player.television
   all_present:
     name: All Present
     entities:
