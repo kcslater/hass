@@ -65,6 +65,7 @@ input_select:
 device_tracker:
   - platform: netgear
     password: !secret netgear_password
+    host: !secret netgear_host
     devices:
       - !secret m_mac
       - !secret k_mac
