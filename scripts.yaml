@@ -108,6 +108,8 @@ tv_time:
   alias: "TV Time"
   sequence:
     - service: script.base_off
+    - service: light.turn_off
+      entity_id: light.bedroom
     # Set soundbar to correct input
     - service: media_player.turn_on
       entity_id: media_player.guest_room_stereo_main
@@ -422,6 +424,22 @@ sonos_set_controller:
         option: >
           {{ target_player.replace('media_player.', '') }}
       entity_id: input_select.music_controller
+
+sonos_check_controller:
+  alias: "Check Music Controller"
+  sequence:
+    - condition: template
+      value_template: '{{ not is_state(''media_player.''+states(''input_select.music_controller''),
+        ''playing'') }}'
+    - service: script.sonos_set_controller
+      data_template:
+        target_player: "{% if is_state('media_player.living_room', 'playing') and 'media_player.living_room'\
+          \ == state_attr('media_player.living_room', 'sonos_group')[0] %}\n  media_player.living_room\n\
+          {% elif is_state('media_player.kitchen', 'playing') and 'media_player.kitchen'\
+          \ == state_attr('media_player.kitchen', 'sonos_group')[0] %}\n  media_player.kitchen\n\
+          {% elif is_state('media_player.bedroom', 'playing') and 'media_player.bedroom'\
+          \ == state_attr('media_player.bedroom', 'sonos_group')[0] %}\n  media_player.bedroom\n\
+          {% endif %}\n"
 
 sonos_pause:
   alias: "Sonos Pause"
