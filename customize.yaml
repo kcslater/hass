@@ -17,6 +17,8 @@ media_player.kitchen:
   icon: mdi:speaker
 media_player.bedroom:
   icon: mdi:speaker
+media_player.office:
+  icon: mdi:speaker
 media_player.guest_room_stereo_main:
   icon: mdi:speaker
 switch.backyard_lights:

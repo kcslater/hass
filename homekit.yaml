@@ -54,6 +54,9 @@ entity_config:
   media_player.bedroom:
     feature_list:
       - feature: play_pause
+  media_player.office:
+    feature_list:
+      - feature: play_pause
   media_player.guest_room_stereo_main:
     name: "Guest Room Stereo"
     feature_list:

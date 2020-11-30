@@ -1,3 +1,16 @@
+- id: tree_sunset
+  alias: Sunset, Turn on Christmas Tree
+  trigger:
+  - platform: state
+    entity_id: sun.sun
+    to: 'below_horizon'
+  condition:
+  - condition: state
+    entity_id: group.all_present
+    state: 'on'
+  action:
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.alexa_ha_plug
 - id: porch_light_on_front_door_opens
   alias: Porch Light On When Front Door Opens
   trigger:
@@ -45,9 +58,7 @@
     entity_id: sensor.hue_dimmer_switch_1
     to: 1_hold
   action:
-    service: script.turn_on
-    data:
-      entity_id: script.time_for_bed
+    service: script.time_for_bed
 - id: goodnight_hue
   alias: Hold Hue Off Button, Goodnight
   trigger:
@@ -55,9 +66,7 @@
     entity_id: sensor.hue_dimmer_switch_1
     to: 4_hold
   action:
-    service: script.turn_on
-    data:
-      entity_id: script.goodnight
+    service: script.goodnight
 - id: standby_5am
   alias: 5 AM Present, Standby
   trigger:
@@ -139,6 +148,7 @@
     entity_id:
     - binary_sensor.m_present
     - binary_sensor.k_present
+    - input_boolean.x_present
   condition:
   - condition: state
     entity_id: input_boolean.sleeping
@@ -178,9 +188,10 @@
       entity_id: sun.sun
       state: below_horizon
   action:
-  - data:
-      entity_id: light.living_room
-    service: light.turn_on
+  - service: light.turn_on
+    entity_id: light.living_room
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.alexa_ha_plug
 - id: goodbye_last_exit
   alias: Last Person Leaves, Goodbye
   trigger:
@@ -192,9 +203,7 @@
     entity_id: input_boolean.sleeping
     state: 'off'
   action:
-  - service: script.turn_on
-    data:
-      entity_id: script.goodbye
+  - service: script.goodbye
 - id: goodbye_away
   alias: Abode_alarm to Away, Goodbye
   trigger:
@@ -202,9 +211,7 @@
     entity_id: alarm_control_panel.abode_alarm
     to: armed_away
   action:
-  - service: script.turn_on
-    data:
-      entity_id: script.goodbye
+  - service: script.goodbye
 - id: mute_dn_up_dn
   alias: Soundbar Down Up Down, Mute
   trigger:
@@ -212,7 +219,7 @@
     entity_id: sensor.guest_room_volume
   condition:
   - condition: template
-    value_template: '{{ vol_new < vol_old }}'
+    value_template: '{{ trigger.to_state.state < trigger.from_state.state }}'
   - condition: template
     value_template: '{{ not is_state(''media_player.guest_room_stereo_main'', ''off'')
       }}'
@@ -225,12 +232,8 @@
   action:
   - service: script.down_up_down_mute
     data_template:
-      vol_old: '{{ vol_old }}'
-      vol_new: '{{ vol_new }}'
-  mode: single
-  variables:
-    vol_old: '{{ trigger.from_state.state }}'
-    vol_new: '{{ trigger.to_state.state }}'
+      vol_old: '{{ trigger.from_state.state }}'
+      vol_new: '{{ trigger.to_state.state }}'
 - id: lights_up_dn
   alias: Soundbar Up Down, Lights
   trigger:
@@ -238,7 +241,7 @@
     entity_id: sensor.guest_room_volume
   condition:
   - condition: template
-    value_template: '{{ vol_new > vol_old }}'
+    value_template: '{{ trigger.to_state.state > trigger.from_state.state }}'
   - condition: template
     value_template: '{{ not is_state(''media_player.guest_room_stereo_main'', ''off'')
       }}'
@@ -251,12 +254,8 @@
   action:
   - service: script.up_down_lights
     data_template:
-      vol_old: '{{ vol_old }}'
-      vol_new: '{{ vol_new }}'
-  mode: single
-  variables:
-    vol_old: '{{ trigger.from_state.state }}'
-    vol_new: '{{ trigger.to_state.state }}'
+      vol_old: '{{ trigger.from_state.state }}'
+      vol_new: '{{ trigger.to_state.state }}'
 - id: auto_lock
   alias: Lock After 20 Minutes
   description: ''
@@ -279,6 +278,7 @@
     - sensor.bedroom_volume
     - sensor.kitchen_volume
     - sensor.living_room_volume
+    - sensor.office_volume
   condition:
   - condition: template
     value_template: '{{ not is_state(''media_player.living_room'', ''playing'') }}'
@@ -286,6 +286,8 @@
     value_template: '{{ not is_state(''media_player.kitchen'', ''playing'') }}'
   - condition: template
     value_template: '{{ not is_state(''media_player.bedroom'', ''playing'') }}'
+  - condition: template
+    value_template: '{{ not is_state(''media_player.office'', ''playing'') }}'
   action:
   - service: sonos.unjoin
     data_template:
@@ -300,9 +302,10 @@
     - sensor.bedroom_volume
     - sensor.kitchen_volume
     - sensor.living_room_volume
+    - sensor.office_volume
   condition:
   - condition: template
-    value_template: '{{ trigger.to_state.state > trigger.from_state.state }}'
+    value_template: '{{ trigger.to_state.state | float > trigger.from_state.state | float }}'
   - condition: template
     value_template: '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'','''').replace(''_volume'',''''),
       ''playing'') }}'
@@ -316,6 +319,9 @@
         state: 'playing'
       - condition: state
         entity_id: media_player.bedroom
+        state: 'playing'
+      - condition: state
+        entity_id: media_player.office
         state: 'playing'
   action:
   - service: script.sonos_check_controller
@@ -332,6 +338,7 @@
     - sensor.bedroom_volume
     - sensor.kitchen_volume
     - sensor.living_room_volume
+    - sensor.office_volume
   condition:
   - condition: template
     value_template: '{{ trigger.to_state.state < trigger.from_state.state }}'
@@ -348,6 +355,9 @@
         state: 'playing'
       - condition: state
         entity_id: media_player.bedroom
+        state: 'playing'
+      - condition: state
+        entity_id: media_player.office
         state: 'playing'
   action:
   - service: script.sonos_check_controller
@@ -366,6 +376,7 @@
     - media_player.bedroom
     - media_player.kitchen
     - media_player.living_room
+    - media_player.office
   condition:
   - condition: template
     value_template: '{{ trigger.entity_id != ''media_player.'' + states(''input_select.music_controller'')
@@ -385,6 +396,7 @@
     - media_player.bedroom
     - media_player.kitchen
     - media_player.living_room
+    - media_player.office
   condition:
   - condition: template
     value_template: '{{ trigger.entity_id == ''media_player.'' + states(''input_select.music_controller'')
@@ -398,6 +410,8 @@
         \ == state_attr('media_player.kitchen', 'sonos_group')[0] %}\n  media_player.kitchen\n\
         {% elif is_state('media_player.bedroom', 'playing') and 'media_player.bedroom'\
         \ == state_attr('media_player.bedroom', 'sonos_group')[0] %}\n  media_player.bedroom\n\
+        {% elif is_state('media_player.office', 'playing') and 'media_player.office'\
+        \ == state_attr('media_player.office', 'sonos_group')[0] %}\n  media_player.office\n\
         {% endif %}\n"
 - id: sonos_pause_play_skip
   alias: Sonos Pause Play, Skip
@@ -410,6 +424,7 @@
     - media_player.bedroom
     - media_player.kitchen
     - media_player.living_room
+    - media_player.office
   condition: []
   action:
   - wait_template: '{{ is_state(trigger.entity_id, ''playing'') }}'
@@ -436,6 +451,7 @@
       - bedroom
       - kitchen
       - living_room
+      - office
   action:
   - service: script.sonos_group
     data_template:
@@ -529,8 +545,8 @@
 
         '
     service: notify.mobile_app_meghans_iphone
-- id: soundbar_or_tv_off_lights_on
-  alias: Soundbar or TV Off, Lights On
+- id: soundbar_or_tv_off_lights_on_noguests
+  alias: Soundbar or TV Off Without Guests, Lights On
   description: ''
   trigger:
   - platform: state
@@ -556,6 +572,31 @@
     entity_id: input_boolean.tv_off_recent
   - service: script.coming_up
   mode: single
+- id: soundbar_or_tv_off_lights_on_guests
+  alias: Soundbar or TV Off With Guests, Lights On
+  description: ''
+  trigger:
+  - platform: state
+    to: 'off'
+    entity_id: media_player.guest_room_stereo_main
+  - platform: state
+    to: 'off'
+    from: 'on'
+    entity_id: media_player.television
+  condition:
+  - condition: state
+    entity_id: input_boolean.guests_visiting
+    state: 'on'
+  - condition: or
+    conditions:
+    - condition: time
+      after: '20:00'
+    - condition: state
+      entity_id: sun.sun
+      state: below_horizon
+  action:
+  - service: light.turn_on
+    entity_id: light.guest_room
 - id: turn_off_tv_off_recent
   alias: Turn Off TV-Off-Recent Indicator After 1 Minute
   description: ''

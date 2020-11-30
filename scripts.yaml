@@ -49,6 +49,8 @@ base_off:
       entity_id: media_player.kitchen
     - service: media_player.media_pause
       entity_id: media_player.living_room
+    - service: media_player.media_pause
+      entity_id: media_player.office
     # Turn off upstairs and basement
     - service: homeassistant.turn_off
       entity_id: group.upstairs
@@ -203,14 +205,14 @@ down_up_down_mute:
       timeout: 1
       continue_on_timeout: false
     - condition: template
-      value_template: "{{ states('sensor.guest_room_volume') > vol_new }}"
+      value_template: "{{ states('sensor.guest_room_volume') | float > vol_new }}"
     - wait_for_trigger:
         - platform: state
           entity_id: sensor.guest_room_volume
       timeout: 1
       continue_on_timeout: false
     - condition: template
-      value_template: "{{ states('sensor.guest_room_volume') < vol_old }}"
+      value_template: "{{ states('sensor.guest_room_volume') | float < vol_old }}"
     - service: media_player.volume_mute
       data:
         entity_id: media_player.guest_room_stereo_main
@@ -225,7 +227,7 @@ up_down_lights:
       timeout: 1
       continue_on_timeout: false
     - condition: template
-      value_template: "{{ states('sensor.guest_room_volume') < vol_new }}"
+      value_template: "{{ states('sensor.guest_room_volume') | float < vol_new }}"
     - service: light.toggle
       entity_id: light.guest_room
     - delay: 00:00:03
@@ -303,6 +305,7 @@ sonos_ungroup:
 sonos_move:
   alias: "Sonos Move"
   sequence:
+    - service: script.sonos_ungroup_all
     - service: script.sonos_group
       data_template:
         target_player: '{{ new_player }}'
@@ -337,6 +340,14 @@ sonos_move_living_room:
         new_player: 'media_player.living_room'
         old_player: '{{ ''media_player.'' + states(''input_select.music_controller'') }}'
 
+sonos_move_office:
+  alias: "Sonos Move Office"
+  sequence:
+    - service: script.sonos_move
+      data_template:
+        new_player: 'media_player.office'
+        old_player: '{{ ''media_player.'' + states(''input_select.music_controller'') }}'
+
 sonos_group_bedroom:
   alias: "Sonos Group Bedroom"
   sequence:
@@ -358,6 +369,13 @@ sonos_group_living_room:
       data:
         target_player: media_player.living_room
 
+sonos_group_office:
+  alias: "Sonos Group Office"
+  sequence:
+    - service: script.sonos_group
+      data:
+        target_player: media_player.office
+
 sonos_group_all:
   alias: "Sonos Group All"
   sequence:
@@ -370,6 +388,9 @@ sonos_group_all:
     - service: script.sonos_group
       data:
         target_player: media_player.bedroom
+    - service: script.sonos_group
+      data:
+        target_player: media_player.office
 
 sonos_ungroup_all:
   alias: "Sonos Ungroup All"
@@ -378,17 +399,13 @@ sonos_ungroup_all:
       data_template:
         entity_id: >
           {% if states('input_select.music_controller') == 'bedroom' %}
-            media_player.kitchen
-          {% else %}
-            media_player.bedroom
-          {% endif %}
-    - service: sonos.unjoin
-      data_template:
-        entity_id: >
-          {% if states('input_select.music_controller') == 'bedroom' or states('input_select.music_controller') == 'kitchen' %}
-            media_player.living_room
-          {% else %}
-            media_player.kitchen
+            ['media_player.kitchen', 'media_player.living_room', 'media_player.office']
+          {% elif states('input_select.music_controller') == 'kitchen' %}
+            ['media_player.bedroom', 'media_player.living_room', 'media_player.office']
+          {% elif states('input_select.music_controller') == 'living_room' %}
+            ['media_player.bedroom', 'media_player.kitchen', 'media_player.office']
+          {% elif states('input_select.music_controller') == 'office' %}
+            ['media_player.bedroom', 'media_player.kitchen', 'media_player.living_room']
           {% endif %}
 
 sonos_ungroup_bedroom:
@@ -408,6 +425,12 @@ sonos_ungroup_living_room:
   sequence:
     - service: sonos.unjoin
       entity_id: media_player.living_room
+
+sonos_ungroup_office:
+  alias: "Sonos Ungroup Office"
+  sequence:
+    - service: sonos.unjoin
+      entity_id: media_player.office
 
 sonos_set_controller:
   alias: "Set Music Controller"
@@ -439,6 +462,8 @@ sonos_check_controller:
           \ == state_attr('media_player.kitchen', 'sonos_group')[0] %}\n  media_player.kitchen\n\
           {% elif is_state('media_player.bedroom', 'playing') and 'media_player.bedroom'\
           \ == state_attr('media_player.bedroom', 'sonos_group')[0] %}\n  media_player.bedroom\n\
+          {% elif is_state('media_player.office', 'playing') and 'media_player.office'\
+          \ == state_attr('media_player.office', 'sonos_group')[0] %}\n  media_player.office\n\
           {% endif %}\n"
 
 sonos_pause:
@@ -482,6 +507,10 @@ spotify_switch:
 spotify_bedroom:
   alias: "Spotify Bedroom"
   sequence:
+    - service: media_player.volume_set
+      data:
+        entity_id: media_player.bedroom
+        volume_level: 0.14
     - service: script.spotify_switch
       data:
         title: "Bedroom"
@@ -508,7 +537,21 @@ spotify_living_room:
 spotify_guest_room:
   alias: "Spotify Guest Room"
   sequence:
+    - service: media_player.volume_set
+      data:
+        entity_id: media_player.guest_room_stereo_main
+        volume_level: 0.15
     - service: script.spotify_switch
       data:
         title: "Guest Room Stereo"
 
+spotify_office:
+  alias: "Spotify Office"
+  sequence:
+    - service: media_player.volume_set
+      data:
+        entity_id: media_player.office
+        volume_level: 0.14
+    - service: script.spotify_switch
+      data:
+        title: "Office"
