@@ -15,7 +15,7 @@
     entities:
       - light.living_room
       - switch.kitchen_light
-      - input_boolean.alexa_ha_plug
+    #   - input_boolean.alexa_ha_plug
   guest_room:
     name: Guest Room
     entities:

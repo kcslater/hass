@@ -3,7 +3,7 @@
   trigger:
   - platform: state
     entity_id: sun.sun
-    to: 'below_horizon'
+    to: below_horizon
   condition:
   - condition: state
     entity_id: group.all_present
@@ -54,19 +54,25 @@
 - id: time_for_bed_hue
   alias: Hold Hue On Button, Time For Bed
   trigger:
-  - platform: state
-    entity_id: sensor.hue_dimmer_switch_1
-    to: 1_hold
+  - device_id: ba4f5d90868d83280e80b115569b5853
+    domain: hue
+    platform: device
+    type: remote_button_long_release
+    subtype: turn_on
   action:
-    service: script.time_for_bed
+  - service: script.time_for_bed
+  mode: single
 - id: goodnight_hue
   alias: Hold Hue Off Button, Goodnight
   trigger:
-  - platform: state
-    entity_id: sensor.hue_dimmer_switch_1
-    to: 4_hold
+  - device_id: ba4f5d90868d83280e80b115569b5853
+    domain: hue
+    platform: device
+    type: remote_button_long_release
+    subtype: turn_off
   action:
-    service: script.goodnight
+  - service: script.goodnight
+  mode: single
 - id: standby_5am
   alias: 5 AM Present, Standby
   trigger:
@@ -94,9 +100,6 @@
     data:
       entity_id: alarm_control_panel.abode_alarm
   - service: script.lock_if_closed
-  # - service: input_boolean.turn_on
-  #   data:
-  #     entity_id: input_boolean.alexa_ha_nightlight
 - id: everything_off_2am
   alias: 2 AM Not Present, Everything Off
   trigger:
@@ -120,9 +123,6 @@
   - service: input_boolean.turn_off
     data:
       entity_id: input_boolean.sleeping
-  # - service: input_boolean.turn_off
-  #   data:
-  #     entity_id: input_boolean.alexa_ha_nightlight
 - id: standby_arrival
   alias: Anyone Arrives, Standby
   trigger:
@@ -213,7 +213,7 @@
   action:
   - service: script.goodbye
 - id: mute_dn_up_dn
-  alias: Soundbar Down Up Down, Mute
+  alias: Soundbar Volume Down Up Down, Mute
   trigger:
   - platform: state
     entity_id: sensor.guest_room_volume
@@ -234,6 +234,7 @@
     data_template:
       vol_old: '{{ trigger.from_state.state }}'
       vol_new: '{{ trigger.to_state.state }}'
+  mode: single
 - id: lights_up_dn
   alias: Soundbar Up Down, Lights
   trigger:
@@ -291,7 +292,7 @@
   action:
   - service: sonos.unjoin
     data_template:
-      entity_id: '{{ ''media_player.''+trigger.entity_id.replace(''sensor.'', '''').replace(''_volume'','''')
+      entity_id: '{{ ''media_player.''+trigger.entity_id.replace(''sensor.'', '''''''').replace(''_volume'','''''''')
         }}'
 - id: sonos_volume_up_group
   alias: Volume Up, Sonos Group
@@ -305,29 +306,30 @@
     - sensor.office_volume
   condition:
   - condition: template
-    value_template: '{{ trigger.to_state.state | float > trigger.from_state.state | float }}'
+    value_template: '{{ trigger.to_state.state | float > trigger.from_state.state
+      | float }}'
   - condition: template
-    value_template: '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'','''').replace(''_volume'',''''),
+    value_template: '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'','''''''').replace(''_volume'',''''''''),
       ''playing'') }}'
   - condition: or
     conditions:
-      - condition: state
-        entity_id: media_player.living_room
-        state: 'playing'
-      - condition: state
-        entity_id: media_player.kitchen
-        state: 'playing'
-      - condition: state
-        entity_id: media_player.bedroom
-        state: 'playing'
-      - condition: state
-        entity_id: media_player.office
-        state: 'playing'
+    - condition: state
+      entity_id: media_player.living_room
+      state: playing
+    - condition: state
+      entity_id: media_player.kitchen
+      state: playing
+    - condition: state
+      entity_id: media_player.bedroom
+      state: playing
+    - condition: state
+      entity_id: media_player.office
+      state: playing
   action:
   - service: script.sonos_check_controller
   - service: script.sonos_group
     data_template:
-      target_player: media_player.{{ trigger.entity_id.replace('sensor.', '').replace('_volume','')
+      target_player: media_player.{{ trigger.entity_id.replace('sensor.', '''').replace('_volume','''')
         }}
 - id: sonos_volume_down_move
   alias: Volume Down, Sonos Move
@@ -343,27 +345,27 @@
   - condition: template
     value_template: '{{ trigger.to_state.state < trigger.from_state.state }}'
   - condition: template
-    value_template: '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'','''').replace(''_volume'',''''),
+    value_template: '{{ not is_state(''media_player.''+trigger.entity_id.replace(''sensor.'','''''''').replace(''_volume'',''''''''),
       ''playing'') }}'
   - condition: or
     conditions:
-      - condition: state
-        entity_id: media_player.living_room
-        state: 'playing'
-      - condition: state
-        entity_id: media_player.kitchen
-        state: 'playing'
-      - condition: state
-        entity_id: media_player.bedroom
-        state: 'playing'
-      - condition: state
-        entity_id: media_player.office
-        state: 'playing'
+    - condition: state
+      entity_id: media_player.living_room
+      state: playing
+    - condition: state
+      entity_id: media_player.kitchen
+      state: playing
+    - condition: state
+      entity_id: media_player.bedroom
+      state: playing
+    - condition: state
+      entity_id: media_player.office
+      state: playing
   action:
   - service: script.sonos_check_controller
   - service: script.sonos_move
     data_template:
-      new_player: '{{ trigger.entity_id.replace(''sensor.'', ''media_player.'').replace(''_volume'','''')
+      new_player: '{{ trigger.entity_id.replace(''sensor.'', ''media_player.'').replace(''_volume'','''''''')
         }}'
       old_player: '{{ ''media_player.'' + states(''input_select.music_controller'')  }}'
 - id: sonos_play_change_controller
@@ -433,6 +435,50 @@
   - data_template:
       entity_id: '{{ trigger.entity_id }}'
     service: media_player.media_next_track
+- id: sonos_volume_down_up_drop
+  alias: Sonos Volume Down Up, Sonos Drop
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - sensor.bedroom_volume
+    - sensor.kitchen_volume
+    - sensor.living_room_volume
+    - sensor.office_volume
+  condition:
+  - condition: template
+    value_template: '{{ is_state(''media_player.''+trigger.entity_id.replace(''sensor.'','''''''').replace(''_volume'',''''''''),
+      ''playing'') }}'
+  - condition: template
+    value_template: '{{ trigger.to_state.state < trigger.from_state.state }}'
+  action:
+  - wait_template: '{{ is_state(trigger.entity_id, trigger.from_state.state) }}'
+    timeout: '1'
+    continue_on_timeout: false
+  - service: sonos.unjoin
+    data_template:
+      entity_id: '{{ ''media_player.''+trigger.entity_id.replace(''sensor.'', '''''''').replace(''_volume'','''''''')
+        }}'
+  mode: single
+- id: sonos_off_30_minutes_reset_volume
+  alias: Sonos Paused 30 Minutes, Reset Volume
+  description: ''
+  trigger:
+  - platform: state
+    to: idle
+    for:
+      minutes: 30
+    entity_id:
+    - media_player.bedroom
+    - media_player.kitchen
+    - media_player.living_room
+    - media_player.office
+  condition: []
+  action:
+  - service: media_player.volume_set
+    data_template:
+      entity_id: '{{ trigger.entity_id }}'
+      volume_level: 0.25
 - id: spotify_guest_room_echo
   alias: Spotify from Guest Room Echo to Stereo
   trigger:
@@ -463,10 +509,15 @@
   - platform: state
     to: open
     entity_id: cover.garage_door
-    for:
-    - 00:20:00
-    - 00:40:00
-    - 01:00:00
+    for: 00:20:00
+  - platform: state
+    to: open
+    entity_id: cover.garage_door
+    for: 00:40:00
+  - platform: state
+    to: open
+    entity_id: cover.garage_door
+    for: 01:00:00
   condition: []
   action:
   - data_template:
@@ -474,10 +525,8 @@
         push:
           badge: 0
           category: garage
-      message: 'Hey silly, the garage has been open for {{ (trigger.for|string)[2:4].replace(''00'',''60'')
+      message: Hey silly, the garage has been open for {{ (trigger.for|string)[2:4].replace('00','60')
         }} minutes!
-
-        '
       title: Garage Open
     service: notify.mobile_app_eye_phone
   - data_template:
@@ -485,10 +534,8 @@
         push:
           badge: 0
           category: garage
-      message: 'Hey silly, the garage has been open for {{ (trigger.for|string)[2:4].replace(''00'',''60'')
+      message: Hey silly, the garage has been open for {{ (trigger.for|string)[2:4].replace('00','60')
         }} minutes!
-
-        '
       title: Garage Open
     service: notify.mobile_app_meghans_iphone
 - id: ios_garage_triggered
@@ -526,24 +573,14 @@
   condition: []
   action:
   - data_template:
-      message: 'Hey silly, the {{ state_attr(trigger.entity_id, ''friendly_name'')|lower
-        }} has been open for {{ (trigger.for|string)[2:4].replace(''00'',''60'') }}
-        minutes!
-
-        '
-      title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open
-
-        '
+      message: Hey silly, the {{ state_attr(trigger.entity_id, 'friendly_name')|lower
+        }} has been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
+      title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
     service: notify.mobile_app_eye_phone
   - data_template:
-      message: 'Hey silly, the {{ state_attr(trigger.entity_id, ''friendly_name'')|lower
-        }} has been open for {{ (trigger.for|string)[2:4].replace(''00'',''60'') }}
-        minutes!
-
-        '
-      title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open
-
-        '
+      message: Hey silly, the {{ state_attr(trigger.entity_id, 'friendly_name')|lower
+        }} has been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
+      title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
     service: notify.mobile_app_meghans_iphone
 - id: soundbar_or_tv_off_lights_on_noguests
   alias: Soundbar or TV Off Without Guests, Lights On
@@ -559,6 +596,9 @@
   condition:
   - condition: state
     entity_id: input_boolean.guests_visiting
+    state: 'off'
+  - condition: state
+    entity_id: light.guest_room
     state: 'off'
   - condition: or
     conditions:
@@ -587,6 +627,9 @@
   - condition: state
     entity_id: input_boolean.guests_visiting
     state: 'on'
+  - condition: state
+    entity_id: light.guest_room
+    state: 'off'
   - condition: or
     conditions:
     - condition: time

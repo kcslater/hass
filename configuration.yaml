@@ -79,7 +79,7 @@ device_tracker:
 media_player:
   - platform: yamaha_musiccast
     host: !secret gr_stereo_ip
-    port: !secret gr_stereo_port
+    #port: !secret gr_stereo_port
 
 # Spotify
 spotify:

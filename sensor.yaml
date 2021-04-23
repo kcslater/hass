@@ -1,5 +1,5 @@
 # Hue custom component (installed in config/custom_components/huesensor/)
-- platform: huesensor
+#- platform: huesensor
 # Spotify source
 - platform: template
   sensors:

@@ -93,18 +93,16 @@ everything_off:
 goodnight:
   alias: "Goodnight"
   sequence:
-    - service: script.nighttime
     - service: light.turn_off
-      data:
-        entity_id: light.bedroom
-        # transition: 120
+      entity_id: light.bedroom
+    - service: script.nighttime
 
 time_for_bed:
   alias: "Time For Bed"
   sequence:
-    - service: script.nighttime
     - service: light.turn_on
       entity_id: light.bedroom
+    - service: script.nighttime
 
 tv_time:
   alias: "TV Time"
@@ -146,7 +144,10 @@ coming_up:
       data:
         entity_id: light.guest_room
         brightness_pct: 100
-    - delay: 00:05:00
+    - wait_template: "{{ is_state('light.guest_room', 'off') }}"
+      timeout: 00:05:00
+    - condition: template
+      value_template: "{{ not wait.completed }}"
     - service: light.turn_off
       entity_id: light.guest_room
 
