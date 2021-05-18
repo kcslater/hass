@@ -46,15 +46,19 @@ entity_config:
   light.basement:
     name: "Basement Lights"
   media_player.living_room:
+    name: "Living Room Stereo"
     feature_list:
       - feature: play_pause
   media_player.kitchen:
+    name: "Kitchen Stereo"
     feature_list:
       - feature: play_pause
   media_player.bedroom:
+    name: "Bedroom Stereo"
     feature_list:
       - feature: play_pause
   media_player.office:
+    name: "Office Stereo"
     feature_list:
       - feature: play_pause
   media_player.guest_room_stereo_main:

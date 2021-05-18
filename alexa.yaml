@@ -31,6 +31,7 @@ smart_home:
       - switch.if_anyone_arrives_then_standby
       - switch.if_last_person_leaves_then_away
       - switch.kitchen_light
+      - media_player.guest_room_stereo_main
   entity_config:
     input_boolean.alexa_ha_nightlight:
       name: "Alexa HA - Nightlight"
