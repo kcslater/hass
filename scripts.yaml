@@ -497,6 +497,20 @@ sonos_previous:
 
 ### SPOTIFY SCRIPTS
 
+spotify_pause:
+  alias: "Spotify Pause"
+  sequence:
+    - service: media_player.media_pause
+      data:
+        entity_id: media_player.spotify
+
+spotify_play:
+  alias: "Spotify Play"
+  sequence:
+    - service: media_player.media_play
+      data:
+        entity_id: media_player.spotify
+
 spotify_switch:
   alias: "Spotify Switch"
   sequence: 

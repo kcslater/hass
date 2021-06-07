@@ -17,8 +17,8 @@
     name: TV Off Recent
     icon: mdi:television-off
   alexa_ha_plug:
-    name: Christmas Tree
-    icon: mdi:pine-tree
+    name: Salt Lamp
+    icon: mdi:lava-lamp
   alexa_ha_nightlight:
     name: Nightlight
     icon: mdi:dome-light

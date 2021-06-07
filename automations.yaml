@@ -52,7 +52,7 @@
     data:
       notification_id: config_entry_discovery
 - id: time_for_bed_hue
-  alias: Hold Hue On Button, Time For Bed
+  alias: Hue On Button Hold, Nightlights in Bedroom and Nursery
   trigger:
   - device_id: ba4f5d90868d83280e80b115569b5853
     domain: hue
@@ -60,10 +60,16 @@
     type: remote_button_long_release
     subtype: turn_on
   action:
-  - service: script.time_for_bed
+  - service: light.turn_on
+    target:
+      entity_id:
+      - light.kailins_lamp
+      - light.meghans_lamp
+    data:
+      brightness_pct: 1
   mode: single
 - id: goodnight_hue
-  alias: Hold Hue Off Button, Goodnight
+  alias: Hue Off Button Hold, Goodnight
   trigger:
   - device_id: ba4f5d90868d83280e80b115569b5853
     domain: hue
@@ -669,3 +675,33 @@
     entity_id: switch.kitchen_lights
   - service: input_boolean.turn_off
     entity_id: input_boolean.tv_off_recent
+- id: '1623041044622'
+  alias: Hue On Button Tap, Salt Lamp On
+  description: When Hue remote is pressed on, salt lamp turns on
+  trigger:
+  - device_id: ba4f5d90868d83280e80b115569b5853
+    domain: hue
+    platform: device
+    type: remote_button_short_release
+    subtype: turn_on
+  condition: []
+  action:
+  - service: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.alexa_ha_plug
+  mode: single
+- id: '1623041440459'
+  alias: Hue Off Button Tap, Salt Lamp Off
+  description: ''
+  trigger:
+  - device_id: ba4f5d90868d83280e80b115569b5853
+    domain: hue
+    platform: device
+    type: remote_button_short_release
+    subtype: turn_off
+  condition: []
+  action:
+  - service: input_boolean.turn_off
+    target:
+      entity_id: input_boolean.alexa_ha_plug
+  mode: single
