@@ -52,7 +52,7 @@
     data:
       notification_id: config_entry_discovery
 - id: time_for_bed_hue
-  alias: Hue On Button Hold, Nightlights in Bedroom and Nursery
+  alias: Hue On Button Hold, Salt Lamp On and Nightlights in Bedroom and Nursery
   trigger:
   - device_id: ba4f5d90868d83280e80b115569b5853
     domain: hue
@@ -60,6 +60,9 @@
     type: remote_button_long_release
     subtype: turn_on
   action:
+  - service: input_boolean.turn_on
+    target:
+      entity_id: input_boolean.alexa_ha_plug
   - service: light.turn_on
     target:
       entity_id:
