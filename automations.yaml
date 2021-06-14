@@ -30,15 +30,16 @@
     data:
       entity_id: light.front_door
 - id: porch_light_off_10mins
-  alias: Porch Light Off After 10 Mins
+  alias: Porch Light Off After 20 Mins
   trigger:
   - platform: state
     entity_id: binary_sensor.closed_light
     to: 'on'
-    for: 00:10:00
+    for: 00:20:00
   action:
   - service: light.turn_off
     entity_id: light.front_door
+  mode: single
 - id: remove_new_devices_notification
   alias: Remove new devices notification
   trigger:
@@ -72,7 +73,7 @@
       brightness_pct: 1
   mode: single
 - id: goodnight_hue
-  alias: Hue Off Button Hold, Goodnight
+  alias: Hue Off Button Hold, Turn off Bedroom and Nursery Lights
   trigger:
   - device_id: ba4f5d90868d83280e80b115569b5853
     domain: hue
@@ -80,7 +81,11 @@
     type: remote_button_long_release
     subtype: turn_off
   action:
-  - service: script.goodnight
+  - service: homeassistant.turn_off
+    target:
+      entity_id:
+      - group.bedroom
+      - light.nursery
   mode: single
 - id: standby_5am
   alias: 5 AM Present, Standby
@@ -557,8 +562,8 @@
   action:
   - entity_id: cover.garage_door
     service: cover.close_cover
-- id: notify_door
-  alias: Notify When A Door Is Open
+- id: notify_door_open_long
+  alias: Notify When A Door Is Open For Long Time
   description: ''
   trigger:
   - platform: state
@@ -591,6 +596,33 @@
         }} has been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
       title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
     service: notify.mobile_app_meghans_iphone
+- id: notify_door_open_no_one_home
+  alias: Notify When Door Opens While No One Is Home
+  description: ''
+  trigger:
+  - platform: state
+    entity_id:
+    - binary_sensor.front_door
+    - binary_sensor.side_door
+    to: 'on'
+  condition:
+  - condition: state
+    entity_id: group.all_present
+    state: 'off'
+  action:
+  - data_template:
+      message: >-
+        Hey, the {{ state_attr(trigger.entity_id, 'friendly_name')|lower }}
+        was just opened, but it appears that no one is home!
+      title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
+    service: notify.mobile_app_eye_phone
+  - data_template:
+      message: >-
+        Hey, the {{ state_attr(trigger.entity_id, 'friendly_name')|lower }}
+        was just opened, but it appears that no one is home!
+      title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
+    service: notify.mobile_app_meghans_iphone
+  mode: single
 - id: soundbar_or_tv_off_lights_on_noguests
   alias: Soundbar or TV Off Without Guests, Lights On
   description: ''
@@ -708,3 +740,4 @@
     target:
       entity_id: input_boolean.alexa_ha_plug
   mode: single
+
