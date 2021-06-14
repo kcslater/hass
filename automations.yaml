@@ -539,8 +539,9 @@
         push:
           badge: 0
           category: garage
-      message: Hey silly, the garage has been open for {{ (trigger.for|string)[2:4].replace('00','60')
-        }} minutes!
+      message: >-
+        The garage has been open for 
+        {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
       title: Garage Open
     service: notify.mobile_app_eye_phone
   - data_template:
@@ -548,8 +549,9 @@
         push:
           badge: 0
           category: garage
-      message: Hey silly, the garage has been open for {{ (trigger.for|string)[2:4].replace('00','60')
-        }} minutes!
+      message: >-
+        The garage has been open for 
+        {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
       title: Garage Open
     service: notify.mobile_app_meghans_iphone
 - id: ios_garage_triggered
@@ -587,12 +589,14 @@
   condition: []
   action:
   - data_template:
-      message: Hey silly, the {{ state_attr(trigger.entity_id, 'friendly_name')|lower
+      message: >-
+        The {{ state_attr(trigger.entity_id, 'friendly_name')|lower
         }} has been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
       title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
     service: notify.mobile_app_eye_phone
   - data_template:
-      message: Hey silly, the {{ state_attr(trigger.entity_id, 'friendly_name')|lower
+      message: >-
+        The {{ state_attr(trigger.entity_id, 'friendly_name')|lower
         }} has been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
       title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
     service: notify.mobile_app_meghans_iphone
@@ -612,14 +616,16 @@
   action:
   - data_template:
       message: >-
-        Hey, the {{ state_attr(trigger.entity_id, 'friendly_name')|lower }}
-        was just opened, but it appears that no one is home!
+        The {{ state_attr(trigger.entity_id, 'friendly_name')|lower }}
+        was just opened, but it appears that no one is home! The alarm system 
+        is currently {{ states('alarm_control_panel.abode_alarm')|upper }}.
       title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
     service: notify.mobile_app_eye_phone
   - data_template:
       message: >-
-        Hey, the {{ state_attr(trigger.entity_id, 'friendly_name')|lower }}
-        was just opened, but it appears that no one is home!
+        The {{ state_attr(trigger.entity_id, 'friendly_name')|lower }}
+        was just opened, but it appears that no one is home! The alarm system 
+        is currently {{ states('alarm_control_panel.abode_alarm')|upper }}.
       title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
     service: notify.mobile_app_meghans_iphone
   mode: single
