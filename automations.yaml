@@ -235,7 +235,7 @@
   - condition: template
     value_template: '{{ trigger.to_state.state < trigger.from_state.state }}'
   - condition: template
-    value_template: '{{ not is_state(''media_player.guest_room_stereo_main'', ''off'')
+    value_template: '{{ not is_state(''media_player.guest_room_stereo'', ''off'')
       }}'
   - condition: state
     entity_id: script.down_up_down_mute
@@ -258,7 +258,7 @@
   - condition: template
     value_template: '{{ trigger.to_state.state > trigger.from_state.state }}'
   - condition: template
-    value_template: '{{ not is_state(''media_player.guest_room_stereo_main'', ''off'')
+    value_template: '{{ not is_state(''media_player.guest_room_stereo'', ''off'')
       }}'
   - condition: state
     entity_id: script.down_up_down_mute
@@ -635,7 +635,7 @@
   trigger:
   - platform: state
     to: 'off'
-    entity_id: media_player.guest_room_stereo_main
+    entity_id: media_player.guest_room_stereo
   - platform: state
     to: 'off'
     from: 'on'
@@ -665,7 +665,7 @@
   trigger:
   - platform: state
     to: 'off'
-    entity_id: media_player.guest_room_stereo_main
+    entity_id: media_player.guest_room_stereo
   - platform: state
     to: 'off'
     from: 'on'
@@ -705,7 +705,7 @@
   - platform: state
     to: 'on'
     entity_id:
-    - media_player.guest_room_stereo_main
+    - media_player.guest_room_stereo
     - media_player.television
   condition:
   - condition: state

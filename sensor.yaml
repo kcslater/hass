@@ -19,5 +19,5 @@
       value_template: '{{ state_attr("media_player.office", "volume_level") | float }}'
       friendly_name: 'Office Volume'
     guest_room_volume:
-      value_template: '{{ state_attr("media_player.guest_room_stereo_main", "volume_level") | float }}'
+      value_template: '{{ state_attr("media_player.guest_room_stereo", "volume_level") | float }}'
       friendly_name: 'Guest Room Volume'

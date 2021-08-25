@@ -22,7 +22,7 @@
     name: Guest Room
     entities:
       - light.guest_room
-      - media_player.guest_room_stereo_main
+      - media_player.guest_room_stereo
       - media_player.television
   core_present:
     name: K or M present

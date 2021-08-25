@@ -112,10 +112,10 @@ tv_time:
       entity_id: light.bedroom
     # Set soundbar to correct input
     - service: media_player.turn_on
-      entity_id: media_player.guest_room_stereo_main
+      entity_id: media_player.guest_room_stereo
     - service: media_player.select_source
       data:
-        entity_id: media_player.guest_room_stereo_main
+        entity_id: media_player.guest_room_stereo
         source: 'tv'
     - service: media_player.turn_on
       entity_id: media_player.television
@@ -194,7 +194,7 @@ switch_to_tv:
   sequence:
     - service: media_player.select_source
       data:
-        entity_id: media_player.guest_room_stereo_main
+        entity_id: media_player.guest_room_stereo
         source: "tv"
 
 down_up_down_mute:
@@ -216,7 +216,7 @@ down_up_down_mute:
       value_template: "{{ states('sensor.guest_room_volume') | float < vol_old }}"
     - service: media_player.volume_mute
       data:
-        entity_id: media_player.guest_room_stereo_main
+        entity_id: media_player.guest_room_stereo
         is_volume_muted: true  
 
 up_down_lights:
@@ -554,7 +554,7 @@ spotify_guest_room:
   sequence:
     - service: media_player.volume_set
       data:
-        entity_id: media_player.guest_room_stereo_main
+        entity_id: media_player.guest_room_stereo
         volume_level: 0.15
     - service: script.spotify_switch
       data:

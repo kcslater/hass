@@ -9,8 +9,8 @@ sun.sun:
 #   icon: mdi:television
 #   device_class: tv
 #   friendly_name: TV
-media_player.living_room_stereo_main:
-  icon: mdi:audio-video
+# media_player.living_room_stereo_main:
+#   icon: mdi:audio-video
 media_player.living_room:
   icon: mdi:speaker
 media_player.kitchen:
@@ -19,7 +19,7 @@ media_player.bedroom:
   icon: mdi:speaker
 media_player.office:
   icon: mdi:speaker
-media_player.guest_room_stereo_main:
+media_player.guest_room_stereo:
   icon: mdi:speaker
 switch.backyard_lights:
   icon: mdi:outdoor-lamp
