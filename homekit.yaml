@@ -1,19 +1,15 @@
 filter:
   include_domains:
     - cover
-    - media_player
     - light
     - switch
     - script
     - input_boolean
     - input_number
-    - lock
   exclude_entities:
     - light.backyard
     - light.porch_lamp
-    - media_player.spotify
-    - media_player.television
-    - media_player.office
+    - light.hwmugdih4035
     - script.close_garage
     - script.lock_if_closed_1
     - script.base_off
@@ -48,23 +44,3 @@ entity_config:
     name: "Front Door Light"
   light.basement:
     name: "Basement Lights"
-  media_player.living_room:
-    name: "Living Room Stereo"
-    feature_list:
-      - feature: play_pause
-  media_player.kitchen:
-    name: "Kitchen Stereo"
-    feature_list:
-      - feature: play_pause
-  media_player.bedroom:
-    name: "Bedroom Stereo"
-    feature_list:
-      - feature: play_pause
-#   media_player.office:
-#     name: "Office Stereo"
-#     feature_list:
-#       - feature: play_pause
-  media_player.guest_room_stereo:
-    name: "Guest Room Stereo"
-    feature_list:
-      - feature: on_off
