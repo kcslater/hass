@@ -15,9 +15,9 @@
     name: Upstairs Lights
     entities:
       - light.living_room
-      - light.nursery
+      # - light.nursery
       - switch.kitchen_light
-      # - input_boolean.alexa_ha_plug
+      - input_boolean.alexa_ha_plug
   guest_room:
     name: Guest Room
     entities:

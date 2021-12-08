@@ -88,7 +88,7 @@
       - light.nursery
   mode: single
 - id: standby_5am
-  alias: 5 AM Present, Standby
+  alias: 5 AM Anyone Present, Standby
   trigger:
   - platform: time
     at: 05:00:00
@@ -115,21 +115,21 @@
       entity_id: alarm_control_panel.abode_alarm
   - service: script.lock_if_closed
 - id: everything_off_2am
-  alias: 2 AM Not Present, Everything Off
+  alias: 2 AM K and M Not Present, Everything Off
   trigger:
   - platform: time
     at: 02:00:00
   condition:
   - condition: state
-    entity_id: group.all_present
+    entity_id: group.core_present
     state: 'off'
   action:
   - service: script.everything_off
   - service: script.lock_if_closed
   - service: cover.close_cover
     entity_id: cover.garage_door
-- id: sleeping_nightlight_off_6am
-  alias: 6 AM, Sleeping and Nightlight Off
+- id: sleeping_off_6am
+  alias: 6 AM, Sleeping Off
   trigger:
   - platform: time
     at: 06:00:00
@@ -539,9 +539,8 @@
         push:
           badge: 0
           category: garage
-      message: >-
-        The garage has been open for 
-        {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
+      message: The garage has been open for  {{ (trigger.for|string)[2:4].replace('00','60')
+        }} minutes!
       title: Garage Open
     service: notify.mobile_app_eye_phone
   - data_template:
@@ -549,9 +548,8 @@
         push:
           badge: 0
           category: garage
-      message: >-
-        The garage has been open for 
-        {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
+      message: The garage has been open for  {{ (trigger.for|string)[2:4].replace('00','60')
+        }} minutes!
       title: Garage Open
     service: notify.mobile_app_meghans_iphone
 - id: ios_garage_triggered
@@ -589,15 +587,13 @@
   condition: []
   action:
   - data_template:
-      message: >-
-        The {{ state_attr(trigger.entity_id, 'friendly_name')|lower
-        }} has been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
+      message: The {{ state_attr(trigger.entity_id, 'friendly_name')|lower }} has
+        been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
       title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
     service: notify.mobile_app_eye_phone
   - data_template:
-      message: >-
-        The {{ state_attr(trigger.entity_id, 'friendly_name')|lower
-        }} has been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
+      message: The {{ state_attr(trigger.entity_id, 'friendly_name')|lower }} has
+        been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
       title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
     service: notify.mobile_app_meghans_iphone
 - id: notify_door_open_no_one_home
@@ -615,17 +611,15 @@
     state: 'off'
   action:
   - data_template:
-      message: >-
-        The {{ state_attr(trigger.entity_id, 'friendly_name')|lower }}
-        was just opened, but it appears that no one is home! The alarm system 
-        is currently {{ states('alarm_control_panel.abode_alarm')|upper }}.
+      message: The {{ state_attr(trigger.entity_id, 'friendly_name')|lower }} was
+        just opened, but it appears that no one is home! The alarm system  is currently
+        {{ states('alarm_control_panel.abode_alarm')|upper }}.
       title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
     service: notify.mobile_app_eye_phone
   - data_template:
-      message: >-
-        The {{ state_attr(trigger.entity_id, 'friendly_name')|lower }}
-        was just opened, but it appears that no one is home! The alarm system 
-        is currently {{ states('alarm_control_panel.abode_alarm')|upper }}.
+      message: The {{ state_attr(trigger.entity_id, 'friendly_name')|lower }} was
+        just opened, but it appears that no one is home! The alarm system  is currently
+        {{ states('alarm_control_panel.abode_alarm')|upper }}.
       title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
     service: notify.mobile_app_meghans_iphone
   mode: single
@@ -635,6 +629,7 @@
   trigger:
   - platform: state
     to: 'off'
+    from: playing
     entity_id: media_player.guest_room_stereo
   - platform: state
     to: 'off'
@@ -665,6 +660,7 @@
   trigger:
   - platform: state
     to: 'off'
+    from: playing
     entity_id: media_player.guest_room_stereo
   - platform: state
     to: 'off'
@@ -746,4 +742,21 @@
     target:
       entity_id: input_boolean.alexa_ha_plug
   mode: single
-
+- id: living_room_lights_on_xmas_tree_on
+  alias: Living Room Lights On, Christmas Tree On
+  trigger:
+  - platform: state
+    entity_id: light.living_room
+    to: 'on'
+  action:
+  - service: input_boolean.turn_on
+    entity_id: input_boolean.alexa_ha_plug
+- id: living_room_lights_off_xmas_tree_off
+  alias: Living Room Lights Off, Christmas Tree Off
+  trigger:
+  - platform: state
+    entity_id: light.living_room
+    to: 'off'
+  action:
+  - service: input_boolean.turn_off
+    entity_id: input_boolean.alexa_ha_plug
