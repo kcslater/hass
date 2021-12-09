@@ -7,17 +7,6 @@ default_config:
 # Enables Hass IO UI
 hassio:
 
-# Discover some devices automatically
-discovery:
-  ignore:
-    - google_cast
-    - homekit
-    - yamaha
-    - philips_hue
-
-# Allows you to issue voice commands from the frontend in enabled browsers
-conversation:
-
 # View all events in a logbook
 logbook:
   exclude:
@@ -30,8 +19,8 @@ logbook:
 light:
   - platform: template
     lights:
-      upstairs_lights:
-        friendly_name: "Upstairs Lights"
+      upstairs:
+        friendly_name: "Upstairs"
         value_template: "{{ is_state('group.upstairs_lights', 'on') }}"
         turn_on:
           service: homeassistant.turn_on
@@ -61,25 +50,6 @@ input_select:
       - kitchen
       - living_room
       - office
-
-# Netgear
-device_tracker:
-  - platform: netgear
-    password: !secret netgear_password
-    host: !secret netgear_host
-    devices:
-      - !secret m_mac
-      - !secret k_mac
-    new_device_defaults:
-      track_new_devices: false
-    interval_seconds: 30
-    consider_home: 3:00
-
-# Yamaha
-media_player:
-  - platform: yamaha_musiccast
-    host: !secret gr_stereo_ip
-    #port: !secret gr_stereo_port
 
 # Spotify
 spotify:
