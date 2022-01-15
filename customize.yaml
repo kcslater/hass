@@ -22,8 +22,8 @@ media_player.office:
 media_player.guest_room_stereo:
   icon: mdi:speaker
 switch.backyard_lights:
-  icon: mdi:outdoor-lamp
+  icon: mdi:string-lights
 switch.kitchen_light:
-  icon: mdi:lightbulb
+  icon: mdi:lightbulb-group
 lock.home_door_lock:
   friendly_name: Front Door Lock
