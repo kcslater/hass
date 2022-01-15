@@ -21,4 +21,4 @@
     icon: mdi:string-lights
   alexa_ha_nightlight:
     name: Nightlight
-    icon: mdi:dome-light
+    icon: mdi:lightbulb
