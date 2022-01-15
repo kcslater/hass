@@ -8,12 +8,21 @@ default_config:
 hassio:
 
 # View all events in a logbook
-logbook:
-  exclude:
-    entities:
-      - input_boolean.k_present
-      - input_boolean.m_present
-      - automation.remove_new_devices_notification
+# logbook:
+#   exclude:
+#     entities:
+#       - input_boolean.k_present
+#       - input_boolean.m_present
+#       - automation.remove_new_devices_notification
+
+logger:
+  default: warn
+
+recorder:
+  commit_interval: 30
+  include:
+    domains:
+      - light
 
 # Upstairs lights
 light:
@@ -28,18 +37,8 @@ light:
         turn_off:
           service: homeassistant.turn_off
           entity_id: group.upstairs_lights
-
-# iOS garage alert action
-ios:
-  push:
-    categories:
-      - name: garage_trigger
-        identifier: 'garage'
-        actions:
-          - identifier: 'GARAGE_CLOSE'
-            title: 'Close Garage'
-            authenticationRequired: no
-            destructive: no
+        icon_template:
+          mdi:lightbulb-group
 
 # Music Controller
 input_select:
