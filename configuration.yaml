@@ -20,9 +20,9 @@ logger:
 
 recorder:
   commit_interval: 30
-  include:
-    domains:
-      - light
+#   include:
+#     domains:
+#       - light
 
 # Upstairs lights
 light:

@@ -166,6 +166,12 @@ goodbye:
     # Close garage
     - service: cover.close_cover
       entity_id: cover.garage_door
+    # Set thermostat to away mode
+    - service: climate.set_preset_mode
+      target:
+        entity_id: climate.thermostat
+      data:
+        preset_mode: "away"
 
 standby:
   alias: "Standby"

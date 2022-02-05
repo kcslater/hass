@@ -156,6 +156,10 @@
   - data:
       entity_id: alarm_control_panel.abode_alarm
     service: alarm_control_panel.alarm_disarm
+  - service: ecobee.resume_program
+    data:
+      resume_all: true
+      entity_id: climate.thermostat
 - id: porch_light_on_arrival_night
   alias: Anyone Arrives At Night, Porch Light
   trigger:
