@@ -208,10 +208,8 @@
       entity_id: sun.sun
       state: below_horizon
   action:
-  - service: light.turn_on
-    entity_id: light.living_room
-  - service: input_boolean.turn_on
-    entity_id: input_boolean.alexa_ha_plug
+  - service: homeassistant.turn_on
+    entity_id: group.living_room
 - id: goodbye_last_exit
   alias: Last Person Leaves, Goodbye
   trigger:

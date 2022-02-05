@@ -3,6 +3,11 @@
     entities:
       - light.bedroom
       # - input_boolean.alexa_ha_plug
+  living_room:
+    name: Living Room
+    entities:
+      - light.living_room
+      # - input_boolean.alexa_ha_plug
   upstairs:
     name: Upstairs, No Bedroom
     entities:
