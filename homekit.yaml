@@ -6,7 +6,9 @@ filter:
     - script
     - input_boolean
     - input_number
+    - climate
   exclude_entities:
+    - input_boolean.alexa_ha_plug
     - light.backyard
     - light.porch_lamp
     - light.hwmugdih4035
