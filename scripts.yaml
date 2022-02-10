@@ -57,6 +57,24 @@ base_off:
     - service: light.turn_off
       entity_id: light.basement
 
+apple_tv_off:
+  alias: "Apple TV Off"
+  sequence:
+    # Check that it's not off already
+    - condition: template
+      value_template: '{{ not is_state(''media_player.guest_room'', ''standby'') }}'
+    - service: remote.send_command
+      target:
+        entity_id: remote.guest_room
+      data:
+        delay_secs: 1
+        command:
+          - home_hold
+          - select
+    - service: media_player.turn_off
+      target:
+        entity_id: media_player.guest_room
+
 nighttime:
   alias: "Night-time"
   sequence:
@@ -78,17 +96,19 @@ nighttime:
       state: 'off'
     - service: homeassistant.turn_off
       entity_id: group.guest_room
+    - service: script.apple_tv_off
 
 everything_off:
   alias: "Everything Off"
   sequence:
     - service: script.base_off
+    - service: input_boolean.turn_off
+      entity_id: input_boolean.alexa_ha_nightlight
     - service: homeassistant.turn_off
       entity_id: group.bedroom
     - service: homeassistant.turn_off
       entity_id: group.guest_room
-    - service: input_boolean.turn_off
-      entity_id: input_boolean.alexa_ha_nightlight
+    - service: script.apple_tv_off
 
 goodnight:
   alias: "Goodnight"
@@ -117,8 +137,14 @@ tv_time:
       data:
         entity_id: media_player.guest_room_stereo
         source: 'tv'
-    - service: media_player.turn_on
-      entity_id: media_player.television
+    - service: remote.send_command
+      target:
+        entity_id: remote.guest_room
+      data:
+        command:
+          - wakeup
+    # - service: media_player.turn_on
+    #   entity_id: media_player.television
     # Turn on lamp and fade out
     - condition: or
       conditions:
