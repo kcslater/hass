@@ -2,7 +2,7 @@
     name: Guest Room Guests
     icon: mdi:account-multiple
   sleeping:
-    name: Sleeping boolean
+    name: Sleeping
     icon: mdi:sleep
   k_present:
     name: K Home, Homekit
