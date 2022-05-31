@@ -39,6 +39,24 @@ light:
           entity_id: group.upstairs_lights
         icon_template:
           mdi:lightbulb-group
+      apple_tv:
+        friendly_name: "Apple TV"
+        value_template: "{{ not (is_state('media_player.guest_room', 'standby') or is_state('media_player.guest_room', 'paused')) }}"
+        turn_on:
+          service: script.apple_tv_on
+        turn_off:
+          service: script.apple_tv_off
+        icon_template:
+          mdi:apple
+      tempo:
+        friendly_name: "Tempo"
+        value_template: "{{ is_state('media_player.tv', 'ok') and 'Tempo' == state_attr('media_player.tv', 'source') }}"
+        turn_on:
+          service: script.tempo_on
+        turn_off:
+          service: script.apple_tv_off
+        icon_template:
+          mdi:dumbbell
 
 # Music Controller
 input_select:

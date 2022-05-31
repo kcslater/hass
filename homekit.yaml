@@ -27,12 +27,19 @@ filter:
     - script.toggle_gr_lights_if_volume_down_up
     - script.down_up_down_mute
     - script.up_down_lights
+    - script.apple_tv_off
+    - script.apple_tv_on
     - input_boolean.tv_off_recent
     - script.lock_if_closed
     - switch.if_11pm_home_then_home
     - switch.if_5_30am_home_then_standby
     - switch.if_anyone_arrives_then_standby
     - switch.if_last_person_leaves_then_away
+    - switch.sonos_living_room_surround_enabled
+    - switch.basement_sensor_illuminance
+    - switch.basement_sensor_motion
+    - script.apple_tv_switch_if_needed
+    - script.tempo_on
 entity_config:
   light.bedroom:
     name: "Bedroom Lights"

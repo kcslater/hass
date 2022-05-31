@@ -1,8 +1,62 @@
 - id: thermostat_night_on
-  alias: Thermostat Night On
+  alias: Thermostat At Midnight, On
   trigger:
   - platform: time
     at: 00:00:01
+  condition:
+  - condition: state
+    entity_id: input_boolean.sleeping
+    state: 'on'
+  - condition: numeric_state
+    entity_id: sensor.smartsensor_temperature
+    below: '68.5'
+  action:
+  - service: climate.set_hvac_mode
+    target:
+      entity_id: climate.thermostat
+    data:
+      hvac_mode: heat
+- id: thermostat_night_cold_on
+  alias: Thermostat Below 68 After 4am, On
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.smartsensor_temperature
+    below: '68'
+  - platform: state
+    entity_id: binary_sensor.smartsensor_2
+    to: 'off'
+    for: 00:10:00
+  - platform: time
+    at: 04:00:00
+  condition:
+  - condition: state
+    entity_id: input_boolean.sleeping
+    state: 'on'
+  - condition: state
+    entity_id: climate.thermostat
+    state: 'off'
+  - condition: state
+    entity_id: binary_sensor.smartsensor_2
+    state: 'off'
+    for: 00:09:00
+  - condition: numeric_state
+    entity_id: sensor.smartsensor_temperature
+    below: '68.1'
+  - condition: time
+    after: 03:59:00
+    before: 04:30:00
+  action:
+  - service: climate.set_hvac_mode
+    target:
+      entity_id: climate.thermostat
+    data:
+      hvac_mode: heat
+- id: thermostat_night_off
+  alias: Thermostat 69.5 While Sleeping, Off
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.smartsensor_temperature
+    above: '71'
   condition:
   - condition: state
     entity_id: input_boolean.sleeping
@@ -12,17 +66,24 @@
     target:
       entity_id: climate.thermostat
     data:
-      hvac_mode: heat
-- id: thermostat_night_off
-  alias: Thermostat Night Off
+      hvac_mode: 'off'
+- id: thermostat_night_off_after_4am
+  alias: Thermostat 67.5 While Sleeping After 4am, Off
   trigger:
   - platform: numeric_state
     entity_id: sensor.smartsensor_temperature
-    above: 69
+    above: 67.5
+  - platform: time
+    at: 04:00:00
   condition:
   - condition: state
     entity_id: input_boolean.sleeping
     state: 'on'
+  - condition: numeric_state
+    entity_id: sensor.smartsensor_temperature
+    above: 67.4
+  - condition: time
+    after: 03:59:00
   action:
   - service: climate.set_hvac_mode
     target:
@@ -64,9 +125,17 @@
   alias: Porch Light Off After 20 Mins
   trigger:
   - platform: state
-    entity_id: binary_sensor.closed_light
-    to: 'on'
+    entity_id: binary_sensor.front_door
+    to: 'off'
     for: 00:20:00
+  condition:
+  - condition: state
+    entity_id: light.front_door
+    state: 'on'
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
   action:
   - service: light.turn_off
     entity_id: light.front_door
@@ -159,6 +228,19 @@
   action:
   - service: input_boolean.turn_on
     entity_id: input_boolean.sleeping
+  - service: input_boolean.turn_on
+    data: {}
+    target:
+      entity_id: input_boolean.alexa_ha_nightlight
+  - delay:
+      hours: 0
+      minutes: 0
+      seconds: 5
+      milliseconds: 0
+  - service: input_boolean.turn_off
+    data: {}
+    target:
+      entity_id: input_boolean.alexa_ha_nightlight
 - id: everything_off_2am
   alias: 2 AM K and M Not Present, Everything Off
   trigger:
@@ -174,10 +256,10 @@
   - service: cover.close_cover
     entity_id: cover.garage_door
 - id: sleeping_off_6am
-  alias: 6 AM, Sleeping Off
+  alias: 7 AM, Sleeping Off
   trigger:
   - platform: time
-    at: 06:00:00
+    at: 07:00:00
   action:
   - service: input_boolean.turn_off
     data:
@@ -195,6 +277,14 @@
   - condition: state
     entity_id: input_boolean.sleeping
     state: 'off'
+  - condition: or
+    conditions:
+    - condition: state
+      entity_id: alarm_control_panel.abode_alarm
+      state: armed_away
+    - condition: state
+      entity_id: alarm_control_panel.abode_alarm
+      state: armed_home
   action:
   - data:
       entity_id: alarm_control_panel.abode_alarm
@@ -214,6 +304,9 @@
     - binary_sensor.k_present
     - input_boolean.x_present
   condition:
+  - condition: state
+    entity_id: light.front_door
+    state: 'off'
   - condition: state
     entity_id: input_boolean.sleeping
     state: 'off'
@@ -323,11 +416,15 @@
   alias: Lock After 20 Minutes
   description: ''
   trigger:
-  - entity_id: binary_sensor.unlocked_closed
+  - platform: state
+    entity_id: binary_sensor.front_door
+    to: 'off'
     for: 00:20:00
-    platform: state
-    to: 'on'
-  condition: []
+  condition:
+  - condition: state
+    entity_id: lock.home_door_lock
+    state: unlocked
+    for: 00:20:00
   action:
   - data:
       entity_id: lock.home_door_lock
@@ -472,13 +569,13 @@
   - service: script.sonos_set_controller
     data_template:
       target_player: "{% if is_state('media_player.living_room', 'playing') and 'media_player.living_room'\
-        \ == state_attr('media_player.living_room', 'sonos_group')[0] %}\n  media_player.living_room\n\
+        \ == state_attr('media_player.living_room', 'group_members')[0] %}\n  media_player.living_room\n\
         {% elif is_state('media_player.kitchen', 'playing') and 'media_player.kitchen'\
-        \ == state_attr('media_player.kitchen', 'sonos_group')[0] %}\n  media_player.kitchen\n\
+        \ == state_attr('media_player.kitchen', 'group_members')[0] %}\n  media_player.kitchen\n\
         {% elif is_state('media_player.bedroom', 'playing') and 'media_player.bedroom'\
-        \ == state_attr('media_player.bedroom', 'sonos_group')[0] %}\n  media_player.bedroom\n\
+        \ == state_attr('media_player.bedroom', 'group_members')[0] %}\n  media_player.bedroom\n\
         {% elif is_state('media_player.office', 'playing') and 'media_player.office'\
-        \ == state_attr('media_player.office', 'sonos_group')[0] %}\n  media_player.office\n\
+        \ == state_attr('media_player.office', 'group_members')[0] %}\n  media_player.office\n\
         {% endif %}\n"
 - id: sonos_pause_play_skip
   alias: Sonos Pause Play, Skip
@@ -494,7 +591,7 @@
     - media_player.office
   condition:
   - condition: template
-    value_template: '{{ trigger.entity_id == state_attr(trigger.entity_id, ''sonos_group'')[0]
+    value_template: '{{ trigger.entity_id == state_attr(trigger.entity_id, ''group_members'')[0]
       }}'
   action:
   - wait_template: '{{ is_state(trigger.entity_id, ''playing'') }}'
@@ -596,7 +693,7 @@
       message: The garage has been open for  {{ (trigger.for|string)[2:4].replace('00','60')
         }} minutes!
       title: Garage Open
-    service: notify.mobile_app_eye_phone
+    service: notify.mobile_app_iphone
   - data_template:
       data:
         actions:
@@ -644,7 +741,7 @@
       message: The {{ state_attr(trigger.entity_id, 'friendly_name')|lower }} has
         been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
       title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
-    service: notify.mobile_app_eye_phone
+    service: notify.mobile_app_iphone
   - data_template:
       message: The {{ state_attr(trigger.entity_id, 'friendly_name')|lower }} has
         been open for {{ (trigger.for|string)[2:4].replace('00','60') }} minutes!
@@ -669,7 +766,7 @@
         just opened, but it appears that no one is home! The alarm system  is currently
         {{ states('alarm_control_panel.abode_alarm')|upper }}.
       title: '{{ state_attr(trigger.entity_id, ''friendly_name'') }} Open'
-    service: notify.mobile_app_eye_phone
+    service: notify.mobile_app_iphone
   - data_template:
       message: The {{ state_attr(trigger.entity_id, 'friendly_name')|lower }} was
         just opened, but it appears that no one is home! The alarm system  is currently
@@ -686,7 +783,7 @@
     from: playing
     entity_id: media_player.guest_room_stereo
   - platform: state
-    to: 'standby'
+    to: standby
     entity_id: media_player.guest_room
   condition:
   - condition: state
@@ -720,7 +817,7 @@
     from: playing
     entity_id: media_player.guest_room_stereo
   - platform: state
-    to: 'standby'
+    to: standby
     entity_id: media_player.guest_room
   condition:
   - condition: state
@@ -762,7 +859,7 @@
     to: 'on'
     entity_id: media_player.guest_room_stereo
   - platform: state
-    to: 'standby'
+    to: standby
     entity_id: media_player.guest_room
   condition:
   - condition: state

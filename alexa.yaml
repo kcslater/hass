@@ -12,6 +12,8 @@ smart_home:
       - input_boolean.alexa_ha_nightlight
       - input_boolean.alexa_ha_plug
       - light.upstairs
+      - light.apple_tv
+      - light.tempo
     exclude_entities:
       - script.lock_if_closed_1
       - script.base_off
@@ -26,11 +28,16 @@ smart_home:
       - script.sonos_set_controller
       - script.sonos_check_controller
       - script.toggle_gr_lights_if_volume_down_up
+      - script.apple_tv_off
+      - script.apple_tv_on
       - switch.if_11pm_home_then_home
       - switch.if_5_30am_home_then_standby
       - switch.if_anyone_arrives_then_standby
       - switch.if_last_person_leaves_then_away
       - switch.kitchen_light
+      - switch.basement_sensor_illuminance
+      - switch.basement_sensor_motion
+      - switch.sonos_living_room_surround_enabled
   entity_config:
     input_boolean.alexa_ha_nightlight:
       name: "Alexa HA - Nightlight"
@@ -38,3 +45,11 @@ smart_home:
     input_boolean.alexa_ha_plug:
       name: "Alexa HA - Plug"
       display_categories: LIGHT
+    light.apple_tv:
+      display_categories: STREAMING_DEVICE
+    light.tempo:
+      display_categories: STREAMING_DEVICE
+    light.meghans_lamp:
+      name: "Meghans Lamp"
+    light.kailins_lamp:
+      name: "Kailins Lamp"
