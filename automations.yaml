@@ -449,7 +449,7 @@
   - condition: template
     value_template: '{{ not is_state(''media_player.office'', ''playing'') }}'
   action:
-  - service: sonos.unjoin
+  - service: media_player.unjoin
     data_template:
       entity_id: '{{ ''media_player.''+trigger.entity_id.replace(''sensor.'', '''''''').replace(''_volume'','''''''')
         }}'
@@ -622,7 +622,7 @@
   - wait_template: '{{ is_state(trigger.entity_id, trigger.from_state.state) }}'
     timeout: '1'
     continue_on_timeout: false
-  - service: sonos.unjoin
+  - service: media_player.unjoin
     data_template:
       entity_id: '{{ ''media_player.''+trigger.entity_id.replace(''sensor.'', '''''''').replace(''_volume'','''''''')
         }}'
