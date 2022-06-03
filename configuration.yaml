@@ -16,7 +16,7 @@ hassio:
 #       - automation.remove_new_devices_notification
 
 logger:
-  default: warn
+  default: warning
 
 recorder:
   commit_interval: 30
@@ -39,8 +39,11 @@ light:
           entity_id: group.upstairs_lights
         icon_template:
           mdi:lightbulb-group
+switch:
+  - platform: template
+    switches:
       apple_tv:
-        friendly_name: "Apple TV"
+        friendly_name: "Apple TV Controller"
         value_template: "{{ not (is_state('media_player.guest_room', 'standby') or is_state('media_player.guest_room', 'paused')) }}"
         turn_on:
           service: script.apple_tv_on
@@ -67,11 +70,6 @@ input_select:
       - kitchen
       - living_room
       - office
-
-# Spotify
-spotify:
-  client_id: !secret spotify_client_id
-  client_secret: !secret spotify_client_secret
 
 # Sonos
 sonos:

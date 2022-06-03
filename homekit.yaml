@@ -53,3 +53,5 @@ entity_config:
     name: "Front Door Light"
   light.basement:
     name: "Basement Lights"
+  switch.apple_tv:
+    name: "Apple TV"

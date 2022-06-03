@@ -391,7 +391,7 @@
       vol_new: '{{ trigger.to_state.state }}'
   mode: single
 - id: lights_up_dn
-  alias: Soundbar Up Down, Lights
+  alias: Soundbar Volume Up Down, Lights
   trigger:
   - platform: state
     entity_id: sensor.guest_room_volume
@@ -430,7 +430,7 @@
       entity_id: lock.home_door_lock
     service: lock.lock
 - id: sonos_volume_ungroup
-  alias: Volume Change, Sonos Ungroup
+  alias: Sonos Volume Change, Ungroup
   description: ''
   trigger:
   - platform: state
@@ -454,7 +454,7 @@
       entity_id: '{{ ''media_player.''+trigger.entity_id.replace(''sensor.'', '''''''').replace(''_volume'','''''''')
         }}'
 - id: sonos_volume_up_group
-  alias: Volume Up, Sonos Group
+  alias: Sonos Volume Up, Group
   description: ''
   trigger:
   - platform: state
@@ -486,12 +486,13 @@
       state: playing
   action:
   - service: script.sonos_check_controller
+    data: {}
   - service: script.sonos_group
     data_template:
       target_player: media_player.{{ trigger.entity_id.replace('sensor.', '''').replace('_volume','''')
         }}
 - id: sonos_volume_down_move
-  alias: Volume Down, Sonos Move
+  alias: Sonos Volume Down, Move
   description: ''
   trigger:
   - platform: state
@@ -522,6 +523,7 @@
       state: playing
   action:
   - service: script.sonos_check_controller
+    data: {}
   - service: script.sonos_move
     data_template:
       new_player: '{{ trigger.entity_id.replace(''sensor.'', ''media_player.'').replace(''_volume'','''''''')
