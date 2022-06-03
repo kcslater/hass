@@ -12,8 +12,6 @@ smart_home:
       - input_boolean.alexa_ha_nightlight
       - input_boolean.alexa_ha_plug
       - light.upstairs
-      - light.apple_tv
-      - light.tempo
     exclude_entities:
       - script.lock_if_closed_1
       - script.base_off
@@ -45,9 +43,9 @@ smart_home:
     input_boolean.alexa_ha_plug:
       name: "Alexa HA - Plug"
       display_categories: LIGHT
-    light.apple_tv:
+    switch.apple_tv:
       display_categories: STREAMING_DEVICE
-    light.tempo:
+    switch.tempo:
       display_categories: STREAMING_DEVICE
     light.meghans_lamp:
       name: "Meghans Lamp"

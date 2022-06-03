@@ -43,7 +43,7 @@ switch:
   - platform: template
     switches:
       apple_tv:
-        friendly_name: "Apple TV Controller"
+        friendly_name: "Apple TV"
         value_template: "{{ not (is_state('media_player.guest_room', 'standby') or is_state('media_player.guest_room', 'paused')) }}"
         turn_on:
           service: script.apple_tv_on
