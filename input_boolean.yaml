@@ -1,5 +1,5 @@
   guests_visiting:
-    name: Guest Room Guests
+    name: Guest Mode
     icon: mdi:account-multiple
   sleeping:
     name: Sleeping
