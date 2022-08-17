@@ -236,11 +236,8 @@ ready_for_bed:
   sequence:
   - service: light.turn_on
     data:
-      brightness: 180
-      rgb_color:
-      - 247
-      - 206
-      - 70
+      brightness_pct: 80
+      color_name: 'orange'
     target:
       entity_id: light.nursery
 turntable:
