@@ -3,9 +3,10 @@ good_morning:
   sequence:
   - service: light.turn_on
     data:
-      entity_id: light.bedroom
       brightness_pct: 100
-      transition: 900
+    target:
+      entity_id:
+      - light.living_room
   - service: input_boolean.turn_off
     entity_id: input_boolean.sleeping
   - service: climate.set_hvac_mode
@@ -13,6 +14,13 @@ good_morning:
       entity_id: climate.thermostat
     data:
       hvac_mode: heat
+  - service: light.turn_on
+    data:
+      color_name: orange
+      brightness_pct: 100
+    target:
+      entity_id: light.kailins_lamp
+  mode: single
 lock_if_closed_1:
   alias: Lock The Door If Closed And Unlocked
   sequence:
@@ -31,19 +39,15 @@ lock_if_closed:
   - condition: state
     entity_id: binary_sensor.front_door
     state: 'on'
-  - service: notify.mobile_app_eye_phone
+  - service: notify.mobile_app_kailins_iphone
     data_template:
-      message: 'Hey silly, you asked me to lock the front door, but you have to close
+      message: Hey silly, you asked me to lock the front door, but you have to close
         it first!
-
-        '
       title: Front Door Open
   - service: notify.mobile_app_meghans_iphone
     data_template:
-      message: 'Hey silly, you asked me to lock the front door, but you have to close
+      message: Hey silly, you asked me to lock the front door, but you have to close
         it first!
-
-        '
       title: Front Door Open
 base_off:
   alias: Base Off
@@ -83,7 +87,7 @@ apple_tv_switch_if_needed:
     - condition: state
       entity_id: media_player.tv
       attribute: source
-      state: "Apple TV"
+      state: Apple TV
   - service: remote.send_command
     target:
       entity_id: remote.guest_room
@@ -227,19 +231,29 @@ bedtime:
   alias: Bedtime
   sequence:
   - service: script.naptime
+    data: {}
   - service: light.turn_on
     data:
-      entity_id: light.nursery
       brightness: 1
+      color_name: red
+    target:
+      entity_id: light.nursery
+  mode: single
 ready_for_bed:
   alias: Ready for bed
   sequence:
   - service: light.turn_on
     data:
       brightness_pct: 80
-      color_name: 'orange'
+      color_name: orange
     target:
       entity_id: light.nursery
+  - service: climate.set_hvac_mode
+    data:
+      hvac_mode: 'off'
+    target:
+      entity_id: climate.thermostat
+  mode: single
 turntable:
   alias: Turntable
   sequence:
@@ -299,20 +313,20 @@ sonos_group:
   alias: Sonos Group
   sequence:
   - condition: template
-    value_template: "{% if target_player is not none and target_player != false and\
-      \ target_player != '' %}\n  true\n{% else %}\n  false\n{% endif %}\n"
+    value_template: "{% if target_player is not none and target_player != false and
+      target_player != '' %}\n  true\n{% else %}\n  false\n{% endif %}\n"
   - condition: template
-    value_template: "{% if states(target_player) != 'playing' %}\n  true\n{% else\
-      \ %}\n  false\n{% endif %}\n"
+    value_template: "{% if states(target_player) != 'playing' %}\n  true\n{% else
+      %}\n  false\n{% endif %}\n"
   - service: media_player.join
     data_template:
       entity_id: media_player.{{ states('input_select.music_controller') }}
-      group_members: "{% if target_player is not none %}\n  {{ target_player }}\n{% endif\
-        \ %}\n"
+      group_members: "{% if target_player is not none %}\n  {{ target_player }}\n{%
+        endif %}\n"
   - service: media_player.volume_set
     data_template:
-      entity_id: "{% if target_player is not none %}\n  {{ target_player }}\n{% endif\
-        \ %}\n"
+      entity_id: "{% if target_player is not none %}\n  {{ target_player }}\n{% endif
+        %}\n"
       volume_level: '{{ state_attr(''media_player.'' + states(''input_select.music_controller''),
         ''volume_level'') }}
 
@@ -426,14 +440,13 @@ sonos_ungroup_all:
   sequence:
   - service: media_player.unjoin
     data_template:
-      entity_id: "{% if states('input_select.music_controller') == 'bedroom' %}\n\
-        \  ['media_player.kitchen', 'media_player.living_room', 'media_player.office']\n\
-        {% elif states('input_select.music_controller') == 'kitchen' %}\n  ['media_player.bedroom',\
-        \ 'media_player.living_room', 'media_player.office']\n{% elif states('input_select.music_controller')\
-        \ == 'living_room' %}\n  ['media_player.bedroom', 'media_player.kitchen',\
-        \ 'media_player.office']\n{% elif states('input_select.music_controller')\
-        \ == 'office' %}\n  ['media_player.bedroom', 'media_player.kitchen', 'media_player.living_room']\n\
-        {% endif %}\n"
+      entity_id: "{% if states('input_select.music_controller') == 'bedroom' %}\n
+        \ ['media_player.kitchen', 'media_player.living_room', 'media_player.office']\n{%
+        elif states('input_select.music_controller') == 'kitchen' %}\n  ['media_player.bedroom',
+        'media_player.living_room', 'media_player.office']\n{% elif states('input_select.music_controller')
+        == 'living_room' %}\n  ['media_player.bedroom', 'media_player.kitchen', 'media_player.office']\n{%
+        elif states('input_select.music_controller') == 'office' %}\n  ['media_player.bedroom',
+        'media_player.kitchen', 'media_player.living_room']\n{% endif %}\n"
 sonos_ungroup_bedroom:
   alias: Sonos Ungroup Bedroom
   sequence:
@@ -482,15 +495,15 @@ sonos_check_controller:
       ''playing'') }}'
   - service: script.sonos_set_controller
     data_template:
-      target_player: "{% if is_state('media_player.living_room', 'playing') and 'media_player.living_room'\
-        \ == state_attr('media_player.living_room', 'group_members')[0] %}\n  media_player.living_room\n\
-        {% elif is_state('media_player.kitchen', 'playing') and 'media_player.kitchen'\
-        \ == state_attr('media_player.kitchen', 'group_members')[0] %}\n  media_player.kitchen\n\
-        {% elif is_state('media_player.bedroom', 'playing') and 'media_player.bedroom'\
-        \ == state_attr('media_player.bedroom', 'group_members')[0] %}\n  media_player.bedroom\n\
-        {% elif is_state('media_player.office', 'playing') and 'media_player.office'\
-        \ == state_attr('media_player.office', 'group_members')[0] %}\n  media_player.office\n\
-        {% endif %}\n"
+      target_player: "{% if is_state('media_player.living_room', 'playing') and 'media_player.living_room'
+        == state_attr('media_player.living_room', 'group_members')[0] %}\n  media_player.living_room\n{%
+        elif is_state('media_player.kitchen', 'playing') and 'media_player.kitchen'
+        == state_attr('media_player.kitchen', 'group_members')[0] %}\n  media_player.kitchen\n{%
+        elif is_state('media_player.bedroom', 'playing') and 'media_player.bedroom'
+        == state_attr('media_player.bedroom', 'group_members')[0] %}\n  media_player.bedroom\n{%
+        elif is_state('media_player.office', 'playing') and 'media_player.office'
+        == state_attr('media_player.office', 'group_members')[0] %}\n  media_player.office\n{%
+        endif %}\n"
 sonos_pause:
   alias: Sonos Pause
   sequence:
