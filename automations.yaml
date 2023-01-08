@@ -9,7 +9,7 @@
     state: 'on'
   - condition: numeric_state
     entity_id: sensor.smartsensor_temperature
-    below: 68
+    below: 67.5
   action:
   - service: climate.set_hvac_mode
     target:
@@ -23,10 +23,6 @@
   - platform: numeric_state
     entity_id: sensor.smartsensor_temperature
     below: 68
-  - platform: state
-    entity_id: binary_sensor.smartsensor_2
-    to: 'off'
-    for: 00:10:00
   - platform: time
     at: 01:00:00
   condition:
@@ -36,10 +32,6 @@
   - condition: state
     entity_id: climate.thermostat
     state: 'off'
-  - condition: state
-    entity_id: binary_sensor.smartsensor_2
-    state: 'off'
-    for: 00:09:00
   - condition: numeric_state
     entity_id: sensor.smartsensor_temperature
     below: 68.1
@@ -112,13 +104,17 @@
     entity_id: binary_sensor.front_door
     to: 'on'
   condition:
-    condition: or
+  - condition: or
     conditions:
     - condition: time
       after: '20:00'
+      before: 00:00:00
     - condition: state
       entity_id: sun.sun
       state: below_horizon
+    - condition: state
+      entity_id: light.front_door
+      state: 'off'
   action:
   - service: light.turn_on
     data:
@@ -128,35 +124,13 @@
   trigger:
   - platform: state
     entity_id:
-    - binary_sensor.front_door
-    to: Closed
-    for:
-      hours: 0
-      minutes: 20
-      seconds: 0
-  - platform: state
-    entity_id:
     - light.front_door
     to: 'on'
     for:
       hours: 0
       minutes: 20
       seconds: 0
-  condition:
-  - condition: state
-    state: 'on'
-    for:
-      hours: 0
-      minutes: 19
-      seconds: 0
-    entity_id: light.front_door
-  - condition: state
-    entity_id: binary_sensor.front_door
-    for:
-      hours: 0
-      minutes: 19
-      seconds: 0
-    state: 'off'
+  condition: []
   action:
   - service: light.turn_off
     entity_id: light.front_door
@@ -277,11 +251,11 @@
   - service: cover.close_cover
     entity_id: cover.garage_door
 - id: sleeping_off_6am
-  alias: 6:30 AM, Sleeping Off
+  alias: 6 AM, Sleeping Off
   description: ''
   trigger:
   - platform: time
-    at: 06:30:00
+    at: 06:00:00
   action:
   - service: input_boolean.turn_off
     data:
@@ -442,15 +416,25 @@
     entity_id: binary_sensor.front_door
     to: 'off'
     for: 00:20:00
+  - platform: state
+    entity_id:
+    - lock.home_door_lock
+    to: unlocked
+    for:
+      hours: 0
+      minutes: 20
+      seconds: 0
   condition:
   - condition: state
     entity_id: lock.home_door_lock
     state: unlocked
-    for: 00:20:00
+    for:
+      hours: 0
+      minutes: 0
+      seconds: 0
   action:
-  - data:
-      entity_id: lock.home_door_lock
-    service: lock.lock
+  - service: script.lock_if_closed_1
+    data: {}
 - id: sonos_volume_ungroup
   alias: Sonos Volume Change, Ungroup
   description: ''
@@ -944,3 +928,101 @@
   action:
   - service: input_boolean.turn_off
     entity_id: input_boolean.alexa_ha_plug
+- id: '1669949388563'
+  alias: Thermostat 68 while sleeping, turn on nursery radiator
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.smartsensor_temperature
+    below: 69
+  condition:
+  - condition: state
+    entity_id: input_boolean.sleeping
+    state: 'on'
+  - condition: state
+    entity_id: switch.nursery_radiator
+    state: 'off'
+  action:
+  - service: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.nursery_radiator
+  mode: single
+- id: '1670467328222'
+  alias: 6 AM, turn on nursery radiator
+  description: ''
+  trigger:
+  - platform: time
+    at: 06:00:00
+  condition:
+  - condition: state
+    entity_id: switch.nursery_radiator
+    state: 'off'
+  action:
+  - service: switch.turn_on
+    data: {}
+    target:
+      entity_id: switch.nursery_radiator
+  mode: single
+- id: '1671491269567'
+  alias: 6:01 AM, turn off nursery radiator
+  description: ''
+  trigger:
+  - platform: time
+    at: 06:01:00
+  condition:
+  - condition: state
+    entity_id: switch.nursery_radiator
+    state: 'on'
+  action:
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.nursery_radiator
+  mode: single
+- id: '1672744230153'
+  alias: Thermostat 72.5 while sleeping, turn off radiator
+  description: ''
+  trigger:
+  - platform: numeric_state
+    entity_id: sensor.smartsensor_temperature
+    above: 72.5
+  condition:
+  - condition: state
+    entity_id: input_boolean.sleeping
+    state: 'on'
+  action:
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.nursery_radiator
+  mode: single
+- id: '1672893953480'
+  alias: 4:30 AM, turn off radiator every 30 mins
+  description: ''
+  trigger:
+  - platform: time
+    at: 04:30:00
+  - platform: time
+    at: 05:00:00
+  - platform: time
+    at: 05:30:00
+  - platform: numeric_state
+    entity_id: sensor.smartsensor_temperature
+    above: 71
+  condition:
+  - condition: state
+    entity_id: switch.nursery_radiator
+    state: 'on'
+  - condition: numeric_state
+    entity_id: sensor.smartsensor_temperature
+    above: 70
+  - condition: time
+    before: 07:00:00
+    after: 04:29:00
+  action:
+  - service: switch.turn_off
+    data: {}
+    target:
+      entity_id: switch.nursery_radiator
+  mode: single
