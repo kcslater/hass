@@ -14,12 +14,10 @@ good_morning:
       entity_id: climate.thermostat
     data:
       hvac_mode: heat
-  - service: light.turn_on
-    data:
-      color_name: orange
-      brightness_pct: 100
+  - service: switch.turn_off
+    data: {}
     target:
-      entity_id: light.kailins_lamp
+      entity_id: switch.nursery_radiator
   mode: single
 lock_if_closed_1:
   alias: Lock The Door If Closed And Unlocked
